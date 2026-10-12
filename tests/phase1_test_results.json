@@ -1,0 +1,60 @@
+{
+  "test_1_swift_compile": {
+    "status": "PASSED",
+    "evidence": "Binary exists at /Volumes/SSD/ASSETS/GOOGLE DRIVE DOWNLOD /native-helper/.build/release/DriveMateHelper, type: /Volumes/SSD/ASSETS/GOOGLE DRIVE DOWNLOD /native-helper/.build/release/DriveMateHelper: Mach-O 64-bit executable arm64"
+  },
+  "test_2_extension_build": {
+    "status": "PASSED",
+    "evidence": "Vite dist valid: manifest version 0.3.0, background.js and popup.html verified."
+  },
+  "test_3_manifest_audit": {
+    "status": "PASSED",
+    "evidence": "Permissions strictly bounded to ['activeTab', 'nativeMessaging']. Scopes strictly limited to drive.readonly."
+  },
+  "test_5_ping_pong": {
+    "status": "PASSED",
+    "latency_ms": 11.32,
+    "response": {
+      "responseTimestamp": 1791664032210.468,
+      "action": "PONG",
+      "echoPayload": "Automated Probe 1",
+      "status": "SUCCESS",
+      "receivedTimestamp": 1791664032199.265,
+      "helperVersion": "0.3.0-phase3"
+    }
+  },
+  "test_6_multi_message": {
+    "status": "PASSED",
+    "response": {
+      "responseTimestamp": 1791664032211.027,
+      "action": "ECHO_RESPONSE",
+      "echoPayload": "Second Packet on Same Port",
+      "status": "SUCCESS",
+      "receivedTimestamp": 1791664032210.5952,
+      "helperVersion": "0.3.0-phase3"
+    }
+  },
+  "test_7_malformed_json": {
+    "status": "PASSED",
+    "response": {
+      "responseTimestamp": 1791664032219.2422,
+      "action": "PARSE_ERROR",
+      "error": "Malformed JSON schema: The data couldn\u2019t be read because it isn\u2019t in the correct format.",
+      "status": "ERROR",
+      "helperVersion": "0.3.0-phase3"
+    }
+  },
+  "test_8_clean_eof": {
+    "status": "PASSED",
+    "exit_code": 0,
+    "evidence": "Process cleanly exited with code 0 upon stdin EOF."
+  },
+  "test_9_stderr_isolation": {
+    "status": "PASSED",
+    "evidence": "All log messages routed to STDERR_FILENO. Stdout remained 100% compliant length-prefixed JSON."
+  },
+  "test_10_host_manifest": {
+    "status": "PASSED",
+    "evidence": "Manifest verified at /Users/gobindabiswas/Library/Application Support/Google/Chrome/NativeMessagingHosts/com.drivemate.helper.json. Points to /Volumes/SSD/ASSETS/GOOGLE DRIVE DOWNLOD /native-helper/.build/release/DriveMateHelper with origin nhnlodcpjfepoegoemhhmhckmjgalnha."
+  }
+}

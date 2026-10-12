@@ -1,0 +1,38 @@
+{
+  "manifest_version": 3,
+  "name": "DriveMate",
+  "version": "0.3.0",
+  "description": "DriveMate — High-Performance Public Google Drive Downloader (No Login Required)",
+  "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAn/Bp43RI09U2hiPzMK8Wpc7wMYCUBJ7d5JnE2UgG2aqKjRzeIjgEtCvw5ZO1z2kun2JODimnMxbvYXqMxg600C1nNHMKQ9nzDsh/gNR27NAqLEcVG/E4nELy8MjXwJUhbPIuSPAnkMRGtbpNjXRpo8Glh7zGrX5f1KAtknbm28dMK0apQFFA/dc70RqtBNfd71g1xylofYkJqs+6MS/Mbq2EMBr5Vv4mArrzo1oEWCTyZ626vm+zToM5gmj8Armosyu4M9NiNWHa2jFpWRmyjVjoyVe+CS9ku8CxNjpIgfUbst7CYGXhybwHyi17cDVOgVH6nq9ACZvquda2qf5qhwIDAQAB",
+  "permissions": [
+    "nativeMessaging",
+    "activeTab",
+    "storage",
+    "unlimitedStorage",
+    "alarms"
+  ],
+  "host_permissions": [
+    "https://drive.google.com/*",
+    "https://*.googleusercontent.com/*",
+    "https://docs.google.com/*",
+    "https://accounts.google.com/*"
+  ],
+  "action": {
+    "default_popup": "dist/popup.html",
+    "default_title": "DriveMate",
+    "default_icon": {
+      "16": "icons/icon-16.png",
+      "48": "icons/icon-48.png",
+      "128": "icons/icon-128.png"
+    }
+  },
+  "background": {
+    "service_worker": "dist/background.js",
+    "type": "module"
+  },
+  "icons": {
+    "16": "icons/icon-16.png",
+    "48": "icons/icon-48.png",
+    "128": "icons/icon-128.png"
+  }
+}

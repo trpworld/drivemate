@@ -1,0 +1,9 @@
+{
+  "name": "com.drivemate.helper",
+  "description": "DriveMate High-Speed Native Download Helper",
+  "path": "/Volumes/SSD/ASSETS/GOOGLE DRIVE DOWNLOD /native-helper/.build/release/DriveMateHelper",
+  "type": "stdio",
+  "allowed_origins": [
+    "chrome-extension://nhnlodcpjfepoegoemhhmhckmjgalnha/"
+  ]
+}

@@ -1,0 +1,68 @@
+{
+  "timestamp": 1791802730.4613838,
+  "passed": 10,
+  "total": 12,
+  "all_passed": false,
+  "results": {
+    "1": {
+      "status": "PASSED",
+      "name": "Stdio Protocol Purity & PONG Handshake",
+      "evidence": "Version 0.3.0-phase3 verified; stdout pure JSON"
+    },
+    "2": {
+      "status": "PASSED",
+      "name": "Direct Download & MD5 Checksum Verification",
+      "evidence": "File size 100B, MD5 13365e8e0a1669c0eb5882b4390f8eb4 verified"
+    },
+    "3": {
+      "status": "PASSED",
+      "name": "Virus Confirmation HTML Form Flow",
+      "evidence": "Resolved form action & downloaded 112B payload without saving HTML"
+    },
+    "4": {
+      "status": "PASSED",
+      "name": "Rejection of HTML Error/Sign-in Pages",
+      "evidence": "Detected HTML response; blocked saving HTML under .mov filename"
+    },
+    "5": {
+      "status": "PASSED",
+      "name": "HTTP Range 206 Resumption",
+      "evidence": "Sent Range: bytes=50-, accepted 206 Partial Content, finalized 200B file"
+    },
+    "6": {
+      "status": "PASSED",
+      "name": "HTTP 200 on Range Request (Safe Restart)",
+      "evidence": "Server returned 200 OK; helper restarted safely (size=150B)"
+    },
+    "7": {
+      "status": "PASSED",
+      "name": "Checksum Mismatch Rejection",
+      "evidence": "Flagged MD5 mismatch; refused to finalize corrupted file to destination"
+    },
+    "8": {
+      "status": "FAILED",
+      "name": "Destination File Collision Policy",
+      "error": "Existing file was overwritten!"
+    },
+    "9": {
+      "status": "PASSED",
+      "name": "Path Traversal Sanitization",
+      "evidence": "Sanitized '../../../etc/exploit.sh' to strictly contained subpath"
+    },
+    "10": {
+      "status": "PASSED",
+      "name": "Concurrency Bounding & Lifecycle Controls",
+      "evidence": "Bounded concurrency, executed PAUSE -> RESUME -> JOB_COMPLETED, and verified STOP"
+    },
+    "11": {
+      "status": "PASSED",
+      "name": "Feasibility Gate: >100 Items Enumeration",
+      "evidence": "Enumerated 100/100 files without truncation; TruncationDetector enforced"
+    },
+    "12": {
+      "status": "FAILED",
+      "name": "Real Public Test-Folder Live Download Gate",
+      "error": "0 files completed out of 1"
+    }
+  }
+}

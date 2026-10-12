@@ -1,0 +1,32 @@
+================================================================================
+                    🚀 DriveMate Quick Installation Guide (Windows)
+           High-Speed Public Google Drive Downloader (Zero Login)
+================================================================================
+
+Setup takes less than 1 minute. Follow these 3 easy steps:
+
+--------------------------------------------------------------------------------
+STEP 1: Install Local Native Engine
+--------------------------------------------------------------------------------
+Double-click on "1. Install Helper (Windows).bat" in this folder.
+It will configure the Windows registry for Chrome, Brave, and Edge automatically.
+
+--------------------------------------------------------------------------------
+STEP 2: Load Extension in Google Chrome
+--------------------------------------------------------------------------------
+1. Open Google Chrome.
+2. In the address bar, type: chrome://extensions (and press Enter).
+   (Or double-click "2. Open Chrome Extensions (Windows).bat").
+3. Enable "Developer mode" toggle in the top-right corner.
+4. Click the "Load unpacked" button in the top-left corner.
+5. Select the "DriveMate-Extension" folder located inside this package.
+
+--------------------------------------------------------------------------------
+STEP 3: Start Downloading!
+--------------------------------------------------------------------------------
+1. Pin the DriveMate extension in your Chrome toolbar.
+2. Paste any public Google Drive folder link.
+3. Watch the instant breakdown of Footages, Photos, Audio, and Documents.
+4. Click "START DOWNLOAD" to enjoy maximum speed transfers!
+
+================================================================================

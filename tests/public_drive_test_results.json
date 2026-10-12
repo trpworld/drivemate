@@ -1,0 +1,126 @@
+{
+  "total": 10,
+  "passed": 5,
+  "failed": 5,
+  "all_passed": false,
+  "tests": [
+    {
+      "test": "Live Public Folder Listing",
+      "success": false,
+      "details": {
+        "error": "HTTP Error 403: Forbidden"
+      },
+      "timestamp": "2026-10-12T14:41:07.224282"
+    },
+    {
+      "test": "Live Nested Recursive Traversal",
+      "success": false,
+      "details": {
+        "error": "HTTP Error 403: Forbidden"
+      },
+      "timestamp": "2026-10-12T14:41:07.225248"
+    },
+    {
+      "test": "Live File Metadata & Range Verification",
+      "success": false,
+      "details": {
+        "error": "HTTP Error 403: Forbidden"
+      },
+      "timestamp": "2026-10-12T14:41:07.226048"
+    },
+    {
+      "test": "Live Inaccessible/Private Resource Handling",
+      "success": false,
+      "details": {
+        "private_folder_http_status": 403,
+        "private_file_http_status": 403,
+        "expected": "HTTP 404 Not Found"
+      },
+      "timestamp": "2026-10-12T14:41:07.227546"
+    },
+    {
+      "test": "Live Drive API v3 Auth Rejection",
+      "success": false,
+      "details": {
+        "api_status": 403,
+        "rejection_confirmed": false,
+        "details": "Drive API v3 files.list strictly rejects unauthenticated calls"
+      },
+      "timestamp": "2026-10-12T14:41:07.228442"
+    },
+    {
+      "test": "Rate Limit & Quota Exceeded Detection",
+      "success": true,
+      "details": {
+        "html_quota_detected": true,
+        "quota_reason": "Too many users have viewed or downloaded this file recently. Please try accessing the file again later.",
+        "http_429_detected": true
+      },
+      "timestamp": "2026-10-12T14:41:07.228502"
+    },
+    {
+      "test": "Special Characters & Filename Integrity",
+      "success": true,
+      "details": {
+        "file_id": "14xzOzvKjP0at07jfonV7qVrTKoctFijz",
+        "display_name": "this is a file (wedding photo #1) & more.txt",
+        "id_disassociated_from_name": true
+      },
+      "timestamp": "2026-10-12T14:41:07.228509"
+    },
+    {
+      "test": "Workspace Native Docs Classification",
+      "success": true,
+      "details": {
+        "classified_items": [
+          {
+            "id": "1abcXYZ1234567890abcdef123456789",
+            "type": "unsupported",
+            "mimeType": "application/vnd.google-apps.document",
+            "status": "SKIPPED_WORKSPACE",
+            "skipReason": "Google Workspace online document cannot be downloaded directly as an original binary file."
+          },
+          {
+            "id": "1sheetXYZ1234567890abcdef123456789",
+            "type": "unsupported",
+            "mimeType": "application/vnd.google-apps.spreadsheet",
+            "status": "SKIPPED_WORKSPACE",
+            "skipReason": "Google Workspace online document cannot be downloaded directly as an original binary file."
+          }
+        ]
+      },
+      "timestamp": "2026-10-12T14:41:07.228557"
+    },
+    {
+      "test": "Circular Reference Loop Prevention",
+      "success": true,
+      "details": {
+        "cycles_prevented": [
+          1
+        ],
+        "nodes_traversed": [
+          "folder_root",
+          "folder_child",
+          "folder_leaf"
+        ]
+      },
+      "timestamp": "2026-10-12T14:41:07.228565"
+    },
+    {
+      "test": "Cancellation / Partial Scan Handling",
+      "success": true,
+      "details": {
+        "partial_result": {
+          "isComplete": false,
+          "foldersScanned": 2,
+          "scannedNodes": [
+            "fol_1",
+            "fol_2"
+          ],
+          "status": "CANCELLED"
+        }
+      },
+      "timestamp": "2026-10-12T14:41:07.228570"
+    }
+  ]
+}

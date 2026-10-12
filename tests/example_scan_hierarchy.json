@@ -1,0 +1,84 @@
+{
+  "scanId": "scan_1728473800000",
+  "rootFolderId": "1A2B3C4D5E6F_ROOT",
+  "rootFolderName": "15/08/2026 BIRTHDAY > VIDEO",
+  "startedAt": "2026-10-09T15:20:00.000Z",
+  "completedAt": "2026-10-09T15:20:04.250Z",
+  "isComplete": true,
+  "stats": {
+    "totalFoldersCount": 3,
+    "supportedFilesCount": 5,
+    "supportedFilesSizeBytes": 38245192800,
+    "skippedFilesCount": 2,
+    "errorsCount": 0
+  },
+  "errors": [],
+  "rootNode": {
+    "id": "1A2B3C4D5E6F_ROOT",
+    "name": "VIDEO",
+    "type": "folder",
+    "mimeType": "application/vnd.google-apps.folder",
+    "canDownload": true,
+    "status": "SUPPORTED",
+    "relativePath": "",
+    "children": [
+      {
+        "id": "file_001",
+        "name": "C6651.MP4",
+        "type": "file",
+        "mimeType": "video/mp4",
+        "sizeBytes": 12450192800,
+        "md5Checksum": "a1b2c3d4e5f60718293a4b5c6d7e8f90",
+        "modifiedTime": "2026-08-15T18:30:00Z",
+        "canDownload": true,
+        "status": "SUPPORTED",
+        "relativePath": "C6651.MP4"
+      },
+      {
+        "id": "file_002",
+        "name": "C6651M01.XML",
+        "type": "file",
+        "mimeType": "text/xml",
+        "sizeBytes": 24576,
+        "md5Checksum": "9876543210fedcba0987654321abcdef",
+        "modifiedTime": "2026-08-15T18:30:00Z",
+        "canDownload": true,
+        "status": "SUPPORTED",
+        "relativePath": "C6651M01.XML"
+      },
+      {
+        "id": "doc_001",
+        "name": "Shot_List.gdoc",
+        "type": "unsupported",
+        "mimeType": "application/vnd.google-apps.document",
+        "canDownload": false,
+        "status": "SKIPPED_WORKSPACE",
+        "skipReason": "Google Workspace document (export required; skipped in Phase 2).",
+        "relativePath": "Shot_List.gdoc"
+      },
+      {
+        "id": "folder_cam_b",
+        "name": "DRONE_FOOTAGE",
+        "type": "folder",
+        "mimeType": "application/vnd.google-apps.folder",
+        "canDownload": true,
+        "status": "SUPPORTED",
+        "relativePath": "DRONE_FOOTAGE",
+        "children": [
+          {
+            "id": "drone_001",
+            "name": "DRONE_01.MP4",
+            "type": "file",
+            "mimeType": "video/mp4",
+            "sizeBytes": 8540192800,
+            "md5Checksum": "3f4e5d6c7b8a90123456789abcdef012",
+            "modifiedTime": "2026-08-15T19:15:00Z",
+            "canDownload": true,
+            "status": "SUPPORTED",
+            "relativePath": "DRONE_FOOTAGE/DRONE_01.MP4"
+          }
+        ]
+      }
+    ]
+  }
+}

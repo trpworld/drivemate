@@ -1,0 +1,34 @@
+# Operating System files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+Thumbs.db
+
+# Dependencies
+node_modules/
+*/node_modules/
+
+# Swift Build Artifacts
+.build/
+*/.build/
+*.xcodeproj
+*.xcworkspace
+
+# Python Artifacts & Cache
+__pycache__/
+*/__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.pytest_cache/
+
+# Heavy Test Downloads & Local Scratch Directories
+tests/scratch/
+scratch/
+.tempmediaStorage/
+*.log
+
+# Cloudflare Wrangler cache
+.wrangler/

@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DriveMate — High-Speed Google Drive Folder Downloader (macOS & Windows)</title>
+  <meta name="description" content="Download massive Google Drive folders at 32x turbo line speed. Zero login required. No more 'Zipping failed' errors or corrupted downloads. 100% Free daily tier.">
+  <link rel="icon" type="image/png" href="assets/icon-128.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <!-- Background Ambient Glow Blobs -->
+  <div class="glow-blob glow-blob-1"></div>
+  <div class="glow-blob glow-blob-2"></div>
+
+  <!-- Header / Navigation -->
+  <header class="navbar">
+    <div class="container nav-container">
+      <a href="#" class="nav-brand">
+        <img src="assets/icon-128.png" alt="DriveMate Logo" class="brand-logo" width="36" height="36">
+        <span class="brand-name">DriveMate</span>
+        <span class="brand-badge">v0.3.0</span>
+      </a>
+
+      <nav class="nav-links">
+        <a href="#features">Features</a>
+        <a href="#comparison">Why DriveMate</a>
+        <a href="#how-it-works">How It Works</a>
+        <a href="#pricing">Pricing</a>
+        <a href="#faq">FAQ</a>
+      </nav>
+
+      <div class="nav-actions">
+        <a href="#download" class="btn btn-secondary nav-btn">Download Free</a>
+        <button class="btn btn-primary nav-btn btn-open-pro-modal">Get PRO ₹100</button>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <!-- HERO SECTION -->
+    <section class="hero-section">
+      <div class="container hero-container">
+        <div class="hero-badge-pill">
+          <span class="pill-sparkle">🚀</span>
+          <span>Zero Google Login • 32x Turbo Speed • Native Engine</span>
+        </div>
+
+        <h1 class="hero-headline">
+          Download Huge Google Drive Folders <br>
+          <span class="gradient-text">At Full Fiber Speed.</span>
+        </h1>
+
+        <p class="hero-subheadline">
+          Say goodbye to endless <em>"Zipping files..."</em>, random network drops, and corrupted partial downloads. DriveMate downloads 1,400+ files recursively with direct multi-threaded speed straight to your Mac or Windows PC.
+        </p>
+
+        <div id="download" class="hero-cta-group">
+          <a href="assets/DriveMate-Mac.zip" download="DriveMate-Mac.zip" class="btn btn-cta btn-mac">
+            <span class="btn-icon">🍏</span>
+            <div class="btn-text-group">
+              <span class="btn-primary-text">Download for macOS</span>
+              <span class="btn-subtext">Apple Silicon (M1–M4) & Intel • v0.3.0</span>
+            </div>
+          </a>
+
+          <a href="assets/DriveMate-Windows.zip" download="DriveMate-Windows.zip" class="btn btn-cta btn-windows">
+            <span class="btn-icon">🪟</span>
+            <div class="btn-text-group">
+              <span class="btn-primary-text">Download for Windows</span>
+              <span class="btn-subtext">Windows 10 / 11 (64-bit) • v0.3.0</span>
+            </div>
+          </a>
+        </div>
+
+        <div class="hero-trust-row">
+          <div class="trust-item"><span class="check-icon">✓</span> 10 GB Free Daily Quota</div>
+          <div class="trust-item"><span class="check-icon">✓</span> Zero Account Credentials</div>
+          <div class="trust-item"><span class="check-icon">✓</span> Instant 1-Click Setup</div>
+          <div class="trust-item"><span class="check-icon">✓</span> No Corrupted ZIP Files</div>
+        </div>
+
+        <!-- Product Visual Showcase Banner -->
+        <div class="hero-visual-wrapper">
+          <div class="hero-visual-card">
+            <div class="visual-card-header">
+              <div class="window-dots">
+                <span class="dot red"></span>
+                <span class="dot yellow"></span>
+                <span class="dot green"></span>
+              </div>
+              <div class="window-title">DriveMate — Public Downloader Dashboard</div>
+              <div class="window-badge">32x MULTI-THREADED</div>
+            </div>
+            <img src="assets/gumroad_cover.jpg" alt="DriveMate Interface Showcase" class="hero-visual-img" />
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PROBLEM VS SOLUTION COMPARISON -->
+    <section id="comparison" class="section comparison-section">
+      <div class="container">
+        <div class="section-header">
+          <span class="section-tag">THE PROBLEM SOLVED</span>
+          <h2 class="section-title">Why Default Google Drive Downloads Suck</h2>
+          <p class="section-desc">Google Drive was built for office documents, not for downloading 100 GB bulk folders of 4K footage and project assets.</p>
+        </div>
+
+        <div class="comparison-grid">
+          <!-- The Bad Way -->
+          <div class="comparison-card bad-card">
+            <div class="card-status-header bad">
+              <span class="status-icon">❌</span>
+              <h3>The Default Google Drive Way</h3>
+            </div>
+            <ul class="comparison-list">
+              <li>
+                <strong>Endless "Zipping files..."</strong>
+                <p>Takes 45 minutes just to bundle files before even 1 byte starts downloading.</p>
+              </li>
+              <li>
+                <strong>Random "Network Error / Failed"</strong>
+                <p>If a 30 GB ZIP fails at 98%, you lose everything and have to restart from 0%.</p>
+              </li>
+              <li>
+                <strong>Messy ZIP Splitting</strong>
+                <p>Splits your folder into 15 messy zip parts that frequently corrupt upon extraction.</p>
+              </li>
+              <li>
+                <strong>Single-Threaded Crawl</strong>
+                <p>Wastes 90% of your 100 Mbps fiber line with slow, throttled browser download speeds.</p>
+              </li>
+            </ul>
+          </div>
+
+          <!-- The DriveMate Way -->
+          <div class="comparison-card good-card">
+            <div class="card-status-header good">
+              <span class="status-icon">⚡</span>
+              <h3>The DriveMate Way</h3>
+            </div>
+            <ul class="comparison-list">
+              <li>
+                <strong>Direct Instant Start (Zero Zipping)</strong>
+                <p>Downloads begin within 2 seconds of pasting the link. Zero waiting for zip compression.</p>
+              </li>
+              <li>
+                <strong>Byte-Level Auto Resume & Retry</strong>
+                <p>If your WiFi hiccups, DriveMate seamlessly retries only the failed chunk, never the whole folder.</p>
+              </li>
+              <li>
+                <strong>Flawless Folder Hierarchy</strong>
+                <p>Every subfolder, photo, and 4K video is saved directly to your disk in its exact original structure.</p>
+              </li>
+              <li>
+                <strong>32-Stream Turbo Multi-threading</strong>
+                <p>Saturates 100% of your fiber line speed with parallel concurrent HTTP chunk streams.</p>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CORE FEATURES GRID -->
+    <section id="features" class="section features-section">
+      <div class="container">
+        <div class="section-header">
+          <span class="section-tag">ENGINEERED FOR SPEED</span>
+          <h2 class="section-title">Power Features That Make DriveMate Unstoppable</h2>
+          <p class="section-desc">Built with high-performance native system engines for creators, video editors, and power users.</p>
+        </div>
+
+        <div class="features-grid">
+          <div class="feature-card">
+            <div class="feature-icon-badge">🚀</div>
+            <h3>32x Turbo Speed Engine</h3>
+            <p>Splits files across up to 32 concurrent worker threads, saturating high-speed gigabit and fiber internet lines.</p>
+          </div>
+
+          <div class="feature-card">
+            <div class="feature-icon-badge">📁</div>
+            <h3>1,400+ Recursive Folders</h3>
+            <p>Traverses deeply nested directories effortlessly. Handles thousands of files without browser freezing or memory leaks.</p>
+          </div>
+
+          <div class="feature-card">
+            <div class="feature-icon-badge">🛡️</div>
+            <h3>Zero Google Login</h3>
+            <p>100% privacy-friendly. Never asks for your Google password, OAuth tokens, or Drive read/write permissions.</p>
+          </div>
+
+          <div class="feature-card">
+            <div class="feature-icon-badge">⚡</div>
+            <h3>Anti-Abuse Rate Shield</h3>
+            <p>Intelligent connection pacing and Google mirror switching prevents "403 Access Denied / Rate limit exceeded" blocks.</p>
+          </div>
+
+          <div class="feature-card">
+            <div class="feature-icon-badge">🔍</div>
+            <h3>Live Media Inspector</h3>
+            <p>Inspects folders in 1.5 seconds. Categorizes videos, photos, music, and documents before starting download.</p>
+          </div>
+
+          <div class="feature-card">
+            <div class="feature-icon-badge">💻</div>
+            <h3>Native Engine for Mac & PC</h3>
+            <p>Powered by ultra-fast native Swift binaries for Apple Silicon / Intel and lightweight cross-platform bridge.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- HOW IT WORKS IN 3 STEPS -->
+    <section id="how-it-works" class="section steps-section">
+      <div class="container">
+        <div class="section-header">
+          <span class="section-tag">DEAD SIMPLE TO USE</span>
+          <h2 class="section-title">How It Works in 3 Seconds</h2>
+          <p class="section-desc">No complicated terminal configurations. Just paste and download.</p>
+        </div>
+
+        <div class="steps-grid">
+          <div class="step-card">
+            <div class="step-number">1</div>
+            <h3>Copy Public Folder Link</h3>
+            <p>Copy any Google Drive link that is shared as <em>"Anyone with the link"</em>.</p>
+          </div>
+
+          <div class="step-card">
+            <div class="step-number">2</div>
+            <h3>Paste into DriveMate</h3>
+            <p>DriveMate automatically inspects and counts all videos, photos, and files in 2 seconds.</p>
+          </div>
+
+          <div class="step-card">
+            <div class="step-number">3</div>
+            <h3>Hit Download & Relax</h3>
+            <p>Files stream concurrently straight into your local Downloads folder at maximum line speed.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PRICING TABLE -->
+    <section id="pricing" class="section pricing-section">
+      <div class="container">
+        <div class="section-header">
+          <span class="section-tag">TRANSPARENT PRICING</span>
+          <h2 class="section-title">Choose Your Plan</h2>
+          <p class="section-desc">Start free forever with 10 GB every single day, or unlock unlimited gigabytes with a one-time lifetime pass.</p>
+        </div>
+
+        <div class="pricing-cards-grid">
+          <!-- Free Forever Tier -->
+          <div class="pricing-card free-card">
+            <div class="pricing-badge">FREE FOREVER</div>
+            <div class="pricing-price-group">
+              <span class="price-symbol">₹</span>
+              <span class="price-val">0</span>
+              <span class="price-cycle">/ forever</span>
+            </div>
+            <p class="pricing-tagline">Perfect for occasional downloads and students.</p>
+
+            <ul class="pricing-features">
+              <li><span class="check">✓</span> <strong>10 GB Daily Quota</strong> (Resets every midnight)</li>
+              <li><span class="check">✓</span> 16 Concurrent Multi-threads</li>
+              <li><span class="check">✓</span> Zero Google Login Required</li>
+              <li><span class="check">✓</span> Recursive Folder Preservation</li>
+              <li><span class="check">✓</span> Live Media Category Counter</li>
+              <li class="disabled"><span class="cross">✕</span> Unlimited Daily Downloads</li>
+              <li class="disabled"><span class="cross">✕</span> 32x Maximum Turbo Speed</li>
+            </ul>
+
+            <a href="#download" class="btn btn-outline pricing-btn">Download Free</a>
+          </div>
+
+          <!-- PRO Lifetime Deal -->
+          <div class="pricing-card pro-card popular">
+            <div class="popular-ribbon">🔥 BEST VALUE • LIFETIME</div>
+            <div class="pricing-badge pro-badge">PRO LIFETIME DEAL</div>
+            <div class="pricing-price-group">
+              <span class="price-strike-val">₹499</span>
+              <span class="price-symbol">₹</span>
+              <span class="price-val">100</span>
+              <span class="price-cycle">/ one-time</span>
+            </div>
+            <p class="pricing-tagline">For creators, editors, and anyone downloading large project archives.</p>
+
+            <ul class="pricing-features">
+              <li><span class="check">✓</span> <strong>Unlimited Daily Downloads</strong> (No 10 GB Ceiling)</li>
+              <li><span class="check">✓</span> <strong>32-Stream Turbo Multi-threading</strong> (Max Line Speed)</li>
+              <li><span class="check">✓</span> <strong>Anti-Abuse Rate Limit Shield</strong></li>
+              <li><span class="check">✓</span> <strong>Bulk 1,400+ Files</strong> with Zero Dropped Files</li>
+              <li><span class="check">✓</span> <strong>1-Device Anti-Piracy License Key</strong></li>
+              <li><span class="check">✓</span> <strong>Free Lifetime Updates</strong> for all versions</li>
+              <li><span class="check">✓</span> <strong>Direct WhatsApp VIP Support</strong></li>
+            </ul>
+
+            <button class="btn btn-primary pricing-btn btn-open-pro-modal">Get Lifetime PRO (₹100) →</button>
+            <div class="pricing-guarantee-note">🔒 One-Time Payment • No Subscriptions • Instant WhatsApp Delivery</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FAQ SECTION -->
+    <section id="faq" class="section faq-section">
+      <div class="container faq-container">
+        <div class="section-header">
+          <span class="section-tag">GOT QUESTIONS?</span>
+          <h2 class="section-title">Frequently Asked Questions</h2>
+        </div>
+
+        <div class="faq-accordion">
+          <div class="faq-item">
+            <button class="faq-question">
+              <span>Do I need to login to my Google account?</span>
+              <span class="faq-icon">+</span>
+            </button>
+            <div class="faq-answer">
+              <p>No! DriveMate works in <strong>Public Link Mode</strong>. It never asks for your Google password, email, or OAuth permissions. As long as the folder is shared as "Anyone with the link", you can download it with zero login.</p>
+            </div>
+          </div>
+
+          <div class="faq-item">
+            <button class="faq-question">
+              <span>How does the 10 GB daily free tier work?</span>
+              <span class="faq-icon">+</span>
+            </button>
+            <div class="faq-answer">
+              <p>Every free user gets 10 GB of high-speed download quota every single day. The quota resets automatically at midnight (12:00 AM) based on your local time. If you need to download more on the same day, you can unlock unlimited usage for just ₹100.</p>
+            </div>
+          </div>
+
+          <div class="faq-item">
+            <button class="faq-question">
+              <span>How do I pay ₹100 and get my Pro License Key?</span>
+              <span class="faq-icon">+</span>
+            </button>
+            <div class="faq-answer">
+              <p>Click the "Get PRO ₹100" button. A QR code will appear—scan it using PhonePe, Google Pay, or Paytm to pay ₹100 to UPI ID <code>8927202527@yapl</code>. Then send your payment screenshot on WhatsApp, and you will receive your unique Lifetime License Key within 1 minute!</p>
+            </div>
+          </div>
+
+          <div class="faq-item">
+            <button class="faq-question">
+              <span>Which operating systems are supported?</span>
+              <span class="faq-icon">+</span>
+            </button>
+            <div class="faq-answer">
+              <p>DriveMate supports <strong>macOS 12+</strong> (both Apple Silicon M1/M2/M3/M4 and Intel chips) as well as <strong>Windows 10/11</strong> across all Chromium browsers (Google Chrome, Brave, Arc, Edge).</p>
+            </div>
+          </div>
+
+          <div class="faq-item">
+            <button class="faq-question">
+              <span>Can I use my license key on multiple computers?</span>
+              <span class="faq-icon">+</span>
+            </button>
+            <div class="faq-answer">
+              <p>Each ₹100 license is bound to 1 computer for your personal use. If you ever buy a new laptop or switch computers, simply contact support on WhatsApp to migrate your license to your new device for free.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="container footer-container">
+      <div class="footer-left">
+        <div class="footer-brand">
+          <img src="assets/icon-128.png" alt="DriveMate Logo" width="28" height="28">
+          <span>DriveMate</span>
+        </div>
+        <p class="footer-desc">The high-speed Google Drive folder downloader for creators and professionals.</p>
+      </div>
+
+      <div class="footer-links">
+        <div class="footer-col">
+          <h4>Download</h4>
+          <a href="assets/DriveMate-Mac.zip" download="DriveMate-Mac.zip">macOS Package (v0.3.0)</a>
+          <a href="assets/DriveMate-Windows.zip" download="DriveMate-Windows.zip">Windows Package (v0.3.0)</a>
+        </div>
+
+        <div class="footer-col">
+          <h4>Support & Contact</h4>
+          <a href="https://wa.me/918927202527?text=Hi%2C%20I%20have%20a%20question%20about%20DriveMate." target="_blank">WhatsApp Support (+91 8927202527)</a>
+          <a href="#" class="btn-open-pro-modal">Get PRO License (₹100)</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="container footer-bottom">
+      <p>© 2026 DriveMate. All rights reserved. Zero Google Login • 100% Privacy-Focused.</p>
+    </div>
+  </footer>
+
+  <!-- PRO UPGRADE & UPI QR CHECKOUT MODAL -->
+  <div id="modal-pro" class="modal-overlay" style="display: none;">
+    <div class="modal-dialog">
+      <button id="btn-close-modal" class="modal-close-btn" type="button">✕</button>
+
+      <div class="modal-header">
+        <div class="modal-badge">👑 PRO LIFETIME DEAL</div>
+        <h2 class="modal-title">Upgrade to DriveMate PRO</h2>
+        <p class="modal-subtitle">One-Time Payment • No Monthly Subscriptions • Unlimited Downloads</p>
+      </div>
+
+      <!-- UPI QR Code Box -->
+      <div class="modal-upi-card">
+        <div class="modal-pricing-row">
+          <span class="modal-price-strike">₹499</span>
+          <span class="modal-price-deal">₹100</span>
+          <span class="modal-price-tag">Lifetime License Deal</span>
+        </div>
+
+        <p class="upi-instructions">Scan QR with <strong>PhonePe / Google Pay / Paytm / BHIM</strong> to pay ₹100</p>
+
+        <div class="upi-qr-frame">
+          <img src="assets/upi_qr_100.png" alt="UPI QR Code ₹100" width="160" height="160" />
+        </div>
+
+        <div class="upi-apps-icons">
+          <span>PhonePe</span> • <span>Google Pay</span> • <span>Paytm</span> • <span>BHIM</span> • <span>Cred</span>
+        </div>
+
+        <div class="upi-id-box">
+          <span>UPI ID: <strong>8927202527@yapl</strong></span>
+          <button id="btn-copy-upi" class="btn-copy-id" type="button">📋 Copy</button>
+        </div>
+
+        <!-- WhatsApp Instant Delivery Link -->
+        <a href="https://wa.me/918927202527?text=Hi%2C%20I%20have%20paid%20%E2%82%B9100%20for%20DriveMate%20PRO.%20My%20UPI%20UTR%20is%3A%20" target="_blank" class="btn-modal-whatsapp">
+          💬 WhatsApp-এ TrxID পাঠান (১ মিনিটে কি পান)
+        </a>
+      </div>
+
+      <div class="modal-footer-hint">
+        ⚡ টাকা পাঠানো মাত্রই WhatsApp-এ আপনার পার্সোনাল <strong>Lifetime License Key</strong> পেয়ে যাবেন!
+      </div>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>

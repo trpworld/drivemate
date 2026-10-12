@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DriveMate — High-Performance Public Downloader</title>
+  <script type="module" crossorigin src="./assets/popup.js"></script>
+  <link rel="stylesheet" crossorigin href="./assets/popup.css">
+</head>
+<body>
+  <div class="container">
+    <!-- Header -->
+    <div class="header">
+      <div class="title-group">
+        <div class="title-logo-wrapper">
+          <img class="title-logo" src="./assets/icon-48.png" alt="DriveMate Logo" width="28" height="28" />
+        </div>
+        <div>
+          <div class="title">DriveMate</div>
+          <div class="subtitle">Public Link Mode — Zero Google Login</div>
+        </div>
+      </div>
+      <div style="display: flex; align-items: center; gap: 6px;">
+        <div id="auth-badge" class="badge badge-connected">PUBLIC LINK MODE</div>
+        <button id="btn-open-tab" class="btn-popout" title="Open DriveMate in Dedicated Full Tab" aria-label="Open in Dedicated Tab">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+            <polyline points="15 3 21 3 21 9"></polyline>
+            <line x1="10" y1="14" x2="21" y2="3"></line>
+          </svg>
+          <span>Tab</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- License & Daily Free Quota Bar -->
+    <div id="license-quota-bar" class="quota-bar-wrapper">
+      <div class="quota-bar-left">
+        <span class="quota-badge">FREE TIER</span>
+        <span id="quota-status-label" class="quota-label">Daily Quota: 0 GB / 10 GB</span>
+      </div>
+      <div class="quota-progress-track">
+        <div id="quota-progress-fill" class="quota-progress-fill" style="width: 0%;"></div>
+      </div>
+      <button id="btn-open-upgrade" class="btn-upgrade-pill" type="button" title="Upgrade to Unlimited Pro Lifetime">
+        <span>⚡ Upgrade PRO</span>
+      </button>
+    </div>
+
+    <!-- Active PRO Banner (Shown when activated) -->
+    <div id="pro-active-bar" class="pro-bar-wrapper" style="display: none;">
+      <div class="pro-active-content">
+        <span class="pro-sparkle">⭐</span>
+        <span class="pro-title">PRO LIFETIME ACTIVATED</span>
+        <span class="pro-sub">— Unlimited Daily Downloads (No 10 GB Limit)</span>
+      </div>
+      <span class="pro-badge-pill">32x TURBO</span>
+    </div>
+
+    <!-- Navigation Tabs -->
+    <div class="tab-nav">
+      <button id="tab-btn-scanner" class="tab-btn active">Public Downloader</button>
+      <button id="tab-btn-native" class="tab-btn">Native Bridge (Phase 1)</button>
+    </div>
+
+    <!-- TAB 1: PUBLIC DOWNLOADER -->
+    <div id="tab-content-scanner" class="tab-content active">
+      <!-- Unified Target & Configuration Card -->
+      <div id="download-config-card" class="card">
+        <div class="row">
+          <span class="label" style="font-weight: 600; color: #f8fafc;">Google Drive Public Link</span>
+          <span class="value" style="font-size: 11px; color: #94a3b8;">Anyone with the link</span>
+        </div>
+        
+        <input
+          id="input-folder-id"
+          type="text"
+          class="text-input"
+          placeholder="Paste public Google Drive folder link here..."
+          spellcheck="false"
+          autofocus
+        />
+
+        <!-- Live Scanning Indicator -->
+        <div id="scan-loading-indicator" class="scan-loading-box" style="display: none;">
+          <div class="spinner"></div>
+          <div class="scan-loading-text">
+            <div style="font-weight: 600; color: #38bdf8;">Inspecting Google Drive link...</div>
+            <div id="scan-loading-detail" style="font-size: 11px; color: #94a3b8;">Counting footages, photos, and files (Zero Login)</div>
+          </div>
+        </div>
+
+        <!-- Scanned Folder Summary Card -->
+        <div id="scanned-folder-summary" class="folder-summary-box" style="display: none;">
+          <div class="summary-header">
+            <div class="summary-title-group">
+              <span class="summary-folder-icon">📁</span>
+              <div style="min-width: 0;">
+                <div id="summary-folder-name" class="summary-folder-name" title="Folder Name">Drive Folder</div>
+                <div id="summary-total-subtitle" class="summary-subtitle">0 files detected • Public Link</div>
+              </div>
+            </div>
+            <button id="btn-rescan-folder" class="btn-rescan" title="Rescan / Refresh Folder" type="button">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="23 4 23 10 17 10"></polyline>
+                <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
+              </svg>
+              <span>Refresh</span>
+            </button>
+          </div>
+
+          <!-- Category Count Chips Grid -->
+          <div class="media-breakdown-grid">
+            <div class="media-chip media-chip-video">
+              <div class="media-chip-header">
+                <span class="media-chip-icon">🎬</span>
+                <span class="media-chip-label">Footages / Videos</span>
+              </div>
+              <div id="count-videos" class="media-chip-count">0</div>
+            </div>
+
+            <div class="media-chip media-chip-photo">
+              <div class="media-chip-header">
+                <span class="media-chip-icon">📸</span>
+                <span class="media-chip-label">Photos / Images</span>
+              </div>
+              <div id="count-photos" class="media-chip-count">0</div>
+            </div>
+
+            <div class="media-chip media-chip-audio">
+              <div class="media-chip-header">
+                <span class="media-chip-icon">🎵</span>
+                <span class="media-chip-label">Audio Tracks</span>
+              </div>
+              <div id="count-audio" class="media-chip-count">0</div>
+            </div>
+
+            <div class="media-chip media-chip-docs">
+              <div class="media-chip-header">
+                <span class="media-chip-icon">📄</span>
+                <span class="media-chip-label">Docs / Others</span>
+              </div>
+              <div id="count-docs" class="media-chip-count">0</div>
+            </div>
+          </div>
+
+          <!-- Expandable File List Preview -->
+          <div class="preview-accordion">
+            <button id="btn-toggle-file-preview" class="btn-preview-toggle" type="button">
+              <span id="preview-toggle-icon">▶</span>
+              <span id="preview-toggle-text">Preview all files (0)</span>
+            </button>
+            <div id="scanned-files-preview-list" class="scanned-preview-list" style="display: none;"></div>
+          </div>
+        </div>
+
+        <div class="row" style="margin-top: 8px;">
+          <span class="label">Destination Folder</span>
+        </div>
+        <input
+          id="input-destination-path"
+          type="text"
+          class="text-input"
+          value="/Users/gobindabiswas/Downloads/DriveMate"
+          placeholder="/path/to/local/folder"
+        />
+
+        <div class="row" style="margin-top: 8px;">
+          <span class="label">Download Speed & Multi-Stream Boost</span>
+          <select id="select-concurrency" class="select-input">
+            <option value="16" selected>⚡ 16 Streams (Turbo Boost — 100% Full Internet Speed)</option>
+            <option value="24">🚀 24 Streams (Ultra High-Speed / Gigabit Fiber)</option>
+            <option value="32">🔥 32 Streams (Maximum Line Saturation)</option>
+            <option value="8">⚡ 8 Streams (Fast)</option>
+            <option value="4">Balanced (4 Streams)</option>
+          </select>
+        </div>
+
+        <div class="row" style="margin-top: 10px; display: flex; align-items: center; justify-content: flex-start; gap: 8px;">
+          <input
+            type="checkbox"
+            id="chk-skip-existing"
+            checked
+            style="accent-color: #38bdf8; width: 15px; height: 15px; cursor: pointer;"
+          />
+          <label for="chk-skip-existing" style="cursor: pointer; color: #f8fafc; font-size: 12px; font-weight: 500;">
+            Do not re-download existing files in folder (Skip duplicates)
+          </label>
+        </div>
+
+        <div class="button-row" style="margin-top: 12px;">
+          <button id="btn-start-download" class="button-primary" style="font-size: 13px; font-weight: 700; width: 100%; padding: 10px;">
+            DOWNLOAD FOLDER NOW
+          </button>
+        </div>
+
+        <div class="button-row" style="margin-top: 6px;">
+          <button id="btn-sample-link" class="button-secondary" style="font-size: 11px; padding: 4px 8px; width: 100%;">
+            Load Sample Public Folder
+          </button>
+        </div>
+
+        <!-- Warning / Error Box -->
+        <div id="dl-warning-box" class="warning-box" style="display: none; margin-top: 10px;"></div>
+      </div>
+
+      <!-- Active Download Progress Card -->
+      <div id="download-progress-card" class="card" style="display: none;">
+        <div class="row">
+          <span id="dl-status-title" class="label" style="font-weight: 600; color: #f8fafc;">Download Status</span>
+          <span id="dl-status-badge" class="badge badge-connecting">PREPARING</span>
+        </div>
+
+        <div class="progress-bar-container">
+          <div id="dl-progress-bar" class="progress-bar-fill"></div>
+        </div>
+
+        <div class="row">
+          <span class="label">Overall Progress</span>
+          <span id="dl-progress-text" class="value">0% (0 / 0 Bytes)</span>
+        </div>
+
+        <div class="row">
+          <span class="label">Transfer Speed / ETA</span>
+          <span id="dl-speed-eta" class="value">-- / --</span>
+        </div>
+
+        <div class="row">
+          <span class="label">Files Progress</span>
+          <span id="dl-files-count" class="value">0 completed (0 active, 0 failed)</span>
+        </div>
+
+        <div class="button-row" style="margin-top: 6px;">
+          <button id="btn-pause-download" class="button-secondary">PAUSE</button>
+          <button id="btn-resume-download" class="button-secondary" style="display: none;">RESUME</button>
+          <button id="btn-stop-download" class="button-danger">STOP</button>
+        </div>
+
+        <div class="row" style="margin-top: 6px;">
+          <span class="label">Active & Recent Files</span>
+        </div>
+        <div id="dl-files-list" class="file-list"></div>
+      </div>
+
+      <!-- Download Summary Report Card -->
+      <div id="download-report-card" class="card" style="display: none;">
+        <div class="row">
+          <span class="label" style="font-weight: 600; color: #f8fafc;">Job Summary Report</span>
+          <span id="dl-report-badge" class="badge badge-connected">COMPLETED</span>
+        </div>
+        <div class="row">
+          <span class="label">Files Downloaded</span>
+          <span id="report-completed-files" class="value">0</span>
+        </div>
+        <div class="row">
+          <span class="label">Files Failed</span>
+          <span id="report-failed-files" class="value">0</span>
+        </div>
+        <div class="row">
+          <span class="label">Total Bytes Written</span>
+          <span id="report-total-bytes" class="value">0 Bytes</span>
+        </div>
+        <div id="report-quota-hint" style="display: none; margin-top: 8px; padding: 8px 10px; background: rgba(245, 158, 11, 0.12); border: 1px solid rgba(245, 158, 11, 0.3); border-radius: 6px; font-size: 11px; color: #fbbf24; line-height: 1.4;">
+          ⚠️ <strong>Google Drive Quota Notice:</strong> Some files were temporarily throttled by Google Drive's unauthenticated download limits. Click <strong>Retry Failed Files</strong> to resume downloading now (completed files are automatically skipped).
+        </div>
+        <div class="button-row" style="margin-top: 10px; display: flex; gap: 8px;">
+          <button id="btn-retry-failed" class="button-primary" style="flex: 1; display: none; background: #0284c7;">
+            ⚡ Retry Failed Files
+          </button>
+          <button id="btn-dismiss-report" class="button-secondary" style="flex: 1;">
+            Download Another Folder
+          </button>
+        </div>
+      </div>
+
+      <!-- Hidden elements for test and backwards-compatibility -->
+      <div style="display: none;">
+        <button id="btn-start-scan"></button>
+        <button id="btn-cancel-scan"></button>
+        <button id="btn-detect-tab"></button>
+        <button id="btn-view-json"></button>
+        <button id="btn-copy-json"></button>
+        <div id="scan-progress-card">
+          <span id="scan-status-text"></span>
+          <span id="scan-folders-count"></span>
+          <span id="scan-files-count"></span>
+          <span id="scan-current-path"></span>
+        </div>
+        <div id="results-card">
+          <span id="scan-result-badge"></span>
+          <span id="res-root-name"></span>
+          <span id="res-total-folders"></span>
+          <span id="res-supported-files"></span>
+          <span id="res-skipped-files"></span>
+          <span id="res-errors-count"></span>
+        </div>
+        <span id="dl-eligibility-badge"></span>
+        <div id="json-viewer-card">
+          <button id="btn-close-json"></button>
+          <textarea id="json-display"></textarea>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 2: NATIVE BRIDGE (PHASE 1 PRESERVED) -->
+    <div id="tab-content-native" class="tab-content">
+      <div class="card">
+        <div class="row">
+          <span class="label">Native Host</span>
+          <span class="value">com.drivemate.helper</span>
+        </div>
+        <div class="row">
+          <span class="label">Round-Trip Latency</span>
+          <span id="val-latency" class="value">--</span>
+        </div>
+        <div class="row">
+          <span class="label">Helper Version</span>
+          <span id="val-version" class="value">--</span>
+        </div>
+      </div>
+
+      <button id="btn-test-native" class="button-primary">
+        RE-TEST NATIVE BRIDGE
+      </button>
+
+      <div class="card">
+        <span class="label" style="margin-bottom: 4px;">Diagnostics & Events</span>
+        <div id="native-log-container" class="log-box"></div>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">
+      DriveMate v0.3.0 • <a href="https://drivemate-pro.pages.dev" target="_blank" style="color: #38bdf8; text-decoration: none; font-weight: 600;">drivemate-pro.pages.dev</a>
+    </div>
+  </div>
+
+  <!-- PRO Upgrade & License Key Modal Dialog -->
+  <div id="modal-upgrade" class="modal-overlay" style="display: none;">
+    <div class="modal-dialog">
+      <button id="btn-close-upgrade-modal" class="modal-close-btn" type="button">✕</button>
+      <div class="modal-header">
+        <div class="modal-icon-badge">👑</div>
+        <div class="modal-title">Upgrade to DriveMate PRO</div>
+        <div class="modal-subtitle">One-Time Payment • Lifetime Unlimited Downloads</div>
+      </div>
+      
+      <div id="modal-quota-alert" class="modal-alert" style="display: none;">
+        ⚠️ <strong>Daily Free Limit Reached!</strong> This download exceeds your 10 GB daily free quota. Upgrade to Pro for unlimited downloads!
+      </div>
+
+      <div class="pro-features-grid">
+        <div class="pro-feature-item">
+          <span class="pro-feat-icon">🚀</span>
+          <div><strong>Unlimited Daily Quota:</strong> Zero 10 GB limit. Download 500 GB+ without waiting for tomorrow.</div>
+        </div>
+        <div class="pro-feature-item">
+          <span class="pro-feat-icon">⚡</span>
+          <div><strong>32-Stream Turbo Multi-threading:</strong> Saturate 100% of your fiber line at maximum line speed.</div>
+        </div>
+        <div class="pro-feature-item">
+          <span class="pro-feat-icon">📁</span>
+          <div><strong>Bulk 1,400+ Files:</strong> Full folder structure, nested subfolders, zero corrupted files.</div>
+        </div>
+        <div class="pro-feature-item">
+          <span class="pro-feat-icon">🛡️</span>
+          <div><strong>Anti-Abuse Shield:</strong> Smart connection pacing, mirror switching & tail re-queueing.</div>
+        </div>
+      </div>
+
+      <!-- UPI Direct Instant Checkout Card (₹100 Lifetime Deal) -->
+      <div class="upi-checkout-card">
+        <div class="upi-headline">
+          <span class="price-strike">₹499</span>
+          <span class="upi-price-deal">₹100</span>
+          <span class="price-tag">One-Time Lifetime Deal</span>
+        </div>
+        <div style="font-size: 11px; color: #94a3b8; text-align: center; margin-top: -2px;">
+          Scan QR with <strong>PhonePe / Google Pay / Paytm / BHIM</strong> to pay ₹100
+        </div>
+
+        <div class="upi-qr-frame">
+          <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAZAAAAGQAQMAAAC6caSPAAAABlBMVEX///8AAABVwtN+AAAACXBIWXMAAA7EAAAOxAGVKw4bAAACeElEQVR4nO2ay7XDMAhE8UplqNS4VJfhlXkWMEhJXgoIGRY+0eeymsNPEaHRftY2DTtFHodtNdW9j6We2/1LL5GOWzuRWshu9/p9rEfTWD77kuEhLxOphAw1hEJMHEMm0q5AbWkOTT9EaiImmCt00SGT6YZIZURw4tnhQu4QIVIYyU3EjNsOCdiW+8f8QuTLkTDkhP8/uEWkFPJimTEatDI19cGIfC8SgglJuDiu6A/tgqeNFh8ixZB9zASsP7xTxLCWdaMjulYTRCohNhaKdGDwHnuwvtQLEBGRMoikYPY+G8IlSOB0jg2IFEE2XNTVT4jIGsfB6xnSIVIKiReAyBNoDSVKxjVPLCGESBlkmQ4cEvPAhyvkxFgoTjNZEKmBoE1I2JtEDxKa0WNJLUQqIa6G6AqzZJTcy3rBRESkEoL4sEjCisIcFXX40nmFSBkEyWJDk9gwIIpkIZE75C2/EKmArNKRFcZgwENIUyK1EIwDXCFWG3hi2PI2Wki4JlIGySYxU4TiOPoCrxuvjBlEiiESksjlPH4obIkwRMogfnIgMWjIRLNhiD1dpgpEyiCZEzw+dAW8JBDJWpJIIeRJNl4MoDWc9YJGRMnXBCJlEFcIasTw0KI28LfBp3xCpBaSAUFXraB4TGtEKiIoBUM14UG9ZFxOiRRDpmVi0PeS0avF9XWISAVkgx5QOLpCjvGzQzDhIcMFkTKIXfTj7AWn7XFlSodIKaSnJKIrtKWkTQ8vbQKRYsjYMl3cn4gZGjWEDxCI1EXUbs9RETpF90WkIGKrbqVC/gOka6rGRgQvgiFSBQk7sxGAYBAuLjwc6HttSeSrERrtR+0P/k6rrCmpjfIAAAAASUVORK5CYII=" alt="Scan to Pay ₹100 via UPI" width="150" height="150" style="display: block; image-rendering: pixelated;" />
+        </div>
+
+        <div class="upi-apps-row">
+          <span>PhonePe</span> • <span>Google Pay</span> • <span>Paytm</span> • <span>BHIM</span> • <span>Cred</span>
+        </div>
+
+        <div class="upi-id-badge">
+          <span>UPI ID: <strong id="val-upi-id">8927202527@yapl</strong></span>
+          <button id="btn-copy-upi" class="btn-copy-upi" type="button" title="Copy UPI ID">📋 Copy</button>
+        </div>
+
+        <a class="btn-whatsapp-chat" href="https://wa.me/918927202527?text=Hi%2C%20I%20have%20paid%20%E2%82%B9100%20for%20DriveMate%20PRO.%20My%20UPI%20UTR%20is%3A%20" target="_blank" rel="noopener noreferrer">
+          💬 WhatsApp-এ TrxID পাঠান (তাৎক্ষণিক কি পান)
+        </a>
+      </div>
+
+      <!-- Lifetime License Key Activation Card -->
+      <div class="license-activation-card">
+        <div class="license-card-header">
+          <span class="license-label">Have a Lifetime License Key?</span>
+        </div>
+        <div class="license-input-row">
+          <input id="input-license-key" class="text-input license-input" placeholder="DM-PRO-XXXX-XXXX-XXXX-XXXX" spellcheck="false" />
+          <button id="btn-activate-license" class="btn-activate" type="button">Activate</button>
+        </div>
+        <div id="license-feedback-msg" class="license-feedback" style="display: none;"></div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
