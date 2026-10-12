@@ -3,36 +3,43 @@ set -e
 
 DIR="$(cd "$(dirname "$0")" && pwd)"
 cd "$DIR"
+export PATH="/opt/homebrew/bin:/usr/local/bin:$PATH"
 
 clear
 echo "=========================================================="
-echo "          🚀 Push DriveMate Codebase to GitHub"
+echo "      🚀 DriveMate: 1-Click Automatic GitHub Uploader"
 echo "=========================================================="
 echo ""
-echo "Remote Repository: https://github.com/gobindabiswas/drivemate.git"
-echo "Local Branch:      main"
+
+# 1. Check if logged into GitHub CLI
+if ! gh auth status >/dev/null 2>&1; then
+  echo "[1/3] GitHub লগইন প্রয়োজন..."
+  echo "👉 ব্রাউজার ওপেন হবে। শুধু স্ক্রিনে দেখানো কোডটি দিয়ে 'Authorize' বাটনে চাপুন।"
+  echo ""
+  gh auth login --web -p https -h github.com
+fi
+
 echo ""
-echo "👉 ধাপ ১: আপনি যদি এখনও GitHub-এ 'drivemate' রিপোজিটরিটি তৈরি না করে থাকেন,"
-echo "          তবে নিচের লিংকে গিয়ে একটি নতুন রিপোজিটরি তৈরি করুন:"
-echo "          URL: https://github.com/new"
-echo "          Repository name: drivemate"
-echo "          (Public অথবা Private যেকোনো একটি সিলেক্ট করুন)"
-echo ""
-echo "----------------------------------------------------------"
-read -p "GitHub-এ 'drivemate' তৈরি করা হয়ে গেলে [Enter] চাপুন..."
+echo "[2/3] GitHub ক্রেডেনশিয়াল সফলভাবে কানেক্ট হয়েছে!"
+USERNAME=$(gh api user --jq .login 2>/dev/null || echo "gobindabiswas")
+echo "      ইউজার: $USERNAME"
 echo ""
 
-echo "[*] গিটহাবে কোড পুশ করা হচ্ছে..."
-echo "👉 দ্রষ্টব্য: GitHub পাসওয়ার্ডের জায়গায় আপনার Personal Access Token (PAT) চাইবে।"
-echo "   (Token না থাকলে: GitHub Settings > Developer Settings > Personal access tokens > Tokens (classic) > Generate new token [repo tick])"
-echo ""
-
-git push -u origin main
+# 2. Check if repo exists or create it
+echo "[3/3] GitHub-এ রিপোজিটরি তৈরি ও কোড পুশ করা হচ্ছে..."
+if gh repo view "$USERNAME/drivemate" >/dev/null 2>&1; then
+  echo "      'drivemate' রিপোজিটরি ইতিমধ্যে বিদ্যমান।"
+  git remote set-url origin "https://github.com/$USERNAME/drivemate.git"
+  git push -u origin main
+else
+  echo "      নতুন পাবলিক রিপোজিটরি তৈরি হচ্ছে: $USERNAME/drivemate ..."
+  gh repo create "drivemate" --public --source=. --remote=origin --push
+fi
 
 echo ""
 echo "=========================================================="
-echo "      ✅ কোড সফলভাবে GitHub-এ আপলোড সম্পন্ন হয়েছে!"
-echo "      রিপোজিটরি লিংক: https://github.com/gobindabiswas/drivemate"
+echo "  🎉 অভিনন্দন! সম্পূর্ণ DriveMate কোডবেস GitHub-এ আপলোড সম্পন্ন!"
+echo "  🌐 রিপোজিটরি লিংক: https://github.com/$USERNAME/drivemate"
 echo "=========================================================="
 echo ""
-read -p "উইন্ডোটি বন্ধ করতে [Enter] চাপুন..."
+read -p "উইন্ডো বন্ধ করতে [Enter] চাপুন..."
