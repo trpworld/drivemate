@@ -92,8 +92,19 @@ export class LicenseService {
       if (resp.ok) {
         const data = await resp.json();
         if (data && data.success === false) {
-          console.warn('[DriveMate Anti-Piracy] Central ledger rejected license:', data.message);
-          return { valid: false };
+          const fatalErrors = [
+            'LICENSE_REVOKED',
+            'KEY_REVOKED_NOT_FOUND',
+            'LICENSE_EXPIRED',
+            'DEVICE_NOT_AUTHORIZED',
+            'DEVICE_LIMIT_EXCEEDED'
+          ];
+          if (fatalErrors.includes(data.error)) {
+            console.warn('[DriveMate Anti-Piracy] Central ledger rejected license:', data.message);
+            return { valid: false };
+          }
+          console.warn('[DriveMate Anti-Piracy] Non-fatal ledger notice, preserving Pro license:', data.message || data.error);
+          return { valid: true };
         }
         if (data && data.success) {
           return { valid: true, details: data };
@@ -377,10 +388,19 @@ export class LicenseService {
         if (response.ok) {
           const resData = await response.json();
           if (resData && resData.success === false) {
-            return {
-              success: false,
-              error: resData.message || '⚠️ Device limit exceeded: This license is already in use on another computer.'
-            };
+            const fatalActivationErrors = [
+              'DEVICE_LIMIT_EXCEEDED',
+              'LICENSE_REVOKED',
+              'LICENSE_EXPIRED',
+              'DEVICE_NOT_AUTHORIZED'
+            ];
+            if (fatalActivationErrors.includes(resData.error)) {
+              return {
+                success: false,
+                error: resData.message || '⚠️ Device limit exceeded: This license is already in use on another computer.'
+              };
+            }
+            console.warn('[DriveMate Activation] Non-fatal server response, proceeding with offline cryptographic activation:', resData.message || resData.error);
           }
           if (resData && resData.success) {
             planName = resData.planName || planName;

@@ -465,40 +465,41 @@ function doPost(e) {
     // --------------------------------------------------------------------------
     // ACTION 2: PAYMENT (UPI UTR Submission & Automated Key Emailing)
     // --------------------------------------------------------------------------
-    const email = (data.email || "").trim();
-    const utr = (data.utr || "").trim();
-    const reqAmount = Number(data.amount) || 0;
-    const reqPlan = (data.plan || "").toString().trim().toUpperCase();
+    if (action === "PAYMENT" || action === "PAY" || action === "SUBMIT_PAYMENT") {
+      const email = (data.email || "").trim();
+      const utr = (data.utr || "").trim();
+      const reqAmount = Number(data.amount) || 0;
+      const reqPlan = (data.plan || "").toString().trim().toUpperCase();
 
-    if (!email || !utr || utr.length < 8) {
-      return jsonResponse({
-        success: false,
-        error: "INVALID_UTR",
-        message: "Please provide a valid email and 12-digit UPI UTR / Transaction ID."
-      });
-    }
+      if (!email || !utr || utr.length < 8) {
+        return jsonResponse({
+          success: false,
+          error: "INVALID_UTR",
+          message: "Please provide a valid email and 12-digit UPI UTR / Transaction ID."
+        });
+      }
 
-    // Determine plan: ₹500 (1 Year - 5 Devices) vs ₹100 (6 Months - 1 Device)
-    let selectedPlan = PLAN_CONFIG["6M"];
-    if (reqAmount === 500 || reqPlan === "1Y" || reqPlan === "YEAR" || reqPlan === "500") {
-      selectedPlan = PLAN_CONFIG["1Y"];
-    }
+      // Determine plan: ₹500 (1 Year - 5 Devices) vs ₹100 (6 Months - 1 Device)
+      let selectedPlan = PLAN_CONFIG["6M"];
+      if (reqAmount === 500 || reqPlan === "1Y" || reqPlan === "YEAR" || reqPlan === "500") {
+        selectedPlan = PLAN_CONFIG["1Y"];
+      }
 
-    const licenseKey = generateCryptographicKey(utr, selectedPlan.type);
+      const licenseKey = generateCryptographicKey(utr, selectedPlan.type);
 
-    // Log to "Payments" sheet
-    const ss = SpreadsheetApp.getActiveSpreadsheet();
-    let paymentSheet = ss.getSheetByName("Payments");
-    if (!paymentSheet) {
-      paymentSheet = ss.insertSheet("Payments");
-      paymentSheet.appendRow(["Timestamp", "Customer Email", "UPI UTR", "Generated License Key", "Amount", "Plan", "Status"]);
-      paymentSheet.setFrozenRows(1);
-    }
-    paymentSheet.appendRow([new Date(), email, utr, licenseKey, selectedPlan.price, selectedPlan.name, "DELIVERED"]);
+      // Log to "Payments" sheet
+      const ss = SpreadsheetApp.getActiveSpreadsheet();
+      let paymentSheet = ss.getSheetByName("Payments");
+      if (!paymentSheet) {
+        paymentSheet = ss.insertSheet("Payments");
+        paymentSheet.appendRow(["Timestamp", "Customer Email", "UPI UTR", "Generated License Key", "Amount", "Plan", "Status"]);
+        paymentSheet.setFrozenRows(1);
+      }
+      paymentSheet.appendRow([new Date(), email, utr, licenseKey, selectedPlan.price, selectedPlan.name, "DELIVERED"]);
 
-    // Send email with license key & anti-sharing notice
-    const emailSubject = `🎉 Your ${selectedPlan.name} Key (${selectedPlan.price})`;
-    const emailBody = `Hello,
+      // Send email with license key & anti-sharing notice
+      const emailSubject = `🎉 Your ${selectedPlan.name} Key (${selectedPlan.price})`;
+      const emailBody = `Hello,
 
 Thank you for choosing DriveMate!
 Your payment of ${selectedPlan.price} (UTR: ${utr}) has been confirmed.
@@ -529,15 +530,21 @@ If you ever need to transfer devices or require assistance, reply directly to th
 Best regards,
 DriveMate Team`;
 
-    GmailApp.sendEmail(email, emailSubject, emailBody);
+      GmailApp.sendEmail(email, emailSubject, emailBody);
+
+      return jsonResponse({
+        success: true,
+        licenseKey: licenseKey,
+        planName: selectedPlan.name,
+        maxDevices: selectedPlan.maxDevices,
+        price: selectedPlan.price,
+        message: `License key generated for ${selectedPlan.name} and sent to ${email}`
+      });
+    }
 
     return jsonResponse({
       success: true,
-      licenseKey: licenseKey,
-      planName: selectedPlan.name,
-      maxDevices: selectedPlan.maxDevices,
-      price: selectedPlan.price,
-      message: `License key generated for ${selectedPlan.name} and sent to ${email}`
+      message: "Action " + action + " acknowledged."
     });
 
   } catch (err) {
