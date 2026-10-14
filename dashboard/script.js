@@ -1504,7 +1504,6 @@ DriveMate PRO কেনার জন্য ধন্যবাদ! আপনা�
       this.showToast("Cloud sync note: " + err.message, "warning");
     }
   }
-  }
 
   async testCloudConnection() {
     const url = this.repo.getCloudUrl();
