@@ -32,3 +32,15 @@ scratch/
 
 # Cloudflare Wrangler cache
 .wrangler/
+
+# Packaged binaries & zips
+*.dmg
+*.zip
+*.app/
+.drivemate/
+DriveMate-Windows/
+DriveMate-macOS/
+DriveMate/
+👉-SEND-THIS-TO-BUYER*
+desktop/src-tauri/target/
+desktop/dist/

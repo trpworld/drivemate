@@ -174,6 +174,10 @@ export interface LicenseState {
   activatedAt?: string;
   planName?: string;
   deviceId?: string;
+  maxDevices?: number;
+  currentDevices?: number;
+  expiryDate?: string | null;
+  daysRemaining?: number | null;
 }
 
 export interface DailyQuotaState {

@@ -51,10 +51,10 @@
     <div id="pro-active-bar" class="pro-bar-wrapper" style="display: none;">
       <div class="pro-active-content">
         <span class="pro-sparkle">⭐</span>
-        <span class="pro-title">PRO LIFETIME ACTIVATED</span>
-        <span class="pro-sub">— Unlimited Daily Downloads (No 10 GB Limit)</span>
+        <span class="pro-title" id="val-pro-plan-title">PRO ACTIVATED</span>
+        <span class="pro-sub" id="val-pro-plan-sub">— Unlimited Daily Downloads (No 10 GB Limit)</span>
       </div>
-      <span class="pro-badge-pill">32x TURBO</span>
+      <span class="pro-badge-pill" id="val-pro-device-slot">PRO ACTIVE</span>
     </div>
 
     <!-- Navigation Tabs -->
@@ -368,19 +368,36 @@
         </div>
       </div>
 
-      <!-- UPI Direct Instant Checkout Card (₹100 Lifetime Deal) -->
+      <!-- UPI Direct Instant Checkout Card (Tiered Plans) -->
       <div class="upi-checkout-card">
-        <div class="upi-headline">
-          <span class="price-strike">₹499</span>
-          <span class="upi-price-deal">₹100</span>
-          <span class="price-tag">One-Time Lifetime Deal</span>
+        <!-- Tier Plan Options Selection -->
+        <div style="display: flex; gap: 8px; margin-bottom: 12px;">
+          <div id="plan-opt-6m" style="flex: 1; padding: 10px; background: rgba(99, 102, 241, 0.15); border: 2px solid #6366f1; border-radius: 8px; text-align: left; cursor: pointer;">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <strong style="font-size: 13px; color: #fff;">6-Month Pro</strong>
+              <span style="font-weight: 800; color: #a5b4fc; font-size: 15px;">₹100</span>
+            </div>
+            <div style="font-size: 10.5px; color: #94a3b8; margin-top: 3px;">1 Computer • 6 Months (180 days)</div>
+          </div>
+
+          <div id="plan-opt-1y" style="flex: 1; padding: 10px; background: rgba(16, 185, 129, 0.15); border: 2px solid #10b981; border-radius: 8px; text-align: left; cursor: pointer; position: relative;">
+            <div style="position: absolute; top: -8px; right: 8px; background: #10b981; color: #000; font-size: 8.5px; font-weight: 800; padding: 1px 6px; border-radius: 4px; text-transform: uppercase;">
+              5 DEVICES
+            </div>
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <strong style="font-size: 13px; color: #fff;">1-Year Team</strong>
+              <span style="font-weight: 800; color: #6ee7b7; font-size: 15px;">₹500</span>
+            </div>
+            <div style="font-size: 10.5px; color: #94a3b8; margin-top: 3px;">5 Computers • 1 Year (365 days)</div>
+          </div>
         </div>
+
         <div style="font-size: 11px; color: #94a3b8; text-align: center; margin-top: -2px;">
-          Scan QR with <strong>PhonePe / Google Pay / Paytm / BHIM</strong> to pay ₹100
+          Scan QR with <strong>PhonePe / Google Pay / Paytm / BHIM</strong>
         </div>
 
         <div class="upi-qr-frame">
-          <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAZAAAAGQAQMAAAC6caSPAAAABlBMVEX///8AAABVwtN+AAAACXBIWXMAAA7EAAAOxAGVKw4bAAACeElEQVR4nO2ay7XDMAhE8UplqNS4VJfhlXkWMEhJXgoIGRY+0eeymsNPEaHRftY2DTtFHodtNdW9j6We2/1LL5GOWzuRWshu9/p9rEfTWD77kuEhLxOphAw1hEJMHEMm0q5AbWkOTT9EaiImmCt00SGT6YZIZURw4tnhQu4QIVIYyU3EjNsOCdiW+8f8QuTLkTDkhP8/uEWkFPJimTEatDI19cGIfC8SgglJuDiu6A/tgqeNFh8ixZB9zASsP7xTxLCWdaMjulYTRCohNhaKdGDwHnuwvtQLEBGRMoikYPY+G8IlSOB0jg2IFEE2XNTVT4jIGsfB6xnSIVIKiReAyBNoDSVKxjVPLCGESBlkmQ4cEvPAhyvkxFgoTjNZEKmBoE1I2JtEDxKa0WNJLUQqIa6G6AqzZJTcy3rBRESkEoL4sEjCisIcFXX40nmFSBkEyWJDk9gwIIpkIZE75C2/EKmArNKRFcZgwENIUyK1EIwDXCFWG3hi2PI2Wki4JlIGySYxU4TiOPoCrxuvjBlEiiESksjlPH4obIkwRMogfnIgMWjIRLNhiD1dpgpEyiCZEzw+dAW8JBDJWpJIIeRJNl4MoDWc9YJGRMnXBCJlEFcIasTw0KI28LfBp3xCpBaSAUFXraB4TGtEKiIoBUM14UG9ZFxOiRRDpmVi0PeS0avF9XWISAVkgx5QOLpCjvGzQzDhIcMFkTKIXfTj7AWn7XFlSodIKaSnJKIrtKWkTQ8vbQKRYsjYMl3cn4gZGjWEDxCI1EXUbs9RETpF90WkIGKrbqVC/gOka6rGRgQvgiFSBQk7sxGAYBAuLjwc6HttSeSrERrtR+0P/k6rrCmpjfIAAAAASUVORK5CYII=" alt="Scan to Pay ₹100 via UPI" width="150" height="150" style="display: block; image-rendering: pixelated;" />
+          <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAZAAAAGQAQMAAAC6caSPAAAABlBMVEX///8AAABVwtN+AAAACXBIWXMAAA7EAAAOxAGVKw4bAAACeElEQVR4nO2ay7XDMAhE8UplqNS4VJfhlXkWMEhJXgoIGRY+0eeymsNPEaHRftY2DTtFHodtNdW9j6We2/1LL5GOWzuRWshu9/p9rEfTWD77kuEhLxOphAw1hEJMHEMm0q5AbWkOTT9EaiImmCt00SGT6YZIZURw4tnhQu4QIVIYyU3EjNsOCdiW+8f8QuTLkTDkhP8/uEWkFPJimTEatDI19cGIfC8SgglJuDiu6A/tgqeNFh8ixZB9zASsP7xTxLCWdaMjulYTRCohNhaKdGDwHnuwvtQLEBGRMoikYPY+G8IlSOB0jg2IFEE2XNTVT4jIGsfB6xnSIVIKiReAyBNoDSVKxjVPLCGESBlkmQ4cEvPAhyvkxFgoTjNZEKmBoE1I2JtEDxKa0WNJLUQqIa6G6AqzZJTcy3rBRESkEoL4sEjCisIcFXX40nmFSBkEyWJDk9gwIIpkIZE75C2/EKmArNKRFcZgwENIUyK1EIwDXCFWG3hi2PI2Wki4JlIGySYxU4TiOPoCrxuvjBlEiiESksjlPH4obIkwRMogfnIgMWjIRLNhiD1dpgpEyiCZEzw+dAW8JBDJWpJIIeRJNl4MoDWc9YJGRMnXBCJlEFcIasTw0KI28LfBp3xCpBaSAUFXraB4TGtEKiIoBUM14UG9ZFxOiRRDpmVi0PeS0avF9XWISAVkgx5QOLpCjvGzQzDhIcMFkTKIXfTj7AWn7XFlSodIKaSnJKIrtKWkTQ8vbQKRYsjYMl3cn4gZGjWEDxCI1EXUbs9RETpF90WkIGKrbqVC/gOka6rGRgQvgiFSBQk7sxGAYBAuLjwc6HttSeSrERrtR+0P/k6rrCmpjfIAAAAASUVORK5CYII=" alt="Scan to Pay via UPI" width="140" height="140" style="display: block; image-rendering: pixelated;" />
         </div>
 
         <div class="upi-apps-row">
@@ -392,18 +409,23 @@
           <button id="btn-copy-upi" class="btn-copy-upi" type="button" title="Copy UPI ID">📋 Copy</button>
         </div>
 
-        <a class="btn-whatsapp-chat" href="https://wa.me/918927202527?text=Hi%2C%20I%20have%20paid%20%E2%82%B9100%20for%20DriveMate%20PRO.%20My%20UPI%20UTR%20is%3A%20" target="_blank" rel="noopener noreferrer">
-          💬 WhatsApp-এ TrxID পাঠান (তাৎক্ষণিক কি পান)
-        </a>
+        <div style="display: flex; flex-direction: column; gap: 8px; width: 100%;">
+          <a class="btn-whatsapp-chat" href="https://wa.me/918927202527?text=Hi%2C%20I%20have%20paid%20%E2%82%B9100%20for%20DriveMate%206-Month%20Plan%20(1%20Device).%20My%20UPI%20UTR%20is%3A%20" target="_blank" rel="noopener noreferrer" style="background: #4338ca; text-align: center; font-size: 12px; padding: 8px 12px;">
+            💬 WhatsApp: ₹100 পাঠিয়েছেন (6 Months / 1 Device)
+          </a>
+          <a class="btn-whatsapp-chat" href="https://wa.me/918927202527?text=Hi%2C%20I%20have%20paid%20%E2%82%B9500%20for%20DriveMate%201-Year%20Team%20Plan%20(5%20Devices).%20My%20UPI%20UTR%20is%3A%20" target="_blank" rel="noopener noreferrer" style="background: #065f46; text-align: center; font-size: 12px; padding: 8px 12px;">
+            💬 WhatsApp: ₹500 পাঠিয়েছেন (1 Year / 5 Devices)
+          </a>
+        </div>
       </div>
 
-      <!-- Lifetime License Key Activation Card -->
+      <!-- License Key Activation Card -->
       <div class="license-activation-card">
         <div class="license-card-header">
-          <span class="license-label">Have a Lifetime License Key?</span>
+          <span class="license-label">Have a License Key?</span>
         </div>
         <div class="license-input-row">
-          <input id="input-license-key" class="text-input license-input" placeholder="DM-PRO-XXXX-XXXX-XXXX-XXXX" spellcheck="false" />
+          <input id="input-license-key" class="text-input license-input" placeholder="DM-6M-XXXX... or DM-1Y-XXXX..." spellcheck="false" />
           <button id="btn-activate-license" class="btn-activate" type="button">Activate</button>
         </div>
         <div id="license-feedback-msg" class="license-feedback" style="display: none;"></div>

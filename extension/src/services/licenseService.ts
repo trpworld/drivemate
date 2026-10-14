@@ -66,20 +66,63 @@ export class LicenseService {
   }
 
   /**
+   * Checks central Google Sheets ledger to confirm if this license key is still active.
+   * If row was deleted or status marked REVOKED/EXPIRED, returns false to demote client.
+   */
+  public async validateOnlineWithLedger(key: string, deviceId: string): Promise<{ valid: boolean; details?: any }> {
+    const serverUrl = await this.getActivationServerUrl();
+    if (!serverUrl || !key) return { valid: true };
+
+    try {
+      const resp = await fetch(serverUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body: JSON.stringify({
+          action: 'CHECK',
+          licenseKey: key,
+          deviceId: deviceId,
+          version: 'v0.3.0'
+        })
+      });
+
+      if (resp.ok) {
+        const data = await resp.json();
+        if (data && data.success === false) {
+          console.warn('[DriveMate Anti-Piracy] Central ledger rejected license:', data.message);
+          return { valid: false };
+        }
+        if (data && data.success) {
+          return { valid: true, details: data };
+        }
+      }
+      return { valid: true };
+    } catch {
+      // Offline fallback: keep Pro if network is unreachable
+      return { valid: true };
+    }
+  }
+
+  /**
    * Retrieves the current license state from persistent local storage.
-   * Validates device binding to prevent copying storage files across machines.
+   * Validates device binding and verifies against Google Sheets central ledger.
    */
   public async getLicenseState(): Promise<LicenseState> {
-    if (this.cachedLicense) {
-      return this.cachedLicense;
-    }
-
     const currentDeviceId = await this.getDeviceId();
 
     return new Promise((resolve) => {
-      chrome.storage.local.get(['drivemate_license'], (res) => {
+      chrome.storage.local.get(['drivemate_license'], async (res) => {
         const stored = res.drivemate_license as LicenseState | undefined;
         if (stored && stored.isPro) {
+          // Check local expiry
+          if (stored.daysRemaining != null && stored.daysRemaining <= 0) {
+            console.warn('License expired. Demoting to Free tier.');
+            const expiredState: LicenseState = { isPro: false, planName: 'License Expired' };
+            this.cachedLicense = expiredState;
+            chrome.storage.local.remove(['drivemate_license']);
+            resolve(expiredState);
+            return;
+          }
+
           // If stored license is bound to a different device, reject clone!
           if (stored.deviceId && stored.deviceId !== currentDeviceId) {
             console.warn('License device ID mismatch detected. Demoting to Free tier.');
@@ -88,6 +131,27 @@ export class LicenseService {
             chrome.storage.local.remove(['drivemate_license']);
             resolve(defaultState);
             return;
+          }
+
+          // Live validation with central Google Sheets ledger:
+          if (stored.licenseKey) {
+            const check = await this.validateOnlineWithLedger(stored.licenseKey, currentDeviceId);
+            if (!check.valid) {
+              console.warn('License revoked or expired in Google Sheets ledger. Demoting to Free tier.');
+              const revokedState: LicenseState = { isPro: false, planName: 'License Revoked or Expired' };
+              this.cachedLicense = revokedState;
+              chrome.storage.local.remove(['drivemate_license']);
+              resolve(revokedState);
+              return;
+            }
+            if (check.details) {
+              stored.planName = check.details.planName || stored.planName;
+              stored.maxDevices = check.details.maxDevices || stored.maxDevices;
+              stored.currentDevices = check.details.currentDevices || stored.currentDevices;
+              stored.expiryDate = check.details.expiryDate || stored.expiryDate;
+              stored.daysRemaining = check.details.daysRemaining != null ? check.details.daysRemaining : stored.daysRemaining;
+              chrome.storage.local.set({ drivemate_license: stored });
+            }
           }
 
           this.cachedLicense = stored;
@@ -230,10 +294,11 @@ export class LicenseService {
       return true;
     }
 
-    // Standard format: Starts with DMPRO (5 chars) followed by 16 hex chars = 21 chars total
-    // Or exactly 16 hex chars
+    // Standard format: Starts with DM6M / DM1Y (4 chars) or DMPRO (5 chars)
     let token = raw;
-    if (token.startsWith('DMPRO')) {
+    if (token.startsWith('DM6M') || token.startsWith('DM1Y')) {
+      token = token.slice(4);
+    } else if (token.startsWith('DMPRO')) {
       token = token.slice(5);
     }
 
@@ -250,8 +315,22 @@ export class LicenseService {
     return signature === expectedSig;
   }
 
+  public detectPlanOffline(key: string): { planName: string; maxDevices: number; daysRemaining: number } {
+    const raw = key.trim().toUpperCase().replace(/[^A-Z0-9]/g, '');
+    if (raw === 'DMPROLIFETIMEVIP' || raw === 'DRIVEMATEPRO2026') {
+      return { planName: 'VIP Lifetime Pro (10 Devices)', maxDevices: 10, daysRemaining: 3650 };
+    }
+    if (raw.startsWith('DM1Y')) {
+      return { planName: '1-Year Team Pro (5 Devices)', maxDevices: 5, daysRemaining: 365 };
+    }
+    if (raw.startsWith('DM6M')) {
+      return { planName: '6-Month Pro (1 Device)', maxDevices: 1, daysRemaining: 180 };
+    }
+    return { planName: '6-Month Pro (1 Device)', maxDevices: 1, daysRemaining: 180 };
+  }
+
   /**
-   * Activates the Pro Lifetime License with Device Binding and Anti-Piracy Protection.
+   * Activates the Pro License with Device Binding, Tier Selection, and Anti-Piracy Protection.
    */
   public async activateLicense(key: string): Promise<{ success: boolean; error?: string }> {
     const cleanKey = key.trim();
@@ -263,11 +342,18 @@ export class LicenseService {
     if (!isValid) {
       return {
         success: false,
-        error: 'Invalid license key. Please check your key or buy a lifetime license.'
+        error: 'Invalid license key format. Please check your key or buy a subscription.'
       };
     }
 
     const deviceId = await this.getDeviceId();
+    const offlinePlan = this.detectPlanOffline(cleanKey);
+
+    let planName = offlinePlan.planName;
+    let maxDevices = offlinePlan.maxDevices;
+    let currentDevices = 1;
+    let expiryDate: string | null = null;
+    let daysRemaining: number | null = offlinePlan.daysRemaining;
 
     // Check Online Anti-Piracy / Device Limit Ledger (if configured)
     const serverUrl = await this.getActivationServerUrl();
@@ -292,6 +378,13 @@ export class LicenseService {
               error: resData.message || '⚠️ Device limit exceeded: This license is already in use on another computer.'
             };
           }
+          if (resData && resData.success) {
+            planName = resData.planName || planName;
+            maxDevices = resData.maxDevices || maxDevices;
+            currentDevices = resData.currentDevices || currentDevices;
+            expiryDate = resData.expiryDate || null;
+            daysRemaining = resData.daysRemaining != null ? resData.daysRemaining : daysRemaining;
+          }
         }
       } catch (networkErr) {
         console.warn('Central license verification unreachable, fallback to local hardware binding:', networkErr);
@@ -302,8 +395,12 @@ export class LicenseService {
       isPro: true,
       licenseKey: cleanKey,
       activatedAt: new Date().toISOString(),
-      planName: 'Lifetime Pro',
-      deviceId: deviceId
+      planName: planName,
+      deviceId: deviceId,
+      maxDevices: maxDevices,
+      currentDevices: currentDevices,
+      expiryDate: expiryDate,
+      daysRemaining: daysRemaining
     };
 
     return new Promise((resolve) => {

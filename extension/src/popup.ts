@@ -150,6 +150,29 @@ export async function refreshQuotaUI() {
     if (quota.isPro) {
       if (licenseQuotaBar) licenseQuotaBar.style.display = 'none';
       if (proActiveBar) proActiveBar.style.display = 'flex';
+
+      const license = await licenseService.getLicenseState();
+      const planTitle = document.getElementById('val-pro-plan-title');
+      const planSub = document.getElementById('val-pro-plan-sub');
+      const slotBadge = document.getElementById('val-pro-device-slot');
+
+      if (planTitle && license.planName) {
+        planTitle.textContent = license.planName.toUpperCase();
+      }
+      if (planSub) {
+        if (license.daysRemaining != null) {
+          planSub.textContent = `— ${license.daysRemaining} days remaining (Unlimited Daily Downloads)`;
+        } else {
+          planSub.textContent = '— Unlimited Daily Downloads (No 10 GB Limit)';
+        }
+      }
+      if (slotBadge) {
+        if (license.maxDevices && license.maxDevices > 1) {
+          slotBadge.textContent = `SLOT ${license.currentDevices || 1}/${license.maxDevices}`;
+        } else {
+          slotBadge.textContent = '1 DEVICE';
+        }
+      }
     } else {
       if (licenseQuotaBar) licenseQuotaBar.style.display = 'flex';
       if (proActiveBar) proActiveBar.style.display = 'none';

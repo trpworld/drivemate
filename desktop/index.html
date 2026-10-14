@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="DriveMate Native — Standalone Multi-Threaded Google Drive Downloader" />
+    <title>DriveMate — Google Drive Downloader</title>
+    <link rel="icon" type="image/png" href="/icons/icon-48.png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+    <script>
+      window.addEventListener('error', function(e) {
+        console.error('DriveMate Runtime Error:', e.error || e.message);
+        var root = document.getElementById('root');
+        if (root && root.children.length === 0) {
+          root.innerHTML = '<div style="padding:40px;color:#fff;background:#0f172a;height:100vh;font-family:sans-serif;">' +
+            '<h2 style="color:#f87171;">DriveMate UI Initialization Error</h2>' +
+            '<p style="color:#e2e8f0;font-size:14px;">' + (e.message || 'Unknown error occurred while starting DriveMate.') + '</p>' +
+            '<pre style="color:#94a3b8;font-size:12px;background:#1e293b;padding:12px;border-radius:6px;overflow:auto;">' + (e.error ? e.error.stack : '') + '</pre>' +
+            '</div>';
+        }
+      });
+      window.addEventListener('unhandledrejection', function(e) {
+        console.error('DriveMate Unhandled Promise Rejection:', e.reason);
+      });
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

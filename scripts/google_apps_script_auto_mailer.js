@@ -26,7 +26,51 @@
  */
 
 const MASTER_SALT = "DriveMate-Pro-2026-SuperSecretMasterSalt-9941";
-const DEFAULT_MAX_DEVICES = 1; // 1 Mac per license key
+
+const PLAN_CONFIG = {
+  "6M": {
+    type: "6M",
+    name: "DriveMate Pro (6 Months - 1 Device)",
+    shortName: "6-Month Pro (1 Device)",
+    durationDays: 180,
+    maxDevices: 1,
+    price: "₹100",
+    prefix: "DM-6M"
+  },
+  "1Y": {
+    type: "1Y",
+    name: "DriveMate Team Pro (1 Year - 5 Devices)",
+    shortName: "1-Year Team Pro (5 Devices)",
+    durationDays: 365,
+    maxDevices: 5,
+    price: "₹500",
+    prefix: "DM-1Y"
+  },
+  "VIP": {
+    type: "VIP",
+    name: "DriveMate VIP Lifetime (10 Devices)",
+    shortName: "VIP Lifetime (10 Devices)",
+    durationDays: 3650,
+    maxDevices: 10,
+    price: "VIP / Free",
+    prefix: "DM-VIP"
+  }
+};
+
+function detectPlanFromKey(key) {
+  const raw = String(key || "").trim().toUpperCase().replace(/[^A-Z0-9]/g, "");
+  if (raw === "DMPROLIFETIMEVIP" || raw === "DRIVEMATEPRO2026") {
+    return PLAN_CONFIG["VIP"];
+  }
+  if (raw.startsWith("DM1Y")) {
+    return PLAN_CONFIG["1Y"];
+  }
+  if (raw.startsWith("DM6M")) {
+    return PLAN_CONFIG["6M"];
+  }
+  // Default to 6 Months (1 Device)
+  return PLAN_CONFIG["6M"];
+}
 
 function doPost(e) {
   try {
@@ -35,12 +79,12 @@ function doPost(e) {
     const action = (data.action || "PAYMENT").toUpperCase();
 
     // --------------------------------------------------------------------------
-    // ACTION 1: ACTIVATE (Anti-Piracy Device Binding Lock)
+    // ACTION 1: ACTIVATE (Anti-Piracy Device Binding & Expiry Check)
     // --------------------------------------------------------------------------
     if (action === "ACTIVATE") {
       const key = (data.licenseKey || data.key || "").trim().toUpperCase();
       const deviceId = (data.deviceId || "").trim();
-      const clientVer = (data.version || "v0.3.0").trim();
+      const clientVer = (data.version || "1.0.0").trim();
 
       if (!key || !deviceId) {
         return jsonResponse({
@@ -59,6 +103,7 @@ function doPost(e) {
         });
       }
 
+      const defaultPlan = detectPlanFromKey(key);
       const ss = SpreadsheetApp.getActiveSpreadsheet();
       let sheet = ss.getSheetByName("Activations");
       if (!sheet) {
@@ -71,7 +116,11 @@ function doPost(e) {
           "Status",
           "First Activated",
           "Last Seen",
-          "Version"
+          "Plan",
+          "Expiry Date",
+          "Version / OS",
+          "Total Downloaded",
+          "Recent Activity"
         ]);
         sheet.setFrozenRows(1);
       }
@@ -90,54 +139,91 @@ function doPost(e) {
 
       if (foundRow === -1) {
         // First time this key is ever activated: bind to this device!
+        const expiryDate = new Date(now.getTime() + defaultPlan.durationDays * 24 * 60 * 60 * 1000);
         sheet.appendRow([
           key,
           deviceId,
           1,
-          DEFAULT_MAX_DEVICES,
+          defaultPlan.maxDevices,
           "ACTIVE",
           now,
           now,
-          clientVer
+          defaultPlan.name,
+          expiryDate.toISOString(),
+          clientVer,
+          "0.00 GB",
+          "Initial Activation"
         ]);
 
         return jsonResponse({
           success: true,
-          message: "🎉 License activated successfully for this device (Device 1/1).",
-          maxDevices: DEFAULT_MAX_DEVICES,
-          currentDevices: 1
+          message: "🎉 License activated successfully (" + defaultPlan.shortName + " - Slot 1/" + defaultPlan.maxDevices + ").",
+          planName: defaultPlan.name,
+          maxDevices: defaultPlan.maxDevices,
+          currentDevices: 1,
+          expiryDate: expiryDate.toISOString(),
+          daysRemaining: defaultPlan.durationDays
         });
       } else {
-        // Key is already in sheet: inspect device binding
+        // Key is already in sheet: inspect device binding & expiry
         const rowData = rows[foundRow - 1];
         const registeredDevicesStr = String(rowData[1] || "");
         const registeredDevices = registeredDevicesStr.split(",").map(d => d.trim()).filter(Boolean);
-        const maxDevices = Number(rowData[3]) || DEFAULT_MAX_DEVICES;
+        const maxDevices = Number(rowData[3]) || defaultPlan.maxDevices;
         const status = String(rowData[4] || "ACTIVE").toUpperCase();
+        const planName = String(rowData[7] || defaultPlan.name);
+        const expiryVal = rowData[8];
 
-        if (status === "REVOKED" || status === "BANNED") {
+        if (status === "REVOKED" || status === "BANNED" || status === "DEACTIVATED" || status === "DISABLED" || status === "SUSPENDED") {
           return jsonResponse({
             success: false,
             error: "LICENSE_REVOKED",
-            message: "This license key has been revoked or banned due to unauthorized sharing."
+            message: "⚠️ This license key has been deactivated/revoked by the administrator."
           });
+        }
+
+        // Check Expiry Date
+        let expiryDate = null;
+        let daysRemaining = null;
+        if (expiryVal) {
+          expiryDate = new Date(expiryVal);
+          if (!isNaN(expiryDate.getTime())) {
+            daysRemaining = Math.max(0, Math.ceil((expiryDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24)));
+            if (now.getTime() > expiryDate.getTime()) {
+              sheet.getRange(foundRow, 5).setValue("EXPIRED");
+              const expFormatted = Utilities.formatDate(expiryDate, "GMT+0530", "dd MMM yyyy");
+              return jsonResponse({
+                success: false,
+                error: "LICENSE_EXPIRED",
+                message: "⚠️ This " + planName + " license expired on " + expFormatted + ". Please renew your subscription.",
+                planName: planName,
+                expiryDate: expiryDate.toISOString(),
+                daysRemaining: 0
+              });
+            }
+          }
         }
 
         // Check if this device is ALREADY registered
         if (registeredDevices.includes(deviceId)) {
           // Same device re-installing or re-activating: ALWAYS ALLOW!
           sheet.getRange(foundRow, 7).setValue(now); // Update Last Seen
+          if (sheet.getLastColumn() >= 10) sheet.getRange(foundRow, 10).setValue(clientVer);
+          if (data.activity && sheet.getLastColumn() >= 12) sheet.getRange(foundRow, 12).setValue(String(data.activity));
           return jsonResponse({
             success: true,
-            message: "Welcome back! Device recognized.",
+            message: "Welcome back! Device recognized (" + registeredDevices.length + "/" + maxDevices + " slots).",
+            planName: planName,
             maxDevices: maxDevices,
-            currentDevices: registeredDevices.length
+            currentDevices: registeredDevices.length,
+            expiryDate: expiryDate ? expiryDate.toISOString() : null,
+            daysRemaining: daysRemaining
           });
         }
 
         // New device trying to use this key:
         if (registeredDevices.length < maxDevices) {
-          // Slot available (e.g. if you allow 2 devices)
+          // Slot available (e.g. up to 5 devices for 1-Year plan)
           registeredDevices.push(deviceId);
           sheet.getRange(foundRow, 2).setValue(registeredDevices.join(","));
           sheet.getRange(foundRow, 3).setValue(registeredDevices.length);
@@ -145,19 +231,164 @@ function doPost(e) {
 
           return jsonResponse({
             success: true,
-            message: "🎉 License activated on additional authorized device (" + registeredDevices.length + "/" + maxDevices + ").",
+            message: "🎉 License activated on authorized device (" + registeredDevices.length + "/" + maxDevices + " slots used).",
+            planName: planName,
             maxDevices: maxDevices,
-            currentDevices: registeredDevices.length
+            currentDevices: registeredDevices.length,
+            expiryDate: expiryDate ? expiryDate.toISOString() : null,
+            daysRemaining: daysRemaining
           });
         } else {
           // Device limit exceeded! BLOCK ACTIVATION!
           return jsonResponse({
             success: false,
             error: "DEVICE_LIMIT_EXCEEDED",
-            message: "⚠️ License sharing blocked: This license is already in use on another computer (Limit: " + maxDevices + " device). Please use on the original computer or buy another license."
+            message: "⚠️ Device limit reached: This " + planName + " is already active on " + maxDevices + " computer(s) (" + registeredDevices.length + "/" + maxDevices + " slots in use). Please use on an authorized computer or buy another license."
           });
         }
       }
+    }
+
+    // --------------------------------------------------------------------------
+    // ACTION: CHECK / VALIDATE (Verify if an existing activation is still authorized)
+    // --------------------------------------------------------------------------
+    if (action === "CHECK" || action === "VALIDATE") {
+      const key = (data.licenseKey || data.key || "").trim().toUpperCase();
+      const deviceId = (data.deviceId || "").trim();
+
+      const ss = SpreadsheetApp.getActiveSpreadsheet();
+      let sheet = ss.getSheetByName("Activations");
+      if (!sheet) {
+        return jsonResponse({
+          success: false,
+          error: "NOT_FOUND",
+          message: "Activations ledger is empty or deleted. All licenses revoked."
+        });
+      }
+
+      const rows = sheet.getDataRange().getValues();
+      let foundRow = -1;
+      for (let i = 1; i < rows.length; i++) {
+        if (String(rows[i][0]).toUpperCase() === key) {
+          foundRow = i + 1;
+          break;
+        }
+      }
+
+      if (foundRow === -1) {
+        return jsonResponse({
+          success: false,
+          error: "KEY_REVOKED_NOT_FOUND",
+          message: "License key is not present in the active ledger. Pro features revoked."
+        });
+      }
+
+      const rowData = rows[foundRow - 1];
+      const registeredDevicesStr = String(rowData[1] || "");
+      const registeredDevices = registeredDevicesStr.split(",").map(d => d.trim()).filter(Boolean);
+      const maxDevices = Number(rowData[3]) || 1;
+      const status = String(rowData[4] || "ACTIVE").toUpperCase();
+      const planName = String(rowData[7] || "DriveMate Pro");
+      const expiryVal = rowData[8];
+
+      if (status === "REVOKED" || status === "BANNED" || status === "DEACTIVATED" || status === "DISABLED" || status === "SUSPENDED") {
+        return jsonResponse({
+          success: false,
+          error: "LICENSE_REVOKED",
+          message: "⚠️ This license has been deactivated/revoked by administrator."
+        });
+      }
+
+      // Check Expiry Date
+      const now = new Date();
+      let expiryDate = null;
+      let daysRemaining = null;
+      if (expiryVal) {
+        expiryDate = new Date(expiryVal);
+        if (!isNaN(expiryDate.getTime())) {
+          daysRemaining = Math.max(0, Math.ceil((expiryDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24)));
+          if (now.getTime() > expiryDate.getTime()) {
+            sheet.getRange(foundRow, 5).setValue("EXPIRED");
+            return jsonResponse({
+              success: false,
+              error: "LICENSE_EXPIRED",
+              message: "⚠️ License expired on " + Utilities.formatDate(expiryDate, "GMT+0530", "dd MMM yyyy"),
+              planName: planName,
+              expiryDate: expiryDate.toISOString(),
+              daysRemaining: 0
+            });
+          }
+        }
+      }
+
+      if (deviceId && !registeredDevices.includes(deviceId)) {
+        return jsonResponse({
+          success: false,
+          error: "DEVICE_NOT_AUTHORIZED",
+          message: "This device is not authorized for this license key."
+        });
+      }
+
+      // Update Last Seen, Total Downloaded, and Recent Activity
+      sheet.getRange(foundRow, 7).setValue(new Date());
+      if (data.totalDownloadedBytes && sheet.getLastColumn() >= 11) {
+        const gb = (Number(data.totalDownloadedBytes) / (1024 * 1024 * 1024)).toFixed(2) + " GB";
+        sheet.getRange(foundRow, 11).setValue(gb);
+      }
+      if (data.activity && sheet.getLastColumn() >= 12) {
+        sheet.getRange(foundRow, 12).setValue(String(data.activity));
+      }
+
+      return jsonResponse({
+        success: true,
+        message: "License active and authorized.",
+        planName: planName,
+        maxDevices: maxDevices,
+        currentDevices: registeredDevices.length,
+        expiryDate: expiryDate ? expiryDate.toISOString() : null,
+        daysRemaining: daysRemaining,
+        status: status
+      });
+    }
+
+    // --------------------------------------------------------------------------
+    // ACTION: DEACTIVATE (Unbind Device / Release License Slot)
+    // --------------------------------------------------------------------------
+    if (action === "DEACTIVATE") {
+      const key = (data.licenseKey || data.key || "").trim().toUpperCase();
+      const deviceId = (data.deviceId || "").trim();
+
+      const ss = SpreadsheetApp.getActiveSpreadsheet();
+      let sheet = ss.getSheetByName("Activations");
+      if (!sheet) {
+        return jsonResponse({ success: true, message: "No activations found." });
+      }
+
+      const rows = sheet.getDataRange().getValues();
+      for (let i = 1; i < rows.length; i++) {
+        if (String(rows[i][0]).toUpperCase() === key) {
+          const registeredDevicesStr = String(rows[i][1] || "");
+          let registeredDevices = registeredDevicesStr.split(",").map(d => d.trim()).filter(Boolean);
+
+          if (deviceId) {
+            registeredDevices = registeredDevices.filter(d => d !== deviceId);
+          } else {
+            registeredDevices = []; // Clear all devices for this key
+          }
+
+          sheet.getRange(i + 1, 2).setValue(registeredDevices.join(","));
+          sheet.getRange(i + 1, 3).setValue(registeredDevices.length);
+          sheet.getRange(i + 1, 7).setValue(new Date());
+
+          return jsonResponse({
+            success: true,
+            message: "🎉 Device deactivated and license slot released.",
+            currentDevices: registeredDevices.length
+          });
+        }
+      }
+
+      return jsonResponse({ success: true, message: "Key not found in ledger." });
     }
 
     // --------------------------------------------------------------------------
@@ -165,6 +396,8 @@ function doPost(e) {
     // --------------------------------------------------------------------------
     const email = (data.email || "").trim();
     const utr = (data.utr || "").trim();
+    const reqAmount = Number(data.amount) || 0;
+    const reqPlan = (data.plan || "").toString().trim().toUpperCase();
 
     if (!email || !utr || utr.length < 8) {
       return jsonResponse({
@@ -174,42 +407,53 @@ function doPost(e) {
       });
     }
 
-    const licenseKey = generateCryptographicKey(utr);
+    // Determine plan: ₹500 (1 Year - 5 Devices) vs ₹100 (6 Months - 1 Device)
+    let selectedPlan = PLAN_CONFIG["6M"];
+    if (reqAmount === 500 || reqPlan === "1Y" || reqPlan === "YEAR" || reqPlan === "500") {
+      selectedPlan = PLAN_CONFIG["1Y"];
+    }
+
+    const licenseKey = generateCryptographicKey(utr, selectedPlan.type);
 
     // Log to "Payments" sheet
     const ss = SpreadsheetApp.getActiveSpreadsheet();
     let paymentSheet = ss.getSheetByName("Payments");
     if (!paymentSheet) {
       paymentSheet = ss.insertSheet("Payments");
-      paymentSheet.appendRow(["Timestamp", "Customer Email", "UPI UTR", "Generated License Key", "Amount", "Status"]);
+      paymentSheet.appendRow(["Timestamp", "Customer Email", "UPI UTR", "Generated License Key", "Amount", "Plan", "Status"]);
       paymentSheet.setFrozenRows(1);
     }
-    paymentSheet.appendRow([new Date(), email, utr, licenseKey, "₹100", "DELIVERED"]);
+    paymentSheet.appendRow([new Date(), email, utr, licenseKey, selectedPlan.price, selectedPlan.name, "DELIVERED"]);
 
     // Send email with license key & anti-sharing notice
-    const emailSubject = "🎉 Your DriveMate PRO Lifetime License Key (₹100 Deal)";
+    const emailSubject = `🎉 Your ${selectedPlan.name} Key (${selectedPlan.price})`;
     const emailBody = `Hello,
 
-Thank you for purchasing DriveMate PRO Lifetime Deal!
-Your payment of ₹100 (UTR: ${utr}) has been confirmed.
+Thank you for choosing DriveMate!
+Your payment of ${selectedPlan.price} (UTR: ${utr}) has been confirmed.
 
 =======================================================
-YOUR LIFETIME LICENSE KEY:
+YOUR LICENSE KEY:
 ${licenseKey}
 =======================================================
 
-⚠️ IMPORTANT DEVICE LOCK NOTICE:
-This license key is bound to 1 computer for your personal use.
-Please do not share this key publicly; once activated on your computer,
-it will be locked to your device.
+PLAN DETAILS:
+• Plan: ${selectedPlan.name}
+• Validity: ${selectedPlan.durationDays} Days (${selectedPlan.type === "1Y" ? "1 Year" : "6 Months"})
+• Device Limit: Up to ${selectedPlan.maxDevices} Device(s) under this single key
+
+⚠️ DEVICE LOCK & PIRACY NOTICE:
+${selectedPlan.maxDevices === 1
+  ? "This license key is bound to 1 computer for your personal use. Once activated, it locks to your device."
+  : "This 1-Year Team license allows activation on up to 5 computers under this single key. You can share this key with up to 5 of your devices."}
 
 HOW TO ACTIVATE IN 10 SECONDS:
-1. Open DriveMate extension in your Chrome browser.
-2. Click "⚡ Upgrade PRO" in the top bar.
-3. Paste your license key in the "Have a Lifetime License Key?" box.
+1. Open DriveMate (Desktop App or Chrome Extension).
+2. Go to Settings / Upgrade.
+3. Paste your license key in the activation box.
 4. Click "Activate".
 
-If you ever switch your computer or need assistance, reply to this email!
+If you ever need to transfer devices or require assistance, reply directly to this email!
 
 Best regards,
 DriveMate Team`;
@@ -219,7 +463,10 @@ DriveMate Team`;
     return jsonResponse({
       success: true,
       licenseKey: licenseKey,
-      message: "License key generated and sent to " + email
+      planName: selectedPlan.name,
+      maxDevices: selectedPlan.maxDevices,
+      price: selectedPlan.price,
+      message: `License key generated for ${selectedPlan.name} and sent to ${email}`
     });
 
   } catch (err) {
@@ -232,17 +479,21 @@ DriveMate Team`;
 }
 
 function doGet(e) {
-  return ContentService.createTextOutput("DriveMate License & Anti-Piracy Engine is Online (v1.0)");
+  return ContentService.createTextOutput("DriveMate Tiered License & Anti-Piracy Engine is Online (v2.0)");
 }
 
 // --- HELPER CRYPTOGRAPHIC FUNCTIONS ---
 
 function isKeyCryptographicallyValid(key) {
-  const raw = key.replace(/[^A-Z0-9]/g, "");
+  const raw = String(key || "").trim().toUpperCase().replace(/[^A-Z0-9]/g, "");
   if (raw === "DMPROLIFETIMEVIP" || raw === "DRIVEMATEPRO2026") return true;
 
   let token = raw;
-  if (token.startsWith("DMPRO")) token = token.slice(5);
+  if (token.startsWith("DM6M") || token.startsWith("DM1Y")) {
+    token = token.slice(4);
+  } else if (token.startsWith("DMPRO")) {
+    token = token.slice(5);
+  }
   if (token.length !== 16) return false;
 
   const payload = token.slice(0, 8);
@@ -258,7 +509,7 @@ function isKeyCryptographicallyValid(key) {
   return signature === sigHex.slice(0, 8).toUpperCase();
 }
 
-function generateCryptographicKey(seed) {
+function generateCryptographicKey(seed, planType) {
   const rawSeed = (seed + Date.now().toString(16)).toUpperCase().replace(/[^A-F0-9]/g, "");
   let payload = rawSeed.slice(0, 8);
   while (payload.length < 8) {
@@ -274,7 +525,9 @@ function generateCryptographicKey(seed) {
   }
   const signature = sigHex.slice(0, 8).toUpperCase();
 
-  return "DM-PRO-" + payload.slice(0, 4) + "-" + payload.slice(4, 8) + "-" + signature.slice(0, 4) + "-" + signature.slice(4, 8);
+  const prefix = (planType === "1Y" || planType === "500") ? "DM-1Y" : (planType === "6M" || planType === "100") ? "DM-6M" : "DM-PRO";
+
+  return prefix + "-" + payload.slice(0, 4) + "-" + payload.slice(4, 8) + "-" + signature.slice(0, 4) + "-" + signature.slice(4, 8);
 }
 
 function jsonResponse(obj) {

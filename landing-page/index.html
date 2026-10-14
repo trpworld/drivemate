@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>DriveMate — High-Speed Google Drive Folder Downloader (macOS & Windows)</title>
-  <meta name="description" content="Download massive Google Drive folders at 32x turbo line speed. Zero login required. No more 'Zipping failed' errors or corrupted downloads. 100% Free daily tier.">
+  <title>DriveMate — High-Speed Google Drive Downloader (Native Mac, Windows & Chrome Extension)</title>
+  <meta name="description" content="Download massive Google Drive folders at 32x turbo line speed. Standalone Native Desktop App for macOS & Windows plus Google Chrome Extension. Zero login required. No more 'Zipping failed' errors or corrupted downloads. 100% Free daily tier.">
   <link rel="icon" type="image/png" href="assets/icon-128.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -23,10 +23,11 @@
       <a href="#" class="nav-brand">
         <img src="assets/icon-128.png" alt="DriveMate Logo" class="brand-logo" width="36" height="36">
         <span class="brand-name">DriveMate</span>
-        <span class="brand-badge">v0.3.0</span>
+        <span class="brand-badge">v1.0 Native + Extension</span>
       </a>
 
       <nav class="nav-links">
+        <a href="#apps">Apps & Extension</a>
         <a href="#features">Features</a>
         <a href="#comparison">Why DriveMate</a>
         <a href="#how-it-works">How It Works</a>
@@ -36,7 +37,7 @@
 
       <div class="nav-actions">
         <a href="#download" class="btn btn-secondary nav-btn">Download Free</a>
-        <button class="btn btn-primary nav-btn btn-open-pro-modal">Get PRO ₹100</button>
+        <button class="btn btn-primary nav-btn btn-open-pro-modal" data-plan="6m">Get PRO ₹100</button>
       </div>
     </div>
   </header>
@@ -47,7 +48,7 @@
       <div class="container hero-container">
         <div class="hero-badge-pill">
           <span class="pill-sparkle">🚀</span>
-          <span>Zero Google Login • 32x Turbo Speed • Native Engine</span>
+          <span>Native Desktop App (Mac & Windows) + Chrome Extension • Zero Login</span>
         </div>
 
         <h1 class="hero-headline">
@@ -56,15 +57,16 @@
         </h1>
 
         <p class="hero-subheadline">
-          Say goodbye to endless <em>"Zipping files..."</em>, random network drops, and corrupted partial downloads. DriveMate downloads 1,400+ files recursively with direct multi-threaded speed straight to your Mac or Windows PC.
+          Available as a standalone <strong>Native Desktop App</strong> for macOS & Windows, or as a lightweight <strong>Google Chrome Extension</strong>. Say goodbye to endless <em>"Zipping files..."</em>, random network drops, and corrupted partial downloads. Download 1,400+ files recursively with direct 32-stream turbo multi-threading.
         </p>
 
+        <!-- Primary Desktop App Downloads -->
         <div id="download" class="hero-cta-group">
-          <a href="assets/DriveMate-Mac.zip" download="DriveMate-Mac.zip" class="btn btn-cta btn-mac">
+          <a href="assets/DriveMate.dmg" download="DriveMate.dmg" class="btn btn-cta btn-mac">
             <span class="btn-icon">🍏</span>
             <div class="btn-text-group">
-              <span class="btn-primary-text">Download for macOS</span>
-              <span class="btn-subtext">Apple Silicon (M1–M4) & Intel • v0.3.0</span>
+              <span class="btn-primary-text">Download for macOS (.DMG)</span>
+              <span class="btn-subtext">Apple Silicon (M1–M4) & Intel • Native App v1.0.0</span>
             </div>
           </a>
 
@@ -72,16 +74,23 @@
             <span class="btn-icon">🪟</span>
             <div class="btn-text-group">
               <span class="btn-primary-text">Download for Windows</span>
-              <span class="btn-subtext">Windows 10 / 11 (64-bit) • v0.3.0</span>
+              <span class="btn-subtext">Windows 10 / 11 (64-bit) • Full Package v1.0</span>
             </div>
+          </a>
+        </div>
+
+        <!-- Chrome Extension Link -->
+        <div class="hero-extension-row">
+          <a href="#apps" class="extension-pill-link">
+            <span>🧩 Also prefer running inside Chrome? <strong>Get Chrome Extension &raquo;</strong></span>
           </a>
         </div>
 
         <div class="hero-trust-row">
           <div class="trust-item"><span class="check-icon">✓</span> 10 GB Free Daily Quota</div>
           <div class="trust-item"><span class="check-icon">✓</span> Zero Account Credentials</div>
-          <div class="trust-item"><span class="check-icon">✓</span> Instant 1-Click Setup</div>
-          <div class="trust-item"><span class="check-icon">✓</span> No Corrupted ZIP Files</div>
+          <div class="trust-item"><span class="check-icon">✓</span> Standalone App + Extension</div>
+          <div class="trust-item"><span class="check-icon">✓</span> Smart Skip & Auto-Retry</div>
         </div>
 
         <!-- Product Visual Showcase Banner -->
@@ -93,10 +102,109 @@
                 <span class="dot yellow"></span>
                 <span class="dot green"></span>
               </div>
-              <div class="window-title">DriveMate — Public Downloader Dashboard</div>
-              <div class="window-badge">32x MULTI-THREADED</div>
+              <div class="window-title">DriveMate Desktop v1.0.0 — Native Rust Tokio Core Engine</div>
+              <div class="window-badge">32x MULTI-STREAM TURBO</div>
             </div>
             <img src="assets/gumroad_cover.jpg" alt="DriveMate Interface Showcase" class="hero-visual-img" />
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CHOOSE YOUR SETUP: NATIVE APP VS CHROME EXTENSION -->
+    <section id="apps" class="section apps-section">
+      <div class="container">
+        <div class="section-header">
+          <span class="section-tag">TWO WAYS TO DOWNLOAD</span>
+          <h2 class="section-title">Choose Your DriveMate Experience</h2>
+          <p class="section-desc">Whether you prefer a powerful standalone desktop workstation app or a browser popup tool, DriveMate has you covered.</p>
+        </div>
+
+        <div class="apps-showcase-grid">
+          <!-- Standalone Native Desktop App -->
+          <div class="app-card native-app-card">
+            <div class="app-card-top">
+              <span class="app-type-badge recommended">⭐ RECOMMENDED FOR POWER USERS</span>
+              <span class="brand-badge">v1.0.0</span>
+            </div>
+            <h3>Standalone Native Desktop App</h3>
+            <p class="app-card-desc">
+              Engineered in <strong>Rust 2.0 Tokio</strong> with HTTP/2 direct sockets. Runs completely independent of your web browser with 0% idle CPU and crash-proof SQLite state recovery.
+            </p>
+            <ul class="app-card-features">
+              <li>
+                <span class="check">✓</span>
+                <div><strong>32-Stream Direct Socket Engine:</strong> Saturates 100% of gigabit fiber connections.</div>
+              </li>
+              <li>
+                <span class="check">✓</span>
+                <div><strong>Background Downloading & System Tray:</strong> Downloads continue even when browser is closed.</div>
+              </li>
+              <li>
+                <span class="check">✓</span>
+                <div><strong>SQLite WAL Mode Persistence:</strong> Resume interrupted downloads seamlessly after reboot.</div>
+              </li>
+              <li>
+                <span class="check">✓</span>
+                <div><strong>🔄 One-Click "Retry Failed" Button:</strong> Re-downloads only throttled items with zero duplicate traffic.</div>
+              </li>
+              <li>
+                <span class="check">✓</span>
+                <div><strong>Camera Metadata Whitelist:</strong> Handles 0-byte camera index files (.IND) with zero false alarms.</div>
+              </li>
+            </ul>
+
+            <div class="app-downloads-row">
+              <a href="assets/DriveMate.dmg" download="DriveMate.dmg" class="btn btn-primary app-dl-btn">
+                <span>🍏 macOS (.DMG)</span>
+              </a>
+              <a href="assets/DriveMate-Windows.zip" download="DriveMate-Windows.zip" class="btn btn-secondary app-dl-btn">
+                <span>🪟 Windows Package</span>
+              </a>
+            </div>
+          </div>
+
+          <!-- Chrome Extension -->
+          <div class="app-card extension-app-card">
+            <div class="app-card-top">
+              <span class="app-type-badge browser">🌐 BROWSER ADD-ON</span>
+              <span class="brand-badge">v0.3.0</span>
+            </div>
+            <h3>Google Chrome Extension</h3>
+            <p class="app-card-desc">
+              Integrates right into your browser toolbar. Perfect for quick folder downloads while actively browsing Google Drive links.
+            </p>
+            <ul class="app-card-features">
+              <li>
+                <span class="check">✓</span>
+                <div><strong>Browser Toolbar Popup:</strong> 1-Click access from Chrome, Brave, Arc, Edge.</div>
+              </li>
+              <li>
+                <span class="check">✓</span>
+                <div><strong>Zero System Privileges Needed:</strong> Runs safely in browser environment.</div>
+              </li>
+              <li>
+                <span class="check">✓</span>
+                <div><strong>Live Media Inspector:</strong> Counts photos, videos, and docs in 2 seconds.</div>
+              </li>
+              <li>
+                <span class="check">✓</span>
+                <div><strong>10 GB Free Daily Quota:</strong> Same generous free tier resets every midnight.</div>
+              </li>
+              <li>
+                <span class="check">✓</span>
+                <div><strong>Shared License Keys:</strong> Use your Pro key across both App & Extension.</div>
+              </li>
+            </ul>
+
+            <div class="app-downloads-row">
+              <a href="assets/DriveMate-Mac.zip" download="DriveMate-Mac.zip" class="btn btn-secondary app-dl-btn">
+                <span>🍏 Mac Extension</span>
+              </a>
+              <a href="assets/DriveMate-Windows.zip" download="DriveMate-Windows.zip" class="btn btn-secondary app-dl-btn">
+                <span>🪟 Windows Extension</span>
+              </a>
+            </div>
           </div>
         </div>
       </div>
@@ -107,7 +215,7 @@
       <div class="container">
         <div class="section-header">
           <span class="section-tag">THE PROBLEM SOLVED</span>
-          <h2 class="section-title">Why Default Google Drive Downloads Suck</h2>
+          <h2 class="section-title">Why Default Google Drive Downloads Fail</h2>
           <p class="section-desc">Google Drive was built for office documents, not for downloading 100 GB bulk folders of 4K footage and project assets.</p>
         </div>
 
@@ -133,7 +241,7 @@
               </li>
               <li>
                 <strong>Single-Threaded Crawl</strong>
-                <p>Wastes 90% of your 100 Mbps fiber line with slow, throttled browser download speeds.</p>
+                <p>Wastes 90% of your fiber line with slow, throttled browser download speeds.</p>
               </li>
             </ul>
           </div>
@@ -197,8 +305,8 @@
 
           <div class="feature-card">
             <div class="feature-icon-badge">⚡</div>
-            <h3>Anti-Abuse Rate Shield</h3>
-            <p>Intelligent connection pacing and Google mirror switching prevents "403 Access Denied / Rate limit exceeded" blocks.</p>
+            <h3>Smart Skip & Rate Shield</h3>
+            <p>Automatically skips already downloaded files to save time and bandwidth. Recovers smoothly from Google quota limits.</p>
           </div>
 
           <div class="feature-card">
@@ -210,7 +318,7 @@
           <div class="feature-card">
             <div class="feature-icon-badge">💻</div>
             <h3>Native Engine for Mac & PC</h3>
-            <p>Powered by ultra-fast native Swift binaries for Apple Silicon / Intel and lightweight cross-platform bridge.</p>
+            <p>Powered by ultra-fast native Rust 2.0 Tokio core for macOS (Apple Silicon/Intel) and Windows 10/11 64-bit.</p>
           </div>
         </div>
       </div>
@@ -247,17 +355,17 @@
       </div>
     </section>
 
-    <!-- PRICING TABLE -->
+    <!-- PRICING TABLE (3 TIERS) -->
     <section id="pricing" class="section pricing-section">
       <div class="container">
         <div class="section-header">
-          <span class="section-tag">TRANSPARENT PRICING</span>
+          <span class="section-tag">OFFICIAL LAUNCH PRICING</span>
           <h2 class="section-title">Choose Your Plan</h2>
-          <p class="section-desc">Start free forever with 10 GB every single day, or unlock unlimited gigabytes with a one-time lifetime pass.</p>
+          <p class="section-desc">Start free forever with 10 GB every single day, or unlock unlimited gigabytes with personal & team licenses.</p>
         </div>
 
         <div class="pricing-cards-grid">
-          <!-- Free Forever Tier -->
+          <!-- Tier 1: Free Forever -->
           <div class="pricing-card free-card">
             <div class="pricing-badge">FREE FOREVER</div>
             <div class="pricing-price-group">
@@ -265,46 +373,78 @@
               <span class="price-val">0</span>
               <span class="price-cycle">/ forever</span>
             </div>
-            <p class="pricing-tagline">Perfect for occasional downloads and students.</p>
+            <p class="pricing-tagline">Perfect for occasional downloads, documents, and students.</p>
 
             <ul class="pricing-features">
               <li><span class="check">✓</span> <strong>10 GB Daily Quota</strong> (Resets every midnight)</li>
               <li><span class="check">✓</span> 16 Concurrent Multi-threads</li>
               <li><span class="check">✓</span> Zero Google Login Required</li>
+              <li><span class="check">✓</span> Native Desktop App & Chrome Extension</li>
               <li><span class="check">✓</span> Recursive Folder Preservation</li>
               <li><span class="check">✓</span> Live Media Category Counter</li>
               <li class="disabled"><span class="cross">✕</span> Unlimited Daily Downloads</li>
               <li class="disabled"><span class="cross">✕</span> 32x Maximum Turbo Speed</li>
+              <li class="disabled"><span class="cross">✕</span> Multi-Device Shared Key</li>
             </ul>
 
             <a href="#download" class="btn btn-outline pricing-btn">Download Free</a>
           </div>
 
-          <!-- PRO Lifetime Deal -->
+          <!-- Tier 2: 6-Month Pro (Personal) -->
           <div class="pricing-card pro-card popular">
-            <div class="popular-ribbon">🔥 BEST VALUE • LIFETIME</div>
-            <div class="pricing-badge pro-badge">PRO LIFETIME DEAL</div>
+            <div class="popular-ribbon">🔥 LAUNCH SPECIAL • 80% OFF</div>
+            <div class="pricing-badge pro-badge">PERSONAL PRO (1 DEVICE)</div>
             <div class="pricing-price-group">
               <span class="price-strike-val">₹499</span>
               <span class="price-symbol">₹</span>
               <span class="price-val">100</span>
-              <span class="price-cycle">/ one-time</span>
+              <span class="price-cycle">/ 6 Months (180 Days)</span>
             </div>
-            <p class="pricing-tagline">For creators, editors, and anyone downloading large project archives.</p>
+            <p class="pricing-tagline">For solo creators, editors, and anyone downloading large project archives.</p>
 
             <ul class="pricing-features">
-              <li><span class="check">✓</span> <strong>Unlimited Daily Downloads</strong> (No 10 GB Ceiling)</li>
-              <li><span class="check">✓</span> <strong>32-Stream Turbo Multi-threading</strong> (Max Line Speed)</li>
-              <li><span class="check">✓</span> <strong>Anti-Abuse Rate Limit Shield</strong></li>
-              <li><span class="check">✓</span> <strong>Bulk 1,400+ Files</strong> with Zero Dropped Files</li>
-              <li><span class="check">✓</span> <strong>1-Device Anti-Piracy License Key</strong></li>
-              <li><span class="check">✓</span> <strong>Free Lifetime Updates</strong> for all versions</li>
-              <li><span class="check">✓</span> <strong>Direct WhatsApp VIP Support</strong></li>
+              <li><span class="check">✓</span> <span><strong>Unlimited Daily Downloads</strong> (No 10 GB Ceiling)</span></li>
+              <li><span class="check">✓</span> <span><strong>32-Stream Turbo Multi-threading</strong> (Max Line Speed)</span></li>
+              <li><span class="check">✓</span> <span><strong>1 Computer Device License</strong> (Key: <code>DM-6M-XXXX</code>)</span></li>
+              <li><span class="check">✓</span> <span><strong>Native Desktop App + Chrome Extension</strong></span></li>
+              <li><span class="check">✓</span> <span><strong>Anti-Quota Shield & Auto Retry</strong></span></li>
+              <li><span class="check">✓</span> <span><strong>Instant WhatsApp Key Delivery (1 min)</strong></span></li>
+              <li><span class="check">✓</span> <span><strong>Free Updates</strong> for all versions</span></li>
             </ul>
 
-            <button class="btn btn-primary pricing-btn btn-open-pro-modal">Get Lifetime PRO (₹100) →</button>
-            <div class="pricing-guarantee-note">🔒 One-Time Payment • No Subscriptions • Instant WhatsApp Delivery</div>
+            <button class="btn btn-primary pricing-btn btn-open-pro-modal" data-plan="6m">Get 6-Month Pro (₹100) →</button>
+            <div class="pricing-guarantee-note">🔒 One-Time UPI Payment • No Subscriptions • Instant WhatsApp Key</div>
           </div>
+
+          <!-- Tier 3: 1-Year Team Pro (5 Devices) -->
+          <div class="pricing-card team-card">
+            <div class="team-ribbon">👑 BEST FOR STUDIOS • 5 DEVICES</div>
+            <div class="pricing-badge team-badge">1-YEAR TEAM (5 COMPUTERS)</div>
+            <div class="pricing-price-group">
+              <span class="price-strike-val">₹1,499</span>
+              <span class="price-symbol">₹</span>
+              <span class="price-val">500</span>
+              <span class="price-cycle">/ 1 Year (365 Days)</span>
+            </div>
+            <p class="pricing-tagline">For wedding videography studios, editing agencies, and multi-PC setups.</p>
+
+            <ul class="pricing-features">
+              <li><span class="check">✓</span> <span><strong>Unlimited Daily Downloads</strong> for entire team</span></li>
+              <li><span class="check">✓</span> <span><strong>Up to 5 Computers Simultaneously</strong> (Key: <code>DM-1Y-XXXX</code>)</span></li>
+              <li><span class="check">✓</span> <span><strong>32-Stream Maximum Turbo Speed</strong> on all 5 PCs</span></li>
+              <li><span class="check">✓</span> <span><strong>Works on Mac & Windows computers together</strong></span></li>
+              <li><span class="check">✓</span> <span><strong>Native Desktop App + Chrome Extension</strong></span></li>
+              <li><span class="check">✓</span> <span><strong>Priority VIP WhatsApp Direct Support</strong></span></li>
+              <li><span class="check">✓</span> <span><strong>Easy Device Migration & Key Re-issue</strong></span></li>
+            </ul>
+
+            <button class="btn btn-team-plan pricing-btn btn-open-pro-modal" data-plan="1y">Get 1-Year Team (₹500) →</button>
+            <div class="pricing-guarantee-note">🔒 One-Time Payment • 5 Machines • 365 Days Unrestricted Access</div>
+          </div>
+        </div>
+
+        <div class="pricing-international-note">
+          🌍 <strong>Outside India?</strong> You can also purchase via Gumroad in USD ($19 Lifetime) using International Credit Cards / PayPal &rarr; <a href="https://gumroad.com/l/drivemate-pro" target="_blank">Buy on Gumroad</a>
         </div>
       </div>
     </section>
@@ -320,6 +460,26 @@
         <div class="faq-accordion">
           <div class="faq-item">
             <button class="faq-question">
+              <span>What is the difference between the Native Desktop App and the Chrome Extension?</span>
+              <span class="faq-icon">+</span>
+            </button>
+            <div class="faq-answer">
+              <p>The <strong>Native Desktop App (macOS & Windows)</strong> is a standalone high-performance workstation application built in Rust. It runs completely outside your web browser, uses virtually zero RAM/CPU, supports background downloading, system tray, crash-proof SQLite queue persistence, and has a dedicated "Retry Failed Files" button for heavy folders (50 GB - 500 GB+). The <strong>Chrome Extension</strong> is a convenient browser popup add-on for quick one-click folder downloads while browsing Google Drive. Your license key works on both!</p>
+            </div>
+          </div>
+
+          <div class="faq-item">
+            <button class="faq-question">
+              <span>How does the ₹100 (6-Month) vs ₹500 (1-Year Team) pricing work?</span>
+              <span class="faq-icon">+</span>
+            </button>
+            <div class="faq-answer">
+              <p>The <strong>₹100 6-Month Pro Plan</strong> activates 1 computer device for 180 days with a personal license key (<code>DM-6M-XXXX</code>). The <strong>₹500 1-Year Team Plan</strong> is built for cinematography teams and multi-computer studios, allowing you to activate up to 5 distinct computers (Mac or Windows) simultaneously under a single team key (<code>DM-1Y-XXXX</code>) for 365 full days.</p>
+            </div>
+          </div>
+
+          <div class="faq-item">
+            <button class="faq-question">
               <span>Do I need to login to my Google account?</span>
               <span class="faq-icon">+</span>
             </button>
@@ -330,41 +490,31 @@
 
           <div class="faq-item">
             <button class="faq-question">
-              <span>How does the 10 GB daily free tier work?</span>
+              <span>What happens if a file fails or Google Drive gives a quota warning?</span>
               <span class="faq-icon">+</span>
             </button>
             <div class="faq-answer">
-              <p>Every free user gets 10 GB of high-speed download quota every single day. The quota resets automatically at midnight (12:00 AM) based on your local time. If you need to download more on the same day, you can unlock unlimited usage for just ₹100.</p>
+              <p>When downloading hundreds of gigabytes of 4K video anonymously, Google Drive occasionally returns temporary quota limits. DriveMate features built-in cookie jars, Google virus scan form parsing, and a prominent <strong>"🔄 RETRY FAILED"</strong> button. Because <em>"Skip already downloaded files"</em> is active by default, clicking retry re-attempts only the failed files and never re-downloads completed files!</p>
             </div>
           </div>
 
           <div class="faq-item">
             <button class="faq-question">
-              <span>How do I pay ₹100 and get my Pro License Key?</span>
+              <span>Can I use my license key on both Mac and Windows?</span>
               <span class="faq-icon">+</span>
             </button>
             <div class="faq-answer">
-              <p>Click the "Get PRO ₹100" button. A QR code will appear—scan it using PhonePe, Google Pay, or Paytm to pay ₹100 to UPI ID <code>8927202527@yapl</code>. Then send your payment screenshot on WhatsApp, and you will receive your unique Lifetime License Key within 1 minute!</p>
+              <p>Yes! License keys are cross-platform. On the 1-Year Team plan, you can activate up to 5 computers in any combination (e.g., 3 Macs and 2 Windows PCs). If you ever buy a new laptop, you can migrate your license for free via WhatsApp support.</p>
             </div>
           </div>
 
           <div class="faq-item">
             <button class="faq-question">
-              <span>Which operating systems are supported?</span>
+              <span>How do I pay and get my License Key?</span>
               <span class="faq-icon">+</span>
             </button>
             <div class="faq-answer">
-              <p>DriveMate supports <strong>macOS 12+</strong> (both Apple Silicon M1/M2/M3/M4 and Intel chips) as well as <strong>Windows 10/11</strong> across all Chromium browsers (Google Chrome, Brave, Arc, Edge).</p>
-            </div>
-          </div>
-
-          <div class="faq-item">
-            <button class="faq-question">
-              <span>Can I use my license key on multiple computers?</span>
-              <span class="faq-icon">+</span>
-            </button>
-            <div class="faq-answer">
-              <p>Each ₹100 license is bound to 1 computer for your personal use. If you ever buy a new laptop or switch computers, simply contact support on WhatsApp to migrate your license to your new device for free.</p>
+              <p>Click any "Get PRO" button. Select your plan (₹100 or ₹500), scan the UPI QR code using PhonePe, Google Pay, Paytm, or BHIM to UPI ID <code>8927202527@yapl</code>, and send your payment screenshot on WhatsApp. You will receive your official cryptographically verified License Key within 1 minute!</p>
             </div>
           </div>
         </div>
@@ -380,26 +530,33 @@
           <img src="assets/icon-128.png" alt="DriveMate Logo" width="28" height="28">
           <span>DriveMate</span>
         </div>
-        <p class="footer-desc">The high-speed Google Drive folder downloader for creators and professionals.</p>
+        <p class="footer-desc">The high-speed Google Drive folder downloader for creators, video editors, and professionals.</p>
       </div>
 
       <div class="footer-links">
         <div class="footer-col">
-          <h4>Download</h4>
-          <a href="assets/DriveMate-Mac.zip" download="DriveMate-Mac.zip">macOS Package (v0.3.0)</a>
-          <a href="assets/DriveMate-Windows.zip" download="DriveMate-Windows.zip">Windows Package (v0.3.0)</a>
+          <h4>Native Desktop Apps</h4>
+          <a href="assets/DriveMate.dmg" download="DriveMate.dmg">macOS App (.DMG v1.0.0)</a>
+          <a href="assets/DriveMate-Windows.zip" download="DriveMate-Windows.zip">Windows Package (v1.0.0)</a>
         </div>
 
         <div class="footer-col">
-          <h4>Support & Contact</h4>
+          <h4>Chrome Extensions</h4>
+          <a href="assets/DriveMate-Mac.zip" download="DriveMate-Mac.zip">macOS Extension Package</a>
+          <a href="assets/DriveMate-Windows.zip" download="DriveMate-Windows.zip">Windows Extension Package</a>
+        </div>
+
+        <div class="footer-col">
+          <h4>Support & Upgrades</h4>
           <a href="https://wa.me/918927202527?text=Hi%2C%20I%20have%20a%20question%20about%20DriveMate." target="_blank">WhatsApp Support (+91 8927202527)</a>
-          <a href="#" class="btn-open-pro-modal">Get PRO License (₹100)</a>
+          <a href="#" class="btn-open-pro-modal" data-plan="6m">Get 6-Month Pro (₹100)</a>
+          <a href="#" class="btn-open-pro-modal" data-plan="1y">Get 1-Year Team (₹500)</a>
         </div>
       </div>
     </div>
 
     <div class="container footer-bottom">
-      <p>© 2026 DriveMate. All rights reserved. Zero Google Login • 100% Privacy-Focused.</p>
+      <p>© 2026 DriveMate. All rights reserved. Standalone Desktop Software + Google Chrome Extension • Zero Login • 100% Privacy.</p>
     </div>
   </footer>
 
@@ -409,9 +566,30 @@
       <button id="btn-close-modal" class="modal-close-btn" type="button">✕</button>
 
       <div class="modal-header">
-        <div class="modal-badge">👑 PRO LIFETIME DEAL</div>
+        <div class="modal-badge">👑 OFFICIAL PRO UPGRADE</div>
         <h2 class="modal-title">Upgrade to DriveMate PRO</h2>
         <p class="modal-subtitle">One-Time Payment • No Monthly Subscriptions • Unlimited Downloads</p>
+      </div>
+
+      <!-- Plan Switcher Tabs -->
+      <div class="modal-plan-tabs">
+        <div class="modal-plan-tab active" data-plan="6m">
+          <div class="tab-badge badge-popular">80% OFF</div>
+          <div class="tab-plan-header">
+            <span class="tab-plan-name">6-Month Pro</span>
+            <span class="tab-plan-price">₹100</span>
+          </div>
+          <div class="tab-plan-desc">1 Computer • 180 Days Unlimited</div>
+        </div>
+
+        <div class="modal-plan-tab tab-team" data-plan="1y">
+          <div class="tab-badge badge-team">5 DEVICES</div>
+          <div class="tab-plan-header">
+            <span class="tab-plan-name">1-Year Team</span>
+            <span class="tab-plan-price">₹500</span>
+          </div>
+          <div class="tab-plan-desc">5 Computers • 365 Days Unlimited</div>
+        </div>
       </div>
 
       <!-- UPI QR Code Box -->
@@ -419,13 +597,13 @@
         <div class="modal-pricing-row">
           <span class="modal-price-strike">₹499</span>
           <span class="modal-price-deal">₹100</span>
-          <span class="modal-price-tag">Lifetime License Deal</span>
+          <span class="modal-price-tag">6 Months • 1 Device Slot</span>
         </div>
 
-        <p class="upi-instructions">Scan QR with <strong>PhonePe / Google Pay / Paytm / BHIM</strong> to pay ₹100</p>
+        <p class="upi-instructions">Scan QR with <strong>PhonePe / Google Pay / Paytm / BHIM / Cred</strong> to pay <span id="modal-pay-amount" style="font-weight: 800; color: #38bdf8;">₹100</span></p>
 
         <div class="upi-qr-frame">
-          <img src="assets/upi_qr_100.png" alt="UPI QR Code ₹100" width="160" height="160" />
+          <img id="modal-qr-img" src="assets/upi_qr_100.png" alt="UPI QR Code ₹100" width="140" height="140" />
         </div>
 
         <div class="upi-apps-icons">
@@ -438,13 +616,13 @@
         </div>
 
         <!-- WhatsApp Instant Delivery Link -->
-        <a href="https://wa.me/918927202527?text=Hi%2C%20I%20have%20paid%20%E2%82%B9100%20for%20DriveMate%20PRO.%20My%20UPI%20UTR%20is%3A%20" target="_blank" class="btn-modal-whatsapp">
-          💬 WhatsApp-এ TrxID পাঠান (১ মিনিটে কি পান)
+        <a id="btn-modal-whatsapp" href="https://wa.me/918927202527?text=Hi%2C%20I%20have%20paid%20%E2%82%B9100%20for%20DriveMate%206-Month%20Plan%20(1%20Device).%20My%20UPI%20UTR%20is%3A%20" target="_blank" class="btn-modal-whatsapp">
+          💬 WhatsApp: ₹100 পাঠিয়েছেন (1 Device Key)
         </a>
       </div>
 
       <div class="modal-footer-hint">
-        ⚡ টাকা পাঠানো মাত্রই WhatsApp-এ আপনার পার্সোনাল <strong>Lifetime License Key</strong> পেয়ে যাবেন!
+        ⚡ টাকা পাঠানো মাত্রই WhatsApp-এ আপনার পার্সোনাল <strong>License Key (DM-6M-... বা DM-1Y-...)</strong> ১ মিনিটে পেয়ে যাবেন!
       </div>
     </div>
   </div>
