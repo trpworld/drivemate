@@ -8,7 +8,7 @@
 const MASTER_SALT = "DriveMate-Pro-2026-SuperSecretMasterSalt-9941";
 const DEFAULT_CLOUD_URL = "https://script.google.com/macros/s/AKfycbx9x8tWbV-HOjcGE5CMB84tUeD1vuddgtk_rr0LPCned-SKbg1kuuluoGFuwPX_iyAV/exec";
 
-// Default Seed Customers if localStorage is empty
+// Default Seed Customers (Paid Licensees)
 const INITIAL_CUSTOMERS = [
   {
     id: "dm-cust-001",
@@ -114,6 +114,188 @@ const INITIAL_CUSTOMERS = [
   }
 ];
 
+// Seed Installed Users: BOTH Free Tier (Not Bought Yet) and Paid Pro users
+const INITIAL_INSTALLED_USERS = [
+  // Free Tier Hot Leads (Downloading heavily on free 10 GB limit)
+  {
+    deviceId: "MAC-M2-AIR-774B",
+    deviceName: "Sourav M2 MacBook Air",
+    location: "Kolkata, WB",
+    os: "macOS (Apple Silicon)",
+    clientType: "macOS Native App (.DMG v1.0.0)",
+    isPro: false,
+    licenseKey: null,
+    planName: "Free Tier (10 GB/Day)",
+    todayDownloadedBytes: 8.8 * 1024 * 1024 * 1024, // 8.8 GB / 10 GB (High usage!)
+    lifetimeDownloadedBytes: 42.6 * 1024 * 1024 * 1024,
+    firstInstalledAt: "2026-10-10T14:20:00.000Z",
+    lastHeartbeat: "4 mins ago",
+    activeNow: true,
+    suggestedContact: "+919830224466"
+  },
+  {
+    deviceId: "WIN-PC-ASUS-991A",
+    deviceName: "Debabrata ASUS TUF Gaming",
+    location: "Howrah, WB",
+    os: "Windows 11 (64-bit)",
+    clientType: "Windows Standalone App (.EXE v1.0.0)",
+    isPro: false,
+    licenseKey: null,
+    planName: "Free Tier (10 GB/Day)",
+    todayDownloadedBytes: 9.6 * 1024 * 1024 * 1024, // 9.6 GB (Hitting ceiling!)
+    lifetimeDownloadedBytes: 68.2 * 1024 * 1024 * 1024,
+    firstInstalledAt: "2026-10-08T09:15:00.000Z",
+    lastHeartbeat: "12 mins ago",
+    activeNow: true,
+    suggestedContact: "+919831445566"
+  },
+  {
+    deviceId: "MAC-PRO-INTEL-331C",
+    deviceName: "Niloy Creative MacBook Pro Intel",
+    location: "Siliguri, WB",
+    os: "macOS (Intel x86_64)",
+    clientType: "Chrome Extension (macOS v0.3.0)",
+    isPro: false,
+    licenseKey: null,
+    planName: "Free Tier (10 GB/Day)",
+    todayDownloadedBytes: 7.2 * 1024 * 1024 * 1024,
+    lifetimeDownloadedBytes: 29.5 * 1024 * 1024 * 1024,
+    firstInstalledAt: "2026-10-11T16:00:00.000Z",
+    lastHeartbeat: "35 mins ago",
+    activeNow: true,
+    suggestedContact: "+919875112233"
+  },
+  {
+    deviceId: "WIN-LENOVO-LEGION-4B",
+    deviceName: "Kazi Sazzad Legion 5",
+    location: "Dhaka, Bangladesh",
+    os: "Windows 11 (64-bit)",
+    clientType: "Windows Standalone App (.EXE v1.0.0)",
+    isPro: false,
+    licenseKey: null,
+    planName: "Free Tier (10 GB/Day)",
+    todayDownloadedBytes: 8.1 * 1024 * 1024 * 1024,
+    lifetimeDownloadedBytes: 54.1 * 1024 * 1024 * 1024,
+    firstInstalledAt: "2026-10-09T18:30:00.000Z",
+    lastHeartbeat: "52 mins ago",
+    activeNow: true,
+    suggestedContact: "+8801819988776"
+  },
+  {
+    deviceId: "MAC-MINI-M2-881E",
+    deviceName: "Amitabh Mac Mini Workstation",
+    location: "Mumbai, MH",
+    os: "macOS (Apple Silicon)",
+    clientType: "macOS Native App (.DMG v1.0.0)",
+    isPro: false,
+    licenseKey: null,
+    planName: "Free Tier (10 GB/Day)",
+    todayDownloadedBytes: 3.4 * 1024 * 1024 * 1024,
+    lifetimeDownloadedBytes: 15.8 * 1024 * 1024 * 1024,
+    firstInstalledAt: "2026-10-13T11:00:00.000Z",
+    lastHeartbeat: "1 hour ago",
+    activeNow: false,
+    suggestedContact: "+919820119988"
+  },
+  {
+    deviceId: "WIN-CUSTOM-RIG-102A",
+    deviceName: "Rahul Wedding Studio PC",
+    location: "Burdwan, WB",
+    os: "Windows 10 Pro",
+    clientType: "Chrome Extension (Windows v0.3.0)",
+    isPro: false,
+    licenseKey: null,
+    planName: "Free Tier (10 GB/Day)",
+    todayDownloadedBytes: 2.1 * 1024 * 1024 * 1024,
+    lifetimeDownloadedBytes: 11.4 * 1024 * 1024 * 1024,
+    firstInstalledAt: "2026-10-12T10:45:00.000Z",
+    lastHeartbeat: "3 hours ago",
+    activeNow: false,
+    suggestedContact: "+919434887766"
+  },
+  {
+    deviceId: "MAC-AIR-M1-441F",
+    deviceName: "Anindya MBA M1",
+    location: "Kolkata, WB",
+    os: "macOS (Apple Silicon)",
+    clientType: "macOS Native App (.DMG v1.0.0)",
+    isPro: false,
+    licenseKey: null,
+    planName: "Free Tier (10 GB/Day)",
+    todayDownloadedBytes: 0.8 * 1024 * 1024 * 1024,
+    lifetimeDownloadedBytes: 4.2 * 1024 * 1024 * 1024,
+    firstInstalledAt: "2026-10-14T08:00:00.000Z",
+    lastHeartbeat: "5 hours ago",
+    activeNow: false,
+    suggestedContact: "+919830554433"
+  },
+  // Paid Licensed Users (from Subhashish, Tanvir, Arjun, Pooja, Ramesh)
+  {
+    deviceId: "MAC-M1-MAX-89A1",
+    deviceName: "Studio iMac M3 (Subhashish Roy)",
+    location: "Kolkata, WB",
+    os: "macOS (Apple Silicon)",
+    clientType: "macOS Native App (.DMG v1.0.0)",
+    isPro: true,
+    licenseKey: "DM-1Y-7F4A-9B2C-3E8D-1A0F",
+    planName: "1-Year Team Pro (5 Devices)",
+    todayDownloadedBytes: 44.5 * 1024 * 1024 * 1024,
+    lifetimeDownloadedBytes: 412.0 * 1024 * 1024 * 1024,
+    firstInstalledAt: "2026-08-15T10:00:00.000Z",
+    lastHeartbeat: "2 mins ago",
+    activeNow: true,
+    suggestedContact: "+919830112233"
+  },
+  {
+    deviceId: "WIN-DELL-XPS-771B",
+    deviceName: "Dell XPS 15 (Tanvir Ahmed)",
+    location: "Dhaka, Bangladesh",
+    os: "Windows 11 (64-bit)",
+    clientType: "Windows Standalone App (.EXE v1.0.0)",
+    isPro: true,
+    licenseKey: "DM-6M-4C1E-88D2-99AB-44F1",
+    planName: "6-Month Pro (1 Device)",
+    todayDownloadedBytes: 28.2 * 1024 * 1024 * 1024,
+    lifetimeDownloadedBytes: 185.4 * 1024 * 1024 * 1024,
+    firstInstalledAt: "2026-10-01T12:00:00.000Z",
+    lastHeartbeat: "8 mins ago",
+    activeNow: true,
+    suggestedContact: "+8801711223344"
+  },
+  {
+    deviceId: "MAC-STUDIO-881A",
+    deviceName: "Mac Studio M2 (Arjun Verma)",
+    location: "Delhi, NCR",
+    os: "macOS (Apple Silicon)",
+    clientType: "macOS Native App (.DMG v1.0.0)",
+    isPro: true,
+    licenseKey: "DM-6M-2A99-55F4-EE12-788B",
+    planName: "6-Month Pro (1 Device)",
+    todayDownloadedBytes: 19.4 * 1024 * 1024 * 1024,
+    lifetimeDownloadedBytes: 230.1 * 1024 * 1024 * 1024,
+    firstInstalledAt: "2026-09-10T14:30:00.000Z",
+    lastHeartbeat: "25 mins ago",
+    activeNow: true,
+    suggestedContact: "+919711889900"
+  },
+  {
+    deviceId: "MAC-AIR-M3-1122",
+    deviceName: "MacBook Air (Pooja Hegde)",
+    location: "Mumbai, MH",
+    os: "macOS (M3)",
+    clientType: "macOS Native App (.DMG v1.0.0)",
+    isPro: true,
+    licenseKey: "DM-VIP-8811-AABB-CCDD-EEFF",
+    planName: "VIP Lifetime (10 Devices)",
+    todayDownloadedBytes: 12.0 * 1024 * 1024 * 1024,
+    lifetimeDownloadedBytes: 94.2 * 1024 * 1024 * 1024,
+    firstInstalledAt: "2026-07-01T09:00:00.000Z",
+    lastHeartbeat: "1 hour ago",
+    activeNow: false,
+    suggestedContact: "+919820556677"
+  }
+];
+
 const INITIAL_VIOLATIONS = [
   {
     id: "viol-001",
@@ -142,10 +324,13 @@ const INITIAL_VIOLATIONS = [
 // STATE REPOSITORY
 class LicenseRepository {
   constructor() {
-    this.storageKey = "drivemate_admin_ledger_v2";
-    this.violationsKey = "drivemate_admin_violations_v2";
+    this.storageKey = "drivemate_admin_ledger_v3";
+    this.installsKey = "drivemate_admin_installs_v3";
+    this.violationsKey = "drivemate_admin_violations_v3";
     this.cloudUrlKey = "drivemate_cloud_script_url";
+    
     this.licenses = this.loadLicenses();
+    this.installedUsers = this.loadInstalledUsers();
     this.violations = this.loadViolations();
   }
 
@@ -155,15 +340,24 @@ class LicenseRepository {
       localStorage.setItem(this.storageKey, JSON.stringify(INITIAL_CUSTOMERS));
       return [...INITIAL_CUSTOMERS];
     }
-    try {
-      return JSON.parse(raw);
-    } catch {
-      return [...INITIAL_CUSTOMERS];
-    }
+    try { return JSON.parse(raw); } catch { return [...INITIAL_CUSTOMERS]; }
   }
 
   saveLicenses() {
     localStorage.setItem(this.storageKey, JSON.stringify(this.licenses));
+  }
+
+  loadInstalledUsers() {
+    const raw = localStorage.getItem(this.installsKey);
+    if (!raw) {
+      localStorage.setItem(this.installsKey, JSON.stringify(INITIAL_INSTALLED_USERS));
+      return [...INITIAL_INSTALLED_USERS];
+    }
+    try { return JSON.parse(raw); } catch { return [...INITIAL_INSTALLED_USERS]; }
+  }
+
+  saveInstalledUsers() {
+    localStorage.setItem(this.installsKey, JSON.stringify(this.installedUsers));
   }
 
   loadViolations() {
@@ -172,11 +366,7 @@ class LicenseRepository {
       localStorage.setItem(this.violationsKey, JSON.stringify(INITIAL_VIOLATIONS));
       return [...INITIAL_VIOLATIONS];
     }
-    try {
-      return JSON.parse(raw);
-    } catch {
-      return [...INITIAL_VIOLATIONS];
-    }
+    try { return JSON.parse(raw); } catch { return [...INITIAL_VIOLATIONS]; }
   }
 
   saveViolations() {
@@ -194,37 +384,25 @@ class LicenseRepository {
   addLicense(item) {
     this.licenses.unshift(item);
     this.saveLicenses();
-  }
 
-  updateLicense(id, updates) {
-    const index = this.licenses.findIndex(l => l.id === id);
-    if (index !== -1) {
-      this.licenses[index] = { ...this.licenses[index], ...updates };
-      this.saveLicenses();
-      return this.licenses[index];
+    // If pre-bound device specified, mark in installedUsers
+    if (item.targetDeviceId) {
+      const u = this.installedUsers.find(x => x.deviceId === item.targetDeviceId);
+      if (u) {
+        u.isPro = true;
+        u.licenseKey = item.licenseKey;
+        u.planName = item.planName;
+        this.saveInstalledUsers();
+      }
     }
-    return null;
-  }
-
-  deleteLicense(id) {
-    this.licenses = this.licenses.filter(l => l.id !== id);
-    this.saveLicenses();
-  }
-
-  recordViolation(viol) {
-    this.violations.unshift(viol);
-    this.saveViolations();
-  }
-
-  clearViolations() {
-    this.violations = [];
-    this.saveViolations();
   }
 
   resetAll() {
     this.licenses = [...INITIAL_CUSTOMERS];
+    this.installedUsers = [...INITIAL_INSTALLED_USERS];
     this.violations = [...INITIAL_VIOLATIONS];
     this.saveLicenses();
+    this.saveInstalledUsers();
     this.saveViolations();
   }
 }
@@ -244,12 +422,6 @@ function getRandomHex(len = 8) {
   return Array.from(bytes).map(b => b.toString(16).padStart(2, "0")).join("").toUpperCase();
 }
 
-/**
- * Generates an authentic, cryptographically signed DriveMate license key.
- * Plan: '6M' -> DM-6M-XXXX-XXXX-YYYY-YYYY
- *       '1Y' -> DM-1Y-XXXX-XXXX-YYYY-YYYY
- *       'VIP' -> DM-VIP-XXXX-XXXX-YYYY-YYYY
- */
 async function generateDriveMateKey(planType = "6M", seedStr = "") {
   let payload = "";
   if (seedStr) {
@@ -259,7 +431,6 @@ async function generateDriveMateKey(planType = "6M", seedStr = "") {
     payload = getRandomHex(8);
   }
 
-  // Cryptographic HMAC-like signature
   const sigHash = await sha256Hex(payload + MASTER_SALT);
   const signature = sigHash.slice(0, 8).toUpperCase();
 
@@ -273,8 +444,6 @@ async function generateDriveMateKey(planType = "6M", seedStr = "") {
   const s2 = signature.slice(4, 8);
 
   const fullKey = `${prefix}-${p1}-${p2}-${s1}-${s2}`;
-
-  // Self-verification check
   const isValid = await verifyDriveMateKey(fullKey);
   if (!isValid) throw new Error("Generated key failed cryptographic self-verification!");
 
@@ -304,17 +473,20 @@ async function verifyDriveMateKey(key) {
   return signature === expSig;
 }
 
-// MAIN UI CONTROLLER
+// MAIN DASHBOARD APP
 class DashboardApp {
   constructor() {
     this.repo = new LicenseRepository();
     this.currentManageId = null;
+    this.currentOfferUser = null;
+    this.currentFunnelFilter = "ALL";
     this.init();
   }
 
   init() {
     this.bindLiveClock();
     this.bindTabs();
+    this.bindInstalledUsersTab();
     this.bindLedger();
     this.bindGenerator();
     this.bindModals();
@@ -359,57 +531,384 @@ class DashboardApp {
 
   renderAll() {
     this.renderMetrics();
+    this.renderInstalledUsers();
     this.renderLedger();
     this.renderViolations();
     this.renderAnalytics();
   }
 
-  // --- METRICS ---
+  // --- TOP METRICS ---
   renderMetrics() {
+    const users = this.repo.installedUsers;
     const licenses = this.repo.licenses;
     const violations = this.repo.violations;
 
-    const totalLicenses = licenses.length;
-    let totalDevices = 0;
-    let totalMaxDevices = 0;
+    const totalInstalls = users.length;
+    const paidUsers = users.filter(u => u.isPro).length;
+    const freeUsers = users.filter(u => !u.isPro).length;
+
+    const conversionRate = totalInstalls > 0 ? ((paidUsers / totalInstalls) * 100).toFixed(1) : 0;
+
     let totalRevenue = 0;
-    let expiringSoon = 0;
-    let expiredCount = 0;
-
-    const now = new Date();
-
     licenses.forEach(l => {
-      totalDevices += (l.devices || []).length;
-      totalMaxDevices += l.maxDevices || 1;
       totalRevenue += Number(l.price || 0);
-
-      if (l.expiryDate) {
-        const exp = new Date(l.expiryDate);
-        const days = Math.ceil((exp - now) / (1000 * 60 * 60 * 24));
-        if (days < 0) {
-          expiredCount++;
-        } else if (days <= 14) {
-          expiringSoon++;
-        }
-      }
     });
 
-    document.getElementById("stat-total-licenses").textContent = totalLicenses;
-    document.getElementById("badge-total-count").textContent = totalLicenses;
-    document.getElementById("stat-sub-growth").textContent = `+${Math.min(totalLicenses, 4)} this week`;
+    // Populate Top Cards
+    document.getElementById("stat-total-installs").textContent = totalInstalls;
+    document.getElementById("stat-sub-installs").textContent = `+${Math.min(totalInstalls, 8)} this week`;
 
-    document.getElementById("stat-active-devices").textContent = totalDevices;
-    const rate = totalMaxDevices > 0 ? Math.round((totalDevices / totalMaxDevices) * 100) : 0;
-    document.getElementById("stat-sub-rate").textContent = `${rate}% Slot Saturation (${totalDevices}/${totalMaxDevices})`;
+    document.getElementById("stat-paid-users").textContent = paidUsers;
+    document.getElementById("stat-sub-paid").textContent = `${licenses.filter(l => l.plan === '1Y').length} Team • ${licenses.filter(l => l.plan === '6M').length} Pro`;
+
+    document.getElementById("stat-free-users").textContent = freeUsers;
+    document.getElementById("stat-sub-free").textContent = `${users.filter(u => !u.isPro && (u.todayDownloadedBytes / (1024*1024*1024)) >= 7).length} High-Usage Hot Leads`;
+
+    document.getElementById("stat-conversion-rate").textContent = `${conversionRate}%`;
+    document.getElementById("stat-sub-conversion").textContent = `${paidUsers} of ${totalInstalls} converted`;
 
     document.getElementById("stat-total-revenue").textContent = `₹${totalRevenue.toLocaleString("en-IN")}`;
-    document.getElementById("stat-sub-revenue").textContent = `${licenses.filter(l => l.plan === "1Y").length} Team • ${licenses.filter(l => l.plan === "6M").length} Pro`;
+    document.getElementById("stat-sub-revenue").textContent = `From ${licenses.length} active licenses`;
 
     document.getElementById("stat-violations").textContent = violations.length;
     document.getElementById("badge-violations-count").textContent = violations.length;
 
-    document.getElementById("stat-expiring").textContent = expiringSoon;
-    document.getElementById("stat-sub-expired").textContent = `${expiredCount} already expired`;
+    // Badges in Tabs
+    document.getElementById("badge-installs-count").textContent = totalInstalls;
+    document.getElementById("badge-total-count").textContent = licenses.length;
+  }
+
+  // --- TAB 1: INSTALLED USERS & FUNNEL ---
+  bindInstalledUsersTab() {
+    const funnelPills = document.querySelectorAll(".funnel-pill");
+    funnelPills.forEach(pill => {
+      pill.addEventListener("click", () => {
+        funnelPills.forEach(p => p.classList.remove("active"));
+        pill.classList.add("active");
+        this.currentFunnelFilter = pill.dataset.funnel;
+        this.renderInstalledUsers();
+      });
+    });
+
+    const searchInput = document.getElementById("installed-search");
+    const clearBtn = document.getElementById("btn-clear-installed-search");
+    const platformFilter = document.getElementById("filter-platform");
+    const refreshBtn = document.getElementById("btn-refresh-installs");
+
+    const onFilterChange = () => {
+      const q = searchInput.value.trim().toLowerCase();
+      clearBtn.style.display = q ? "block" : "none";
+      this.renderInstalledUsers();
+    };
+
+    searchInput.addEventListener("input", onFilterChange);
+    clearBtn.addEventListener("click", () => {
+      searchInput.value = "";
+      clearBtn.style.display = "none";
+      this.renderInstalledUsers();
+    });
+
+    platformFilter.addEventListener("change", onFilterChange);
+    refreshBtn.addEventListener("click", () => {
+      this.renderAll();
+      this.showToast("Installed users list updated!", "success");
+    });
+  }
+
+  renderInstalledUsers() {
+    const tbody = document.getElementById("installed-table-body");
+    const emptyState = document.getElementById("installed-empty-state");
+    const users = this.repo.installedUsers;
+
+    // Funnel counts in pills
+    const countAll = users.length;
+    const countPaid = users.filter(u => u.isPro).length;
+    const countFree = users.filter(u => !u.isPro).length;
+    const countHot = users.filter(u => !u.isPro && (u.todayDownloadedBytes / (1024*1024*1024)) >= 7).length;
+
+    document.getElementById("funnel-count-all").textContent = countAll;
+    document.getElementById("funnel-count-paid").textContent = countPaid;
+    document.getElementById("funnel-count-free").textContent = countFree;
+    document.getElementById("funnel-count-hot").textContent = countHot;
+
+    const q = document.getElementById("installed-search").value.trim().toLowerCase();
+    const platform = document.getElementById("filter-platform").value;
+
+    let items = users;
+
+    // Funnel Filter
+    if (this.currentFunnelFilter === "PAID") {
+      items = items.filter(u => u.isPro);
+    } else if (this.currentFunnelFilter === "FREE") {
+      items = items.filter(u => !u.isPro);
+    } else if (this.currentFunnelFilter === "HOT") {
+      items = items.filter(u => !u.isPro && (u.todayDownloadedBytes / (1024*1024*1024)) >= 7);
+    }
+
+    // Platform Filter
+    if (platform === "MAC") {
+      items = items.filter(u => u.os.includes("Mac") || u.clientType.includes("macOS"));
+    } else if (platform === "WIN") {
+      items = items.filter(u => u.os.includes("Windows") || u.clientType.includes("Windows"));
+    } else if (platform === "EXT") {
+      items = items.filter(u => u.clientType.includes("Extension"));
+    }
+
+    // Search query
+    if (q) {
+      items = items.filter(u => {
+        return (
+          u.deviceName.toLowerCase().includes(q) ||
+          u.deviceId.toLowerCase().includes(q) ||
+          u.location.toLowerCase().includes(q) ||
+          u.os.toLowerCase().includes(q) ||
+          u.clientType.toLowerCase().includes(q) ||
+          (u.licenseKey || "").toLowerCase().includes(q)
+        );
+      });
+    }
+
+    tbody.innerHTML = "";
+
+    if (items.length === 0) {
+      emptyState.style.display = "block";
+      return;
+    }
+
+    emptyState.style.display = "none";
+
+    items.forEach(u => {
+      const tr = document.createElement("tr");
+
+      // OS Platform Icon
+      let osIcon = "💻";
+      if (u.os.includes("Mac")) osIcon = "🍏";
+      else if (u.os.includes("Windows")) osIcon = "🪟";
+
+      // Status Badge
+      let statusBadgeHtml = "";
+      if (u.isPro) {
+        statusBadgeHtml = `<span class="status-badge tier-paid">👑 PRO LICENSED</span>
+          <div style="font-size: 10.5px; color: #a5b4fc; font-family: var(--font-mono); margin-top: 3px;">${escapeHtml(u.licenseKey)}</div>`;
+      } else {
+        const gbUsed = (u.todayDownloadedBytes / (1024*1024*1024));
+        if (gbUsed >= 7) {
+          statusBadgeHtml = `<span class="status-badge tier-hot">🔥 HOT LEAD (FREE)</span>
+            <div style="font-size: 10.5px; color: #fbbf24; margin-top: 3px;">Ready for Pro Upgrade</div>`;
+        } else {
+          statusBadgeHtml = `<span class="status-badge tier-free">🆓 FREE TIER</span>
+            <div style="font-size: 10.5px; color: var(--text-dim); margin-top: 3px;">10 GB Daily Free Limit</div>`;
+        }
+      }
+
+      // Quota Progress Bar
+      let quotaBarHtml = "";
+      if (u.isPro) {
+        const todayGb = (u.todayDownloadedBytes / (1024*1024*1024)).toFixed(1);
+        quotaBarHtml = `
+          <div class="quota-box">
+            <div class="quota-text-row">
+              <span class="text-emerald">${todayGb} GB</span>
+              <span style="color: #6ee7b7; font-size: 10px;">UNLIMITED TURBO</span>
+            </div>
+            <div class="quota-bar-bg">
+              <div class="quota-bar-fill q-pro" style="width: 100%;"></div>
+            </div>
+          </div>
+        `;
+      } else {
+        const todayGb = (u.todayDownloadedBytes / (1024*1024*1024)).toFixed(1);
+        const pct = Math.min(100, Math.round((todayGb / 10) * 100));
+        let qClass = "q-low";
+        if (pct >= 80) qClass = "q-high";
+        else if (pct >= 50) qClass = "q-mid";
+
+        quotaBarHtml = `
+          <div class="quota-box">
+            <div class="quota-text-row">
+              <span class="${pct >= 80 ? 'text-rose' : ''}">${todayGb} / 10 GB</span>
+              <span style="color: var(--text-dim); font-size: 10px;">${pct}%</span>
+            </div>
+            <div class="quota-bar-bg">
+              <div class="quota-bar-fill ${qClass}" style="width: ${pct}%;"></div>
+            </div>
+          </div>
+        `;
+      }
+
+      // Lifetime GB
+      const lifetimeGb = (u.lifetimeDownloadedBytes / (1024*1024*1024)).toFixed(1);
+
+      // First installed date formatted
+      const instDate = new Date(u.firstInstalledAt).toLocaleDateString("en-IN", { day: "2-digit", month: "short", year: "numeric" });
+
+      // Action Button
+      let actionBtnHtml = "";
+      if (u.isPro) {
+        actionBtnHtml = `
+          <button class="btn btn-secondary btn-sm btn-view-pro-user" data-key="${u.licenseKey}">
+            ⚙️ View License
+          </button>
+        `;
+      } else {
+        actionBtnHtml = `
+          <div class="action-btn-group">
+            <button class="btn btn-primary btn-sm btn-grant-pro-user" data-device="${u.deviceId}" data-name="${u.deviceName}">
+              ⚡ Grant Pro
+            </button>
+            <button class="btn btn-whatsapp btn-sm btn-offer-pitch-user" data-device="${u.deviceId}" data-phone="${u.suggestedContact || ''}">
+              💬 Pitch
+            </button>
+          </div>
+        `;
+      }
+
+      tr.innerHTML = `
+        <td>
+          <div class="customer-cell">
+            <span class="customer-name">${osIcon} ${escapeHtml(u.deviceName)}</span>
+            <div class="customer-contact-row">
+              <code>${escapeHtml(u.deviceId)}</code>
+              <span>• 📍 ${escapeHtml(u.location)}</span>
+            </div>
+          </div>
+        </td>
+        <td>
+          <div style="font-size: 12.5px; font-weight: 700; color: #ffffff;">${escapeHtml(u.clientType)}</div>
+          <div style="font-size: 11px; color: var(--text-dim);">${escapeHtml(u.os)}</div>
+        </td>
+        <td>${statusBadgeHtml}</td>
+        <td>${quotaBarHtml}</td>
+        <td>
+          <strong style="color: #38bdf8;">${lifetimeGb} GB</strong>
+          <div style="font-size: 10.5px; color: var(--text-dim);">Lifetime Traffic</div>
+        </td>
+        <td>
+          <div style="font-size: 12px; font-weight: 600; color: #e2e8f0;">${instDate}</div>
+        </td>
+        <td>
+          <div style="display: flex; align-items: center; gap: 6px;">
+            <span class="pulse-dot" style="${u.activeNow ? '' : 'background: #64748b; box-shadow: none; animation: none;'}"></span>
+            <span style="font-size: 12px; color: ${u.activeNow ? '#34d399' : 'var(--text-muted)'}; font-weight: 600;">${u.lastHeartbeat}</span>
+          </div>
+        </td>
+        <td class="text-right">${actionBtnHtml}</td>
+      `;
+
+      tbody.appendChild(tr);
+    });
+
+    // Bind Action Buttons
+    tbody.querySelectorAll(".btn-view-pro-user").forEach(btn => {
+      btn.addEventListener("click", () => {
+        const key = btn.dataset.key;
+        const lic = this.repo.licenses.find(l => l.licenseKey === key);
+        if (lic) this.openManageModal(lic.id);
+        else this.showToast("License details not found in active ledger.", "error");
+      });
+    });
+
+    tbody.querySelectorAll(".btn-grant-pro-user").forEach(btn => {
+      btn.addEventListener("click", () => {
+        const deviceId = btn.dataset.device;
+        const deviceName = btn.dataset.name;
+        this.openGeneratorForDevice(deviceId, deviceName);
+      });
+    });
+
+    tbody.querySelectorAll(".btn-offer-pitch-user").forEach(btn => {
+      btn.addEventListener("click", () => {
+        const deviceId = btn.dataset.device;
+        const user = this.repo.installedUsers.find(u => u.deviceId === deviceId);
+        if (user) this.openOfferModal(user);
+      });
+    });
+  }
+
+  openGeneratorForDevice(deviceId, deviceName) {
+    const genTab = document.querySelector('.tab-btn[data-tab="tab-generator"]');
+    if (genTab) genTab.click();
+
+    document.getElementById("gen-customer-name").value = deviceName.replace(/\(.*?\)/g, "").trim();
+    document.getElementById("gen-prebound-device").value = deviceId;
+    document.getElementById("gen-notes").value = `Auto-converted from installed device ${deviceId}`;
+    this.showToast(`Pre-filled generator for device ${deviceId}!`, "success");
+  }
+
+  // --- OFFER MODAL FOR FREE TIER USERS ---
+  openOfferModal(user) {
+    this.currentOfferUser = user;
+    const modal = document.getElementById("modal-offer");
+    document.getElementById("offer-user-title").textContent = `Upgrade Pitch: ${user.deviceName}`;
+
+    const summaryBox = document.getElementById("offer-device-summary");
+    const todayGb = (user.todayDownloadedBytes / (1024*1024*1024)).toFixed(1);
+    const lifeGb = (user.lifetimeDownloadedBytes / (1024*1024*1024)).toFixed(1);
+
+    summaryBox.innerHTML = `
+      <div><span class="s-label">Device ID:</span> <span class="s-val"><code>${user.deviceId}</code></span></div>
+      <div><span class="s-label">Location:</span> <span class="s-val">${user.location}</span></div>
+      <div><span class="s-label">Today Used:</span> <span class="s-val text-amber">${todayGb} GB / 10 GB</span></div>
+      <div><span class="s-label">Lifetime Traffic:</span> <span class="s-val text-cyan">${lifeGb} GB</span></div>
+    `;
+
+    document.getElementById("offer-wa-phone").value = user.suggestedContact || "";
+
+    const promoSelect = document.getElementById("offer-promo-select");
+    const updatePitch = () => {
+      const promo = promoSelect.value;
+      const phone = document.getElementById("offer-wa-phone").value.trim();
+      let pitch = "";
+
+      if (promo === "6M_SPECIAL") {
+        pitch = `Hello! 👋 
+
+DriveMate ব্যবহার করার জন্য ধন্যবাদ! আপনি ইতিমধ্যে ড্রাইভমেটের ফ্রি ভার্সনে মোট ${lifeGb} GB ডাউনলোড করেছেন। 
+
+যেহেতু আপনি প্রচুর ফাইল ডাউনলোড করছেন, আপনার জন্য আমাদের স্পেশাল অফার: 
+👉 মাত্র ₹১০০-এ পাচ্ছেন সম্পূর্ণ ৬ মাসের DriveMate Pro আনলিমিটেড লাইসেন্স! 
+
+✅ সুবিধা: 
+- কোনো ১০ জিবি লিমিট নেই (সম্পূর্ণ আনলিমিটেড) 
+- ৩২-স্ট্রিম ফুল ফাইবার স্পিড 
+- অটো-রিট্রাই ও নো-জিপিং সুবিধা 
+
+কেনার জন্য আমাদের এই WhatsApp নম্বরে রিপ্লাই দিন। ধন্যবাদ! 🚀`;
+      } else if (promo === "1Y_STUDIO") {
+        pitch = `Hello! 👋 
+
+DriveMate টিম প্যাকেজে আপনাকে স্বাগতম! 
+আপনি যদি স্টুডিও বা মাল্টিপল কম্পিউটারে একসঙ্গে ব্যবহার করতে চান: 
+👉 ১ বছরের টিম লাইসেন্স (৫টি কম্পিউটারে আনলিমিটেড) মাত্র ₹৫০০-এ! 
+
+✅ Mac ও Windows একসাথে চালাতে পারবেন। 
+অফারটি লুফে নিতে এখনই মেসেজ দিন! 👑`;
+      } else {
+        pitch = `Hello! 👋 
+
+DriveMate দিয়ে আজ আপনার ১০ জিবি ফ্রি কোটা সম্পূর্ণ হওয়ার পথে। আজকের জন্য অতিরিক্ত আরও ১০ জিবি ফ্রি ডাটা উপভোগ করতে আমাদের পেজটি ফলো করুন: https://drivemate-pro.pages.dev ⚡️`;
+      }
+
+      document.getElementById("offer-wa-textarea").value = pitch;
+
+      const cleanPhone = phone.replace(/[^0-9]/g, "");
+      const waUrl = cleanPhone 
+        ? `https://wa.me/${cleanPhone}?text=${encodeURIComponent(pitch)}` 
+        : `https://wa.me/?text=${encodeURIComponent(pitch)}`;
+
+      document.getElementById("offer-btn-send-wa").href = waUrl;
+    };
+
+    promoSelect.onchange = updatePitch;
+    document.getElementById("offer-wa-phone").oninput = updatePitch;
+    updatePitch();
+
+    document.getElementById("offer-btn-grant-pro").onclick = () => {
+      modal.style.display = "none";
+      this.openGeneratorForDevice(user.deviceId, user.deviceName);
+    };
+
+    modal.style.display = "flex";
   }
 
   // --- LEDGER TABLE ---
@@ -453,17 +952,12 @@ class DashboardApp {
 
     let items = this.repo.licenses;
 
-    // Filter by Plan
     if (planFilter !== "ALL") {
       items = items.filter(l => l.plan === planFilter);
     }
-
-    // Filter by Status
     if (statusFilter !== "ALL") {
       items = items.filter(l => l.status === statusFilter);
     }
-
-    // Filter by Search Query
     if (q) {
       items = items.filter(l => {
         return (
@@ -491,22 +985,18 @@ class DashboardApp {
     items.forEach(l => {
       const tr = document.createElement("tr");
 
-      // Customer Contact Cell
       const cleanPhone = (l.phone || "").replace(/[^0-9]/g, "");
       const waLink = cleanPhone ? `https://wa.me/${cleanPhone}` : "#";
 
-      // Plan Pill class
       let planPillClass = "plan-6m";
       if (l.plan === "1Y") planPillClass = "plan-1y";
       if (l.plan === "VIP") planPillClass = "plan-vip";
 
-      // Status Badge class
       let statusClass = "active";
       if (l.status === "EXPIRED") statusClass = "expired";
       if (l.status === "REVOKED") statusClass = "revoked";
       if (l.status === "FLAGGED") statusClass = "flagged";
 
-      // Slot Bar calculation
       const devicesCount = (l.devices || []).length;
       const maxDevices = l.maxDevices || 1;
       const slotPercent = Math.min(100, Math.round((devicesCount / maxDevices) * 100));
@@ -514,7 +1004,6 @@ class DashboardApp {
       if (devicesCount === maxDevices) fillClass = "full";
       if (devicesCount > maxDevices) fillClass = "exceeded";
 
-      // Expiry calculation
       let expiryDisplay = "Never (Lifetime)";
       let daysDisplay = "∞ Lifetime";
       let daysBadgeClass = "text-emerald";
@@ -535,7 +1024,6 @@ class DashboardApp {
         }
       }
 
-      // Hardware Badges snippet
       const hwBadges = (l.devices && l.devices.length > 0)
         ? l.devices.map(d => `<span class="hw-badge" title="${d.id} (${d.lastSeen})">${d.os.includes("Mac") ? "🍏 Mac" : "🪟 Win"}</span>`).join(" ")
         : `<span class="text-dim" style="font-size:11px;">No devices bound yet</span>`;
@@ -597,7 +1085,6 @@ class DashboardApp {
       tbody.appendChild(tr);
     });
 
-    // Bind dynamic row clicks
     tbody.querySelectorAll(".btn-mini-copy").forEach(btn => {
       btn.addEventListener("click", () => {
         const key = btn.dataset.key;
@@ -655,6 +1142,7 @@ class DashboardApp {
     const phone = document.getElementById("gen-customer-phone").value.trim();
     const email = document.getElementById("gen-customer-email").value.trim();
     const utr = document.getElementById("gen-payment-utr").value.trim();
+    const targetDeviceId = document.getElementById("gen-prebound-device").value.trim();
     const notes = document.getElementById("gen-notes").value.trim();
     const planType = document.querySelector('input[name="planType"]:checked').value;
 
@@ -695,25 +1183,21 @@ class DashboardApp {
         price,
         licenseKey: newKey,
         maxDevices,
-        devices: [],
+        devices: targetDeviceId ? [{ id: targetDeviceId, os: "Pre-bound Device", name: name, lastSeen: "Pending Activation" }] : [],
         status: "ACTIVE",
         issuedAt: now.toISOString(),
         expiryDate,
         paymentUtr: utr,
         paymentMethod: "UPI Direct",
+        targetDeviceId,
         notes
       };
 
       this.repo.addLicense(newLicense);
       this.renderAll();
 
-      // Display Output Card
       this.populateOutputCard(newLicense);
-
       this.showToast(`🎉 License Key Generated for ${name}!`, "success");
-
-      // Optional: Asynchronously notify Google Sheet backend if configured
-      this.syncNewLicenseToCloud(newLicense);
 
     } catch (err) {
       alert("Error generating key: " + err.message);
@@ -829,13 +1313,16 @@ DriveMate PRO কেনার জন্য ধন্যবাদ! আপনা�
 
   // --- MODALS ---
   bindModals() {
-    // Manage Modal
     const manageModal = document.getElementById("modal-manage");
     document.getElementById("btn-close-manage-modal").addEventListener("click", () => {
       manageModal.style.display = "none";
     });
 
-    // Batch Modal
+    const offerModal = document.getElementById("modal-offer");
+    document.getElementById("btn-close-offer-modal").addEventListener("click", () => {
+      offerModal.style.display = "none";
+    });
+
     const batchModal = document.getElementById("modal-batch");
     document.getElementById("btn-batch-modal-open").addEventListener("click", () => {
       batchModal.style.display = "flex";
@@ -854,7 +1341,6 @@ DriveMate PRO কেনার জন্য ধন্যবাদ! আপনা�
       this.showToast("All batch keys copied to clipboard!", "success");
     });
 
-    // Controls inside Manage Modal
     document.getElementById("btn-extend-30d").addEventListener("click", () => this.extendCurrentLicense(30));
     document.getElementById("btn-extend-1y").addEventListener("click", () => this.extendCurrentLicense(365));
     document.getElementById("btn-reset-all-devices").addEventListener("click", () => this.resetCurrentDevices());
@@ -1001,8 +1487,29 @@ DriveMate PRO কেনার জন্য ধন্যবাদ! আপনা�
   }
 
   // --- ANALYTICS ---
+  bindAnalytics() {
+    // Event listeners for analytics tab interactions
+  }
+
   renderAnalytics() {
+    const users = this.repo.installedUsers;
     const licenses = this.repo.licenses;
+
+    const totalInstalls = users.length;
+    const paidUsers = users.filter(u => u.isPro).length;
+    const freeUsers = users.filter(u => !u.isPro).length;
+
+    const paidPct = totalInstalls > 0 ? Math.round((paidUsers / totalInstalls) * 100) : 0;
+    const freePct = totalInstalls > 0 ? (100 - paidPct) : 0;
+
+    // Funnel Stats Card
+    document.getElementById("funnel-metric-total").textContent = totalInstalls;
+    document.getElementById("funnel-metric-free").textContent = freeUsers;
+    document.getElementById("funnel-metric-paid").textContent = paidUsers;
+    document.getElementById("funnel-bar-paid-pct").textContent = `${paidPct}%`;
+    document.getElementById("funnel-bar-free-pct").textContent = `${freePct}%`;
+    document.getElementById("dual-bar-paid-fill").style.width = `${paidPct}%`;
+    document.getElementById("dual-bar-free-fill").style.width = `${freePct}%`;
 
     // Plans Breakdown
     const planCounts = { "6M": 0, "1Y": 0, "VIP": 0 };
@@ -1014,12 +1521,12 @@ DriveMate PRO কেনার জন্য ধন্যবাদ! আপনা�
     licenses.forEach(l => {
       planCounts[l.plan] = (planCounts[l.plan] || 0) + 1;
       planRevenue[l.plan] = (planRevenue[l.plan] || 0) + (Number(l.price) || 0);
+    });
 
-      (l.devices || []).forEach(d => {
-        totalDevices++;
-        if (d.os.includes("Mac")) macDevices++;
-        else winDevices++;
-      });
+    users.forEach(u => {
+      totalDevices++;
+      if (u.os.includes("Mac")) macDevices++;
+      else winDevices++;
     });
 
     const listEl = document.getElementById("analytics-plans-list");
@@ -1067,6 +1574,21 @@ DriveMate PRO কেনার জন্য ধন্যবাদ! আপনা�
 
     document.getElementById("os-win-count").textContent = `${winDevices} devices (${winPercent}%)`;
     document.getElementById("os-win-bar").style.width = `${winPercent}%`;
+
+    // Bandwidth breakdown
+    let totalBytes = 0;
+    let paidBytes = 0;
+    let freeBytes = 0;
+
+    users.forEach(u => {
+      totalBytes += u.lifetimeDownloadedBytes || 0;
+      if (u.isPro) paidBytes += u.lifetimeDownloadedBytes || 0;
+      else freeBytes += u.lifetimeDownloadedBytes || 0;
+    });
+
+    document.getElementById("bandwidth-total-val").textContent = `${(totalBytes / (1024*1024*1024)).toFixed(1)} GB`;
+    document.getElementById("bandwidth-paid-val").textContent = `${(paidBytes / (1024*1024*1024)).toFixed(1)} GB`;
+    document.getElementById("bandwidth-free-val").textContent = `${(freeBytes / (1024*1024*1024)).toFixed(1)} GB`;
   }
 
   // --- CLOUD SYNC & SETTINGS ---
@@ -1084,19 +1606,23 @@ DriveMate PRO কেনার জন্য ধন্যবাদ! আপনা�
     });
 
     document.getElementById("btn-pull-cloud").addEventListener("click", () => {
-      this.showToast("Syncing latest activations from Google Sheet...", "success");
+      this.showToast("Syncing latest activations and installs from Google Sheet...", "success");
     });
 
     document.getElementById("btn-push-cloud").addEventListener("click", () => {
       this.showToast("Local ledger verified and matched with cloud state.", "success");
     });
 
-    // Backup & Restore
     document.getElementById("btn-export-json").addEventListener("click", () => {
-      const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(this.repo.licenses, null, 2));
+      const dataObj = {
+        licenses: this.repo.licenses,
+        installedUsers: this.repo.installedUsers,
+        violations: this.repo.violations
+      };
+      const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(dataObj, null, 2));
       const a = document.createElement("a");
       a.setAttribute("href", dataStr);
-      a.setAttribute("download", `DriveMate_Licenses_Backup_${new Date().toISOString().slice(0, 10)}.json`);
+      a.setAttribute("download", `DriveMate_Admin_Backup_${new Date().toISOString().slice(0, 10)}.json`);
       document.body.appendChild(a);
       a.click();
       a.remove();
@@ -1110,11 +1636,16 @@ DriveMate PRO কেনার জন্য ধন্যবাদ! আপনা�
       reader.onload = (evt) => {
         try {
           const parsed = JSON.parse(evt.target.result);
-          if (Array.isArray(parsed)) {
-            this.repo.licenses = parsed;
+          if (parsed && (parsed.licenses || Array.isArray(parsed))) {
+            this.repo.licenses = parsed.licenses || parsed;
+            if (parsed.installedUsers) this.repo.installedUsers = parsed.installedUsers;
+            if (parsed.violations) this.repo.violations = parsed.violations;
+
             this.repo.saveLicenses();
+            this.repo.saveInstalledUsers();
+            this.repo.saveViolations();
             this.renderAll();
-            this.showToast(`Restored ${parsed.length} licenses from backup!`, "success");
+            this.showToast(`Restored data backup successfully!`, "success");
           } else {
             alert("Invalid JSON backup structure.");
           }
@@ -1153,29 +1684,6 @@ DriveMate PRO কেনার জন্য ধন্যবাদ! আপনা�
         <div style="color: #fb7185; font-weight: 700; margin-bottom: 4px;">⚠️ Direct Browser CORS Note</div>
         <div style="font-size: 11.5px; color: var(--text-muted);">The server responded. Note: Google Apps Script redirects via 302, which browser CORS permits via standard mode. The endpoint is active and verified by curl tests.</div>
       `;
-    }
-  }
-
-  async syncNewLicenseToCloud(license) {
-    const url = this.repo.getCloudUrl();
-    if (!url) return;
-    try {
-      await fetch(url, {
-        method: "POST",
-        headers: { "Content-Type": "text/plain;charset=utf-8" },
-        body: JSON.stringify({
-          action: "RECORD_SALE",
-          licenseKey: license.licenseKey,
-          customerName: license.name,
-          phone: license.phone,
-          plan: license.plan,
-          price: license.price,
-          utr: license.paymentUtr
-        })
-      });
-    } catch (err) {
-      // Local ledger remains primary; cloud records opportunistically
-      console.log("Cloud record sync opportunistic notice:", err);
     }
   }
 
@@ -1258,7 +1766,6 @@ function escapeHtml(str) {
     .replace(/'/g, "&#039;");
 }
 
-// INITIALIZE ON DOM READY
 document.addEventListener("DOMContentLoaded", () => {
   window.app = new DashboardApp();
 });

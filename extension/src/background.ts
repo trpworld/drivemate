@@ -2,6 +2,8 @@
 // Full Background Execution & Native Messaging Job Controller
 // Allows downloads to run uninterrupted when switching tabs or closing popups
 
+import { LicenseService } from './services/licenseService';
+
 const HOST_NAME = "com.drivemate.helper";
 
 interface TestConnectionResponse {
@@ -69,6 +71,12 @@ chrome.storage.local.get(['activeJob'], (res) => {
     updateBadge();
   }
 });
+
+// Telemetry: Log installation and startup to central Google Sheets ledger
+chrome.runtime.onInstalled.addListener(() => {
+  LicenseService.getInstance().sendTelemetryHeartbeat('INSTALL').catch(() => {});
+});
+LicenseService.getInstance().sendTelemetryHeartbeat('HEARTBEAT').catch(() => {});
 
 // Helper: Broadcast message to any open popup or tab views
 function broadcastMessage(msg: any) {
@@ -407,6 +415,7 @@ chrome.runtime.onMessage.addListener((message: any, _sender, sendResponse) => {
           saveStateToStorage(true);
           broadcastMessage(msg);
           chrome.alarms.clear('drivemate_keepalive');
+          LicenseService.getInstance().sendTelemetryHeartbeat('HEARTBEAT').catch(() => {});
           try { downloadPort?.disconnect(); } catch {}
           downloadPort = null;
           return;

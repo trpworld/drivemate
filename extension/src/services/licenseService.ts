@@ -30,6 +30,10 @@ export class LicenseService {
     return LicenseService.instance;
   }
 
+  public getCachedLicense(): LicenseState | null {
+    return this.cachedLicense;
+  }
+
   /**
    * Retrieves or generates a persistent unique Device ID for hardware binding.
    */
@@ -422,5 +426,37 @@ export class LicenseService {
         resolve();
       });
     });
+  }
+
+  /**
+   * Reports anonymous heartbeat / install telemetry to Google Sheets ledger.
+   * Enables admin to view total installations, free vs paid breakdown, and high-usage leads.
+   */
+  public async sendTelemetryHeartbeat(action: 'INSTALL' | 'HEARTBEAT' = 'HEARTBEAT'): Promise<void> {
+    const serverUrl = await this.getActivationServerUrl();
+    if (!serverUrl) return;
+
+    try {
+      const deviceId = await this.getDeviceId();
+      const quota = await this.getDailyQuota();
+      const license = await this.getLicenseState();
+      const os = typeof navigator !== 'undefined' ? (navigator.userAgent.includes('Mac') ? 'macOS' : navigator.userAgent.includes('Win') ? 'Windows' : 'Linux') : 'Unknown';
+
+      await fetch(serverUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body: JSON.stringify({
+          action: action,
+          deviceId: deviceId,
+          isPro: license.isPro,
+          licenseKey: license.licenseKey || '',
+          downloadedBytes: quota.usedBytes,
+          os: os,
+          version: 'v0.3.0'
+        })
+      });
+    } catch {
+      // Telemetry is best-effort and silent
+    }
   }
 }

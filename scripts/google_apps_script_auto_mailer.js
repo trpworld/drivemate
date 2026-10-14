@@ -79,6 +79,77 @@ function doPost(e) {
     const action = (data.action || "PAYMENT").toUpperCase();
 
     // --------------------------------------------------------------------------
+    // ACTION: INSTALL / HEARTBEAT (Track installed users & free vs paid telemetry)
+    // --------------------------------------------------------------------------
+    if (action === "INSTALL" || action === "HEARTBEAT") {
+      const deviceId = (data.deviceId || "").trim();
+      const os = (data.os || "Unknown").trim();
+      const clientVer = (data.version || "v0.3.0").trim();
+      const downloadedBytes = Number(data.downloadedBytes) || 0;
+      const isPro = Boolean(data.isPro);
+      const licenseKey = (data.licenseKey || "").trim();
+
+      if (!deviceId) {
+        return jsonResponse({ success: false, error: "MISSING_DEVICE_ID" });
+      }
+
+      const ss = SpreadsheetApp.getActiveSpreadsheet();
+      let sheet = ss.getSheetByName("InstalledUsers");
+      if (!sheet) {
+        sheet = ss.insertSheet("InstalledUsers");
+        sheet.appendRow([
+          "Device ID",
+          "Status",
+          "Tier",
+          "License Key",
+          "First Installed",
+          "Last Active",
+          "Today Downloaded (GB)",
+          "OS / Platform",
+          "Version"
+        ]);
+        sheet.setFrozenRows(1);
+      }
+
+      const rows = sheet.getDataRange().getValues();
+      let foundRow = -1;
+      for (let i = 1; i < rows.length; i++) {
+        if (String(rows[i][0]).toUpperCase() === deviceId.toUpperCase()) {
+          foundRow = i + 1;
+          break;
+        }
+      }
+
+      const now = new Date();
+      const gb = (downloadedBytes / (1024 * 1024 * 1024)).toFixed(2) + " GB";
+      const tier = isPro ? "PAID" : (downloadedBytes >= 7 * 1024 * 1024 * 1024 ? "HOT_LEAD" : "FREE");
+
+      if (foundRow === -1) {
+        sheet.appendRow([
+          deviceId,
+          "ACTIVE",
+          tier,
+          licenseKey || "—",
+          now,
+          now,
+          gb,
+          os,
+          clientVer
+        ]);
+      } else {
+        sheet.getRange(foundRow, 2).setValue("ACTIVE");
+        sheet.getRange(foundRow, 3).setValue(tier);
+        if (licenseKey) sheet.getRange(foundRow, 4).setValue(licenseKey);
+        sheet.getRange(foundRow, 6).setValue(now);
+        sheet.getRange(foundRow, 7).setValue(gb);
+        sheet.getRange(foundRow, 8).setValue(os);
+        sheet.getRange(foundRow, 9).setValue(clientVer);
+      }
+
+      return jsonResponse({ success: true, message: "Heartbeat logged." });
+    }
+
+    // --------------------------------------------------------------------------
     // ACTION 1: ACTIVATE (Anti-Piracy Device Binding & Expiry Check)
     // --------------------------------------------------------------------------
     if (action === "ACTIVATE") {
@@ -479,6 +550,69 @@ DriveMate Team`;
 }
 
 function doGet(e) {
+  try {
+    const action = e && e.parameter && e.parameter.action ? e.parameter.action.toUpperCase() : "";
+    if (action === "GET_ALL_DATA") {
+      const ss = SpreadsheetApp.getActiveSpreadsheet();
+
+      // 1. Activations
+      const actSheet = ss.getSheetByName("Activations");
+      const activations = [];
+      if (actSheet) {
+        const rows = actSheet.getDataRange().getValues();
+        for (let i = 1; i < rows.length; i++) {
+          const r = rows[i];
+          if (r[0]) {
+            activations.push({
+              key: String(r[0]),
+              devices: String(r[1] || "").split(",").map(d => d.trim()).filter(Boolean),
+              activeCount: Number(r[2]) || 1,
+              maxDevices: Number(r[3]) || 1,
+              status: String(r[4] || "ACTIVE"),
+              firstActivated: r[5] ? new Date(r[5]).toISOString() : null,
+              lastSeen: r[6] ? new Date(r[6]).toISOString() : null,
+              plan: String(r[7] || ""),
+              expiryDate: r[8] ? new Date(r[8]).toISOString() : null,
+              version: String(r[9] || ""),
+              totalDownloaded: String(r[10] || "0.00 GB"),
+              recentActivity: String(r[11] || "")
+            });
+          }
+        }
+      }
+
+      // 2. Installed Users
+      const userSheet = ss.getSheetByName("InstalledUsers");
+      const users = [];
+      if (userSheet) {
+        const rows = userSheet.getDataRange().getValues();
+        for (let i = 1; i < rows.length; i++) {
+          const r = rows[i];
+          if (r[0]) {
+            users.push({
+              deviceId: String(r[0]),
+              status: String(r[1] || "ACTIVE"),
+              tier: String(r[2] || "FREE"),
+              licenseKey: String(r[3] || ""),
+              firstInstalled: r[4] ? new Date(r[4]).toISOString() : null,
+              lastActive: r[5] ? new Date(r[5]).toISOString() : null,
+              downloadedToday: String(r[6] || "0.00 GB"),
+              os: String(r[7] || "Unknown"),
+              version: String(r[8] || "v0.3.0")
+            });
+          }
+        }
+      }
+
+      return jsonResponse({
+        success: true,
+        activations: activations,
+        installedUsers: users
+      });
+    }
+  } catch (err) {
+    // fallback to text output
+  }
   return ContentService.createTextOutput("DriveMate Tiered License & Anti-Piracy Engine is Online (v2.0)");
 }
 
