@@ -8,327 +8,32 @@
 const MASTER_SALT = "DriveMate-Pro-2026-SuperSecretMasterSalt-9941";
 const DEFAULT_CLOUD_URL = "https://script.google.com/macros/s/AKfycbx9x8tWbV-HOjcGE5CMB84tUeD1vuddgtk_rr0LPCned-SKbg1kuuluoGFuwPX_iyAV/exec";
 
-// Default Seed Customers (Paid Licensees)
-const INITIAL_CUSTOMERS = [
-  {
-    id: "dm-cust-001",
-    name: "Subhashish Roy (Weddings)",
-    phone: "+919830112233",
-    email: "subhashish.cinematography@gmail.com",
-    plan: "1Y",
-    planName: "1-Year Team Pro (5 Devices)",
-    price: 500,
-    licenseKey: "DM-1Y-7F4A-9B2C-3E8D-1A0F",
-    maxDevices: 5,
-    devices: [
-      { id: "MAC-M1-MAX-89A1", os: "macOS (Apple Silicon)", name: "Studio iMac M3", lastSeen: "2026-10-14 19:42" },
-      { id: "MAC-MBP-16-C44B", os: "macOS (M2 Pro)", name: "Editor MacBook Pro 16", lastSeen: "2026-10-14 18:15" },
-      { id: "WIN-RTX4090-E02F", os: "Windows 11 (64-bit)", name: "Color Grading Rig PC", lastSeen: "2026-10-14 15:30" }
-    ],
-    status: "ACTIVE",
-    issuedAt: "2026-08-15T10:00:00.000Z",
-    expiryDate: "2027-08-15T10:00:00.000Z",
-    paymentUtr: "UPI-428819002134",
-    paymentMethod: "PhonePe",
-    notes: "Wedding studio in Kolkata, 3 of 5 machines active."
-  },
-  {
-    id: "dm-cust-002",
-    name: "Tanvir Ahmed",
-    phone: "+8801711223344",
-    email: "tanvir.editor@yahoo.com",
-    plan: "6M",
-    planName: "6-Month Pro (1 Device)",
-    price: 100,
-    licenseKey: "DM-6M-4C1E-88D2-99AB-44F1",
-    maxDevices: 1,
-    devices: [
-      { id: "WIN-DELL-XPS-771B", os: "Windows 11 (64-bit)", name: "Dell XPS 15", lastSeen: "2026-10-14 20:10" }
-    ],
-    status: "ACTIVE",
-    issuedAt: "2026-10-01T12:00:00.000Z",
-    expiryDate: "2027-04-01T12:00:00.000Z",
-    paymentUtr: "BKASH-TRX9921820",
-    paymentMethod: "bKash / Bank",
-    notes: "Dhaka video editor, paid via international remittance."
-  },
-  {
-    id: "dm-cust-003",
-    name: "Arjun Verma (Creative Studio)",
-    phone: "+919711889900",
-    email: "arjun@vfxworld.in",
-    plan: "6M",
-    planName: "6-Month Pro (1 Device)",
-    price: 100,
-    licenseKey: "DM-6M-2A99-55F4-EE12-788B",
-    maxDevices: 1,
-    devices: [
-      { id: "MAC-STUDIO-881A", os: "macOS (Apple Silicon)", name: "Mac Studio M2", lastSeen: "2026-10-14 17:05" }
-    ],
-    status: "FLAGGED",
-    issuedAt: "2026-09-10T14:30:00.000Z",
-    expiryDate: "2027-03-10T14:30:00.000Z",
-    paymentUtr: "GPAY-88291044312",
-    paymentMethod: "Google Pay",
-    notes: "⚠️ VIOLATION: Buyer attempted to activate on 2nd PC (Windows Laptop WIN-HP-441B)."
-  },
-  {
-    id: "dm-cust-004",
-    name: "Pooja Hegde",
-    phone: "+919820556677",
-    email: "pooja.hegde@films.com",
-    plan: "VIP",
-    planName: "VIP Lifetime (10 Devices)",
-    price: 0,
-    licenseKey: "DM-VIP-8811-AABB-CCDD-EEFF",
-    maxDevices: 10,
-    devices: [
-      { id: "MAC-AIR-M3-1122", os: "macOS (M3)", name: "MacBook Air", lastSeen: "2026-10-13 11:20" }
-    ],
-    status: "ACTIVE",
-    issuedAt: "2026-07-01T09:00:00.000Z",
-    expiryDate: "2036-07-01T09:00:00.000Z",
-    paymentUtr: "PROMO-VIP-PARTNER",
-    paymentMethod: "Partner VIP",
-    notes: "Influencer review license."
-  },
-  {
-    id: "dm-cust-005",
-    name: "Ramesh Sharma",
-    phone: "+919810334455",
-    email: "ramesh.sharma@gmail.com",
-    plan: "6M",
-    planName: "6-Month Pro (1 Device)",
-    price: 100,
-    licenseKey: "DM-6M-1122-3344-5566-7788",
-    maxDevices: 1,
-    devices: [
-      { id: "WIN-PC-OLD-9999", os: "Windows 10", name: "Old Assembled PC", lastSeen: "2026-04-10 14:00" }
-    ],
-    status: "EXPIRED",
-    issuedAt: "2026-04-01T10:00:00.000Z",
-    expiryDate: "2026-10-01T10:00:00.000Z",
-    paymentUtr: "PAYTM-992144310",
-    paymentMethod: "Paytm UPI",
-    notes: "Expired 13 days ago. Needs renewal follow-up."
-  }
-];
-
-// Seed Installed Users: BOTH Free Tier (Not Bought Yet) and Paid Pro users
-const INITIAL_INSTALLED_USERS = [
-  // Free Tier Hot Leads (Downloading heavily on free 10 GB limit)
-  {
-    deviceId: "MAC-M2-AIR-774B",
-    deviceName: "Sourav M2 MacBook Air",
-    location: "Kolkata, WB",
-    os: "macOS (Apple Silicon)",
-    clientType: "macOS Native App (.DMG v1.0.0)",
-    isPro: false,
-    licenseKey: null,
-    planName: "Free Tier (10 GB/Day)",
-    todayDownloadedBytes: 8.8 * 1024 * 1024 * 1024, // 8.8 GB / 10 GB (High usage!)
-    lifetimeDownloadedBytes: 42.6 * 1024 * 1024 * 1024,
-    firstInstalledAt: "2026-10-10T14:20:00.000Z",
-    lastHeartbeat: "4 mins ago",
-    activeNow: true,
-    suggestedContact: "+919830224466"
-  },
-  {
-    deviceId: "WIN-PC-ASUS-991A",
-    deviceName: "Debabrata ASUS TUF Gaming",
-    location: "Howrah, WB",
-    os: "Windows 11 (64-bit)",
-    clientType: "Windows Standalone App (.EXE v1.0.0)",
-    isPro: false,
-    licenseKey: null,
-    planName: "Free Tier (10 GB/Day)",
-    todayDownloadedBytes: 9.6 * 1024 * 1024 * 1024, // 9.6 GB (Hitting ceiling!)
-    lifetimeDownloadedBytes: 68.2 * 1024 * 1024 * 1024,
-    firstInstalledAt: "2026-10-08T09:15:00.000Z",
-    lastHeartbeat: "12 mins ago",
-    activeNow: true,
-    suggestedContact: "+919831445566"
-  },
-  {
-    deviceId: "MAC-PRO-INTEL-331C",
-    deviceName: "Niloy Creative MacBook Pro Intel",
-    location: "Siliguri, WB",
-    os: "macOS (Intel x86_64)",
-    clientType: "Chrome Extension (macOS v0.3.0)",
-    isPro: false,
-    licenseKey: null,
-    planName: "Free Tier (10 GB/Day)",
-    todayDownloadedBytes: 7.2 * 1024 * 1024 * 1024,
-    lifetimeDownloadedBytes: 29.5 * 1024 * 1024 * 1024,
-    firstInstalledAt: "2026-10-11T16:00:00.000Z",
-    lastHeartbeat: "35 mins ago",
-    activeNow: true,
-    suggestedContact: "+919875112233"
-  },
-  {
-    deviceId: "WIN-LENOVO-LEGION-4B",
-    deviceName: "Kazi Sazzad Legion 5",
-    location: "Dhaka, Bangladesh",
-    os: "Windows 11 (64-bit)",
-    clientType: "Windows Standalone App (.EXE v1.0.0)",
-    isPro: false,
-    licenseKey: null,
-    planName: "Free Tier (10 GB/Day)",
-    todayDownloadedBytes: 8.1 * 1024 * 1024 * 1024,
-    lifetimeDownloadedBytes: 54.1 * 1024 * 1024 * 1024,
-    firstInstalledAt: "2026-10-09T18:30:00.000Z",
-    lastHeartbeat: "52 mins ago",
-    activeNow: true,
-    suggestedContact: "+8801819988776"
-  },
-  {
-    deviceId: "MAC-MINI-M2-881E",
-    deviceName: "Amitabh Mac Mini Workstation",
-    location: "Mumbai, MH",
-    os: "macOS (Apple Silicon)",
-    clientType: "macOS Native App (.DMG v1.0.0)",
-    isPro: false,
-    licenseKey: null,
-    planName: "Free Tier (10 GB/Day)",
-    todayDownloadedBytes: 3.4 * 1024 * 1024 * 1024,
-    lifetimeDownloadedBytes: 15.8 * 1024 * 1024 * 1024,
-    firstInstalledAt: "2026-10-13T11:00:00.000Z",
-    lastHeartbeat: "1 hour ago",
-    activeNow: false,
-    suggestedContact: "+919820119988"
-  },
-  {
-    deviceId: "WIN-CUSTOM-RIG-102A",
-    deviceName: "Rahul Wedding Studio PC",
-    location: "Burdwan, WB",
-    os: "Windows 10 Pro",
-    clientType: "Chrome Extension (Windows v0.3.0)",
-    isPro: false,
-    licenseKey: null,
-    planName: "Free Tier (10 GB/Day)",
-    todayDownloadedBytes: 2.1 * 1024 * 1024 * 1024,
-    lifetimeDownloadedBytes: 11.4 * 1024 * 1024 * 1024,
-    firstInstalledAt: "2026-10-12T10:45:00.000Z",
-    lastHeartbeat: "3 hours ago",
-    activeNow: false,
-    suggestedContact: "+919434887766"
-  },
-  {
-    deviceId: "MAC-AIR-M1-441F",
-    deviceName: "Anindya MBA M1",
-    location: "Kolkata, WB",
-    os: "macOS (Apple Silicon)",
-    clientType: "macOS Native App (.DMG v1.0.0)",
-    isPro: false,
-    licenseKey: null,
-    planName: "Free Tier (10 GB/Day)",
-    todayDownloadedBytes: 0.8 * 1024 * 1024 * 1024,
-    lifetimeDownloadedBytes: 4.2 * 1024 * 1024 * 1024,
-    firstInstalledAt: "2026-10-14T08:00:00.000Z",
-    lastHeartbeat: "5 hours ago",
-    activeNow: false,
-    suggestedContact: "+919830554433"
-  },
-  // Paid Licensed Users (from Subhashish, Tanvir, Arjun, Pooja, Ramesh)
-  {
-    deviceId: "MAC-M1-MAX-89A1",
-    deviceName: "Studio iMac M3 (Subhashish Roy)",
-    location: "Kolkata, WB",
-    os: "macOS (Apple Silicon)",
-    clientType: "macOS Native App (.DMG v1.0.0)",
-    isPro: true,
-    licenseKey: "DM-1Y-7F4A-9B2C-3E8D-1A0F",
-    planName: "1-Year Team Pro (5 Devices)",
-    todayDownloadedBytes: 44.5 * 1024 * 1024 * 1024,
-    lifetimeDownloadedBytes: 412.0 * 1024 * 1024 * 1024,
-    firstInstalledAt: "2026-08-15T10:00:00.000Z",
-    lastHeartbeat: "2 mins ago",
-    activeNow: true,
-    suggestedContact: "+919830112233"
-  },
-  {
-    deviceId: "WIN-DELL-XPS-771B",
-    deviceName: "Dell XPS 15 (Tanvir Ahmed)",
-    location: "Dhaka, Bangladesh",
-    os: "Windows 11 (64-bit)",
-    clientType: "Windows Standalone App (.EXE v1.0.0)",
-    isPro: true,
-    licenseKey: "DM-6M-4C1E-88D2-99AB-44F1",
-    planName: "6-Month Pro (1 Device)",
-    todayDownloadedBytes: 28.2 * 1024 * 1024 * 1024,
-    lifetimeDownloadedBytes: 185.4 * 1024 * 1024 * 1024,
-    firstInstalledAt: "2026-10-01T12:00:00.000Z",
-    lastHeartbeat: "8 mins ago",
-    activeNow: true,
-    suggestedContact: "+8801711223344"
-  },
-  {
-    deviceId: "MAC-STUDIO-881A",
-    deviceName: "Mac Studio M2 (Arjun Verma)",
-    location: "Delhi, NCR",
-    os: "macOS (Apple Silicon)",
-    clientType: "macOS Native App (.DMG v1.0.0)",
-    isPro: true,
-    licenseKey: "DM-6M-2A99-55F4-EE12-788B",
-    planName: "6-Month Pro (1 Device)",
-    todayDownloadedBytes: 19.4 * 1024 * 1024 * 1024,
-    lifetimeDownloadedBytes: 230.1 * 1024 * 1024 * 1024,
-    firstInstalledAt: "2026-09-10T14:30:00.000Z",
-    lastHeartbeat: "25 mins ago",
-    activeNow: true,
-    suggestedContact: "+919711889900"
-  },
-  {
-    deviceId: "MAC-AIR-M3-1122",
-    deviceName: "MacBook Air (Pooja Hegde)",
-    location: "Mumbai, MH",
-    os: "macOS (M3)",
-    clientType: "macOS Native App (.DMG v1.0.0)",
-    isPro: true,
-    licenseKey: "DM-VIP-8811-AABB-CCDD-EEFF",
-    planName: "VIP Lifetime (10 Devices)",
-    todayDownloadedBytes: 12.0 * 1024 * 1024 * 1024,
-    lifetimeDownloadedBytes: 94.2 * 1024 * 1024 * 1024,
-    firstInstalledAt: "2026-07-01T09:00:00.000Z",
-    lastHeartbeat: "1 hour ago",
-    activeNow: false,
-    suggestedContact: "+919820556677"
-  }
-];
-
-const INITIAL_VIOLATIONS = [
-  {
-    id: "viol-001",
-    timestamp: "2026-10-14 18:22:15",
-    licenseKey: "DM-6M-2A99-55F4-EE12-788B",
-    customerName: "Arjun Verma (Creative Studio)",
-    type: "DEVICE_CAP_EXCEEDED",
-    attemptedDevice: "WIN-HP-441B (Windows 10 Home)",
-    boundDevices: "1/1 slot occupied (MAC-STUDIO-881A)",
-    actionTaken: "BLOCKED_BY_ENGINE",
-    details: "Unauthorized second machine blocked by DriveMate Anti-Piracy Guard."
-  },
-  {
-    id: "viol-002",
-    timestamp: "2026-10-12 11:45:02",
-    licenseKey: "DM-6M-1122-3344-5566-7788",
-    customerName: "Ramesh Sharma",
-    type: "EXPIRED_KEY_PING",
-    attemptedDevice: "WIN-PC-OLD-9999 (Windows 10)",
-    boundDevices: "1/1 (Expired 2026-10-01)",
-    actionTaken: "PRO_FEATURES_LOCKED",
-    details: "Client attempted 32x turbo download with expired license key. Reverted to Free 10GB tier."
-  }
-];
+// Clean Production Database (Zero Mock Data)
+const INITIAL_CUSTOMERS = [];
+const INITIAL_INSTALLED_USERS = [];
+const INITIAL_VIOLATIONS = [];
 
 // STATE REPOSITORY
 class LicenseRepository {
   constructor() {
-    this.storageKey = "drivemate_admin_ledger_v3";
-    this.installsKey = "drivemate_admin_installs_v3";
-    this.violationsKey = "drivemate_admin_violations_v3";
+    this.storageKey = "drivemate_admin_ledger_v4_clean";
+    this.installsKey = "drivemate_admin_installs_v4_clean";
+    this.violationsKey = "drivemate_admin_violations_v4_clean";
     this.cloudUrlKey = "drivemate_cloud_script_url";
-    
+
+    // Automatically purge old mock localStorage keys
+    [
+      "drivemate_admin_ledger_v3",
+      "drivemate_admin_installs_v3",
+      "drivemate_admin_violations_v3",
+      "drivemate_admin_ledger_v2",
+      "drivemate_admin_installs_v2",
+      "drivemate_admin_violations_v2",
+      "drivemate_admin_ledger_v1"
+    ].forEach(k => {
+      try { localStorage.removeItem(k); } catch (e) {}
+    });
+
     this.licenses = this.loadLicenses();
     this.installedUsers = this.loadInstalledUsers();
     this.violations = this.loadViolations();
@@ -336,11 +41,8 @@ class LicenseRepository {
 
   loadLicenses() {
     const raw = localStorage.getItem(this.storageKey);
-    if (!raw) {
-      localStorage.setItem(this.storageKey, JSON.stringify(INITIAL_CUSTOMERS));
-      return [...INITIAL_CUSTOMERS];
-    }
-    try { return JSON.parse(raw); } catch { return [...INITIAL_CUSTOMERS]; }
+    if (!raw) return [];
+    try { return JSON.parse(raw); } catch { return []; }
   }
 
   saveLicenses() {
@@ -349,11 +51,8 @@ class LicenseRepository {
 
   loadInstalledUsers() {
     const raw = localStorage.getItem(this.installsKey);
-    if (!raw) {
-      localStorage.setItem(this.installsKey, JSON.stringify(INITIAL_INSTALLED_USERS));
-      return [...INITIAL_INSTALLED_USERS];
-    }
-    try { return JSON.parse(raw); } catch { return [...INITIAL_INSTALLED_USERS]; }
+    if (!raw) return [];
+    try { return JSON.parse(raw); } catch { return []; }
   }
 
   saveInstalledUsers() {
@@ -362,15 +61,17 @@ class LicenseRepository {
 
   loadViolations() {
     const raw = localStorage.getItem(this.violationsKey);
-    if (!raw) {
-      localStorage.setItem(this.violationsKey, JSON.stringify(INITIAL_VIOLATIONS));
-      return [...INITIAL_VIOLATIONS];
-    }
-    try { return JSON.parse(raw); } catch { return [...INITIAL_VIOLATIONS]; }
+    if (!raw) return [];
+    try { return JSON.parse(raw); } catch { return []; }
   }
 
   saveViolations() {
     localStorage.setItem(this.violationsKey, JSON.stringify(this.violations));
+  }
+
+  clearViolations() {
+    this.violations = [];
+    this.saveViolations();
   }
 
   getCloudUrl() {
@@ -398,9 +99,9 @@ class LicenseRepository {
   }
 
   resetAll() {
-    this.licenses = [...INITIAL_CUSTOMERS];
-    this.installedUsers = [...INITIAL_INSTALLED_USERS];
-    this.violations = [...INITIAL_VIOLATIONS];
+    this.licenses = [];
+    this.installedUsers = [];
+    this.violations = [];
     this.saveLicenses();
     this.saveInstalledUsers();
     this.saveViolations();
@@ -1141,17 +842,31 @@ DriveMate দিয়ে আজ আপনার ১০ জিবি ফ্রি �
     const name = document.getElementById("gen-customer-name").value.trim();
     const phone = document.getElementById("gen-customer-phone").value.trim();
     const email = document.getElementById("gen-customer-email").value.trim();
-    const utr = document.getElementById("gen-payment-utr").value.trim();
+    const utr = document.getElementById("gen-payment-utr").value.trim().toUpperCase();
     const targetDeviceId = document.getElementById("gen-prebound-device").value.trim();
     const notes = document.getElementById("gen-notes").value.trim();
     const planType = document.querySelector('input[name="planType"]:checked').value;
 
     const btn = document.getElementById("btn-submit-gen");
+
+    if (!name) {
+      this.showToast("Please enter Customer Name", "error");
+      document.getElementById("gen-customer-name").focus();
+      return;
+    }
+
+    if (!utr || utr.length < 6) {
+      alert("⚠️ পেমেন্ট UTR নম্বর আবশ্যক!\n\nঅনুগ্রহ করে কাস্টমারের ১২-ডিজিটের UPI Transaction UTR নম্বর দিন। এই UTR নম্বরের সাথে ক্রিপ্টোগ্রাফিক সিগনেচার দিয়ে আসল লাইসেন্স তৈরি হবে।\n\n(Payment UTR is required to deterministically bind and generate genuine cryptographic license).");
+      document.getElementById("gen-payment-utr").focus();
+      return;
+    }
+
     btn.disabled = true;
-    btn.innerHTML = `<span>⏳ Cryptographically Signing...</span>`;
+    btn.innerHTML = `<span>⏳ Cryptographically Binding to UTR...</span>`;
 
     try {
-      const newKey = await generateDriveMateKey(planType, name + phone + utr);
+      // Deterministically bind key to the customer's UPI UTR!
+      const newKey = await generateDriveMateKey(planType, utr);
 
       const now = new Date();
       let durationDays = 180;
@@ -1196,14 +911,41 @@ DriveMate দিয়ে আজ আপনার ১০ জিবি ফ্রি �
       this.repo.addLicense(newLicense);
       this.renderAll();
 
+      // Automatically sync license to Google Sheets central ledger
+      await this.syncNewLicenseToCloud(newLicense);
+
       this.populateOutputCard(newLicense);
-      this.showToast(`🎉 License Key Generated for ${name}!`, "success");
+      this.showToast(`🎉 Genuine License Generated & Bound to UTR ${utr}!`, "success");
 
     } catch (err) {
       alert("Error generating key: " + err.message);
     } finally {
       btn.disabled = false;
       btn.innerHTML = `<span>⚡ Generate Cryptographic License Key</span>`;
+    }
+  }
+
+  async syncNewLicenseToCloud(license) {
+    const url = this.repo.getCloudUrl();
+    if (!url) return;
+    try {
+      await fetch(url, {
+        method: "POST",
+        headers: { "Content-Type": "text/plain;charset=utf-8" },
+        body: JSON.stringify({
+          action: "RECORD_SALE",
+          licenseKey: license.licenseKey,
+          customerName: license.name,
+          phone: license.phone,
+          email: license.email,
+          plan: license.plan,
+          price: license.price,
+          utr: license.paymentUtr,
+          targetDeviceId: license.targetDeviceId
+        })
+      });
+    } catch (err) {
+      console.log("Cloud record sync opportunistic notice:", err);
     }
   }
 
@@ -1605,8 +1347,8 @@ DriveMate PRO কেনার জন্য ধন্যবাদ! আপনা�
       await this.testCloudConnection();
     });
 
-    document.getElementById("btn-pull-cloud").addEventListener("click", () => {
-      this.showToast("Syncing latest activations and installs from Google Sheet...", "success");
+    document.getElementById("btn-pull-cloud").addEventListener("click", async () => {
+      await this.syncFromCloud();
     });
 
     document.getElementById("btn-push-cloud").addEventListener("click", () => {
@@ -1657,12 +1399,111 @@ DriveMate PRO কেনার জন্য ধন্যবাদ! আপনা�
     });
 
     document.getElementById("btn-reset-database").addEventListener("click", () => {
-      if (confirm("Reset database to initial sample records? Your current entries will be restored to defaults.")) {
+      if (confirm("⚠️ সমস্ত ডেমো ডেটা মুছে ফেলবেন?\n\nAre you sure you want to wipe all records and reset the dashboard to a 100% clean state?")) {
         this.repo.resetAll();
         this.renderAll();
-        this.showToast("Database reset to defaults", "success");
+        this.showToast("🧹 All demo records wiped. Dashboard is 100% clean!", "success");
       }
     });
+  }
+
+  async syncFromCloud() {
+    const url = this.repo.getCloudUrl();
+    if (!url) return;
+    this.showToast("Syncing latest data from Google Sheets...", "info");
+    try {
+      const resp = await fetch(`${url}?action=GET_ALL_DATA`);
+      if (resp.ok) {
+        const data = await resp.json();
+        if (data && data.success) {
+          if (Array.isArray(data.activations) && data.activations.length > 0) {
+            data.activations.forEach(act => {
+              const existing = this.repo.licenses.find(l => l.licenseKey === act.key);
+              if (existing) {
+                existing.status = act.status || existing.status;
+                existing.devices = (act.devices || []).map(d => ({ id: d, os: act.version || "Device", name: d, lastSeen: act.lastSeen || "Active" }));
+              } else {
+                this.repo.licenses.push({
+                  id: "cloud-" + act.key.replace(/[^A-Z0-9]/g, ""),
+                  name: "Verified Buyer",
+                  phone: "",
+                  email: "",
+                  plan: act.key.includes("1Y") ? "1Y" : "6M",
+                  planName: act.plan || (act.key.includes("1Y") ? "1-Year Team Pro" : "6-Month Pro"),
+                  price: act.key.includes("1Y") ? 500 : 100,
+                  licenseKey: act.key,
+                  maxDevices: act.maxDevices || 1,
+                  devices: (act.devices || []).map(d => ({ id: d, os: act.version || "Device", name: d, lastSeen: act.lastSeen || "Active" })),
+                  status: act.status || "ACTIVE",
+                  issuedAt: act.firstActivated || new Date().toISOString(),
+                  expiryDate: act.expiryDate,
+                  paymentUtr: "Verified UPI",
+                  paymentMethod: "UPI Cloud"
+                });
+              }
+            });
+            this.repo.saveLicenses();
+          }
+
+          if (Array.isArray(data.installedUsers) && data.installedUsers.length > 0) {
+            data.installedUsers.forEach(u => {
+              const exists = this.repo.installedUsers.find(x => x.deviceId === u.deviceId);
+              if (exists) {
+                exists.status = u.status;
+                exists.isPro = u.tier === "PAID";
+                exists.licenseKey = u.licenseKey;
+                exists.lastHeartbeat = "Recently Active";
+              } else {
+                this.repo.installedUsers.push({
+                  deviceId: u.deviceId,
+                  deviceName: u.deviceId,
+                  location: "User Workstation",
+                  os: u.os || "Unknown OS",
+                  clientType: u.version || "DriveMate App",
+                  isPro: u.tier === "PAID",
+                  licenseKey: u.licenseKey,
+                  planName: u.tier === "PAID" ? "Paid Pro" : "Free Tier",
+                  todayDownloadedBytes: 0,
+                  lifetimeDownloadedBytes: 0,
+                  firstInstalledAt: u.firstInstalled || new Date().toISOString(),
+                  lastHeartbeat: "Active",
+                  activeNow: true
+                });
+              }
+            });
+            this.repo.saveInstalledUsers();
+          }
+
+          if (Array.isArray(data.violations) && data.violations.length > 0) {
+            data.violations.forEach(v => {
+              const exists = this.repo.violations.find(x => x.timestamp === v.timestamp && x.licenseKey === v.licenseKey);
+              if (!exists) {
+                this.repo.violations.unshift({
+                  id: "viol-" + Date.now().toString(36) + Math.random().toString(36).substring(2, 6),
+                  timestamp: v.timestamp,
+                  licenseKey: v.licenseKey,
+                  customerName: "Device Sharing / Piracy Attempt",
+                  type: v.type,
+                  attemptedDevice: v.attemptedDevice,
+                  boundDevices: v.boundDevices,
+                  actionTaken: v.actionTaken,
+                  details: v.details
+                });
+              }
+            });
+            this.repo.saveViolations();
+          }
+
+          this.renderAll();
+          this.showToast(`✅ Synced with Google Sheets: ${this.repo.licenses.length} licenses, ${this.repo.installedUsers.length} installs, ${this.repo.violations.length} alerts!`, "success");
+          return;
+        }
+      }
+      this.showToast("Cloud sync response was empty or blocked by browser CORS policy.", "warning");
+    } catch (err) {
+      this.showToast("Cloud sync note: " + err.message, "warning");
+    }
+  }
   }
 
   async testCloudConnection() {

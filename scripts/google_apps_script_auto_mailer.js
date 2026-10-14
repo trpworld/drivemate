@@ -167,6 +167,16 @@ function doPost(e) {
 
       // Check cryptographic signature validity first
       if (!isKeyCryptographicallyValid(key)) {
+        const ss = SpreadsheetApp.getActiveSpreadsheet();
+        logSecurityViolation(ss, {
+          key: key,
+          type: "FORGED_KEY_ATTEMPT",
+          attemptedDevice: deviceId,
+          boundDevices: "0/0",
+          actionTaken: "REJECTED_SIGNATURE_MISMATCH",
+          details: "Unauthorized machine attempted activation with forged/corrupted key."
+        });
+        sendAdminSecurityAlert(key, deviceId, "FORGED_KEY_ATTEMPT", "Untrusted key rejected by SHA-256 cryptographic guard.");
         return jsonResponse({
           success: false,
           error: "INVALID_KEY",
@@ -246,6 +256,15 @@ function doPost(e) {
         const expiryVal = rowData[8];
 
         if (status === "REVOKED" || status === "BANNED" || status === "DEACTIVATED" || status === "DISABLED" || status === "SUSPENDED") {
+          logSecurityViolation(ss, {
+            key: key,
+            type: "REVOKED_KEY_USE_ATTEMPT",
+            attemptedDevice: deviceId,
+            boundDevices: registeredDevices.join(", "),
+            actionTaken: "PRO_REVOKED_LOCKED",
+            details: "Client attempted to run software using a revoked or banned license key."
+          });
+          sendAdminSecurityAlert(key, deviceId, "REVOKED_KEY_ATTEMPT", "Computer attempted activation on revoked key: " + key);
           return jsonResponse({
             success: false,
             error: "LICENSE_REVOKED",
@@ -310,7 +329,16 @@ function doPost(e) {
             daysRemaining: daysRemaining
           });
         } else {
-          // Device limit exceeded! BLOCK ACTIVATION!
+          // Device limit exceeded! BLOCK ACTIVATION & ALERT ADMIN!
+          logSecurityViolation(ss, {
+            key: key,
+            type: "DEVICE_CAP_EXCEEDED",
+            attemptedDevice: deviceId,
+            boundDevices: registeredDevices.join(", ") + " (" + registeredDevices.length + "/" + maxDevices + ")",
+            actionTaken: "BLOCKED_BY_ENGINE",
+            details: "Unauthorized second machine blocked by DriveMate Anti-Piracy Guard. Key sharing prevented."
+          });
+          sendAdminSecurityAlert(key, deviceId, "DEVICE_CAP_EXCEEDED", "Device sharing blocked! Key " + key + " is already bound to " + registeredDevices.length + "/" + maxDevices + " devices (" + registeredDevices.join(", ") + ").");
           return jsonResponse({
             success: false,
             error: "DEVICE_LIMIT_EXCEEDED",
@@ -463,6 +491,65 @@ function doPost(e) {
     }
 
     // --------------------------------------------------------------------------
+    // ACTION: RECORD_SALE / CREATE_LICENSE (Admin Creates Key with UTR)
+    // --------------------------------------------------------------------------
+    if (action === "RECORD_SALE" || action === "CREATE_LICENSE") {
+      const key = (data.licenseKey || data.key || "").trim().toUpperCase();
+      const name = (data.customerName || data.name || "Customer").trim();
+      const phone = (data.phone || "").trim();
+      const email = (data.email || "").trim();
+      const utr = (data.utr || data.paymentUtr || "").trim();
+      const plan = (data.plan || "6M").toString().trim().toUpperCase();
+      const price = data.price || (plan === "1Y" ? "₹500" : "₹100");
+      const targetDeviceId = (data.targetDeviceId || "").trim();
+
+      const ss = SpreadsheetApp.getActiveSpreadsheet();
+      let sheet = ss.getSheetByName("Activations");
+      if (!sheet) {
+        sheet = ss.insertSheet("Activations");
+        sheet.appendRow([
+          "License Key", "Registered Devices", "Active Count", "Max Devices",
+          "Status", "First Activated", "Last Seen", "Plan", "Expiry Date",
+          "Version / OS", "Total Downloaded", "Recent Activity"
+        ]);
+        sheet.setFrozenRows(1);
+      }
+
+      const defaultPlan = detectPlanFromKey(key);
+      const now = new Date();
+      const expiryDate = new Date(now.getTime() + defaultPlan.durationDays * 24 * 60 * 60 * 1000);
+
+      sheet.appendRow([
+        key,
+        targetDeviceId || "",
+        targetDeviceId ? 1 : 0,
+        defaultPlan.maxDevices,
+        "ACTIVE",
+        now,
+        now,
+        defaultPlan.name,
+        expiryDate.toISOString(),
+        "Admin Issued",
+        "0.00 GB",
+        "Generated for " + name + " (UTR: " + utr + ")"
+      ]);
+
+      // Record in Payments
+      let paySheet = ss.getSheetByName("Payments");
+      if (!paySheet) {
+        paySheet = ss.insertSheet("Payments");
+        paySheet.appendRow(["Timestamp", "Customer Email", "UPI UTR", "Generated License Key", "Amount", "Plan", "Status"]);
+        paySheet.setFrozenRows(1);
+      }
+      paySheet.appendRow([now, email || phone || name, utr, key, price, defaultPlan.name, "DELIVERED"]);
+
+      return jsonResponse({
+        success: true,
+        message: "License " + key + " registered against UTR " + utr
+      });
+    }
+
+    // --------------------------------------------------------------------------
     // ACTION 2: PAYMENT (UPI UTR Submission & Automated Key Emailing)
     // --------------------------------------------------------------------------
     if (action === "PAYMENT" || action === "PAY" || action === "SUBMIT_PAYMENT") {
@@ -611,10 +698,32 @@ function doGet(e) {
         }
       }
 
+      // 3. Violations
+      const violSheet = ss.getSheetByName("Violations");
+      const violations = [];
+      if (violSheet) {
+        const rows = violSheet.getDataRange().getValues();
+        for (let i = 1; i < rows.length; i++) {
+          const r = rows[i];
+          if (r[0] || r[1]) {
+            violations.push({
+              timestamp: r[0] ? Utilities.formatDate(new Date(r[0]), "GMT+0530", "yyyy-MM-dd HH:mm:ss") : "",
+              licenseKey: String(r[1] || ""),
+              type: String(r[2] || "SECURITY_ALERT"),
+              attemptedDevice: String(r[3] || ""),
+              boundDevices: String(r[4] || ""),
+              actionTaken: String(r[5] || "BLOCKED"),
+              details: String(r[6] || "")
+            });
+          }
+        }
+      }
+
       return jsonResponse({
         success: true,
         activations: activations,
-        installedUsers: users
+        installedUsers: users,
+        violations: violations
       });
     }
   } catch (err) {
@@ -673,4 +782,56 @@ function generateCryptographicKey(seed, planType) {
 
 function jsonResponse(obj) {
   return ContentService.createTextOutput(JSON.stringify(obj)).setMimeType(ContentService.MimeType.JSON);
+}
+
+function logSecurityViolation(ss, v) {
+  try {
+    let sheet = ss.getSheetByName("Violations");
+    if (!sheet) {
+      sheet = ss.insertSheet("Violations");
+      sheet.appendRow([
+        "Timestamp",
+        "License Key",
+        "Violation Type",
+        "Attempted Device",
+        "Bound Devices / Limit",
+        "Action Taken",
+        "Details"
+      ]);
+      sheet.setFrozenRows(1);
+    }
+    sheet.appendRow([
+      new Date(),
+      v.key || "UNKNOWN_KEY",
+      v.type || "SECURITY_ALERT",
+      v.attemptedDevice || "Unknown Device",
+      v.boundDevices || "—",
+      v.actionTaken || "BLOCKED",
+      v.details || ""
+    ]);
+  } catch (err) {
+    console.error("Error logging violation: " + err);
+  }
+}
+
+function sendAdminSecurityAlert(key, deviceId, type, details) {
+  try {
+    const adminEmail = Session.getActiveUser().getEmail();
+    if (!adminEmail) return;
+    const subject = `🚨 DriveMate Anti-Piracy Alert: ${type}`;
+    const body = `DriveMate Anti-Piracy Guard detected an unauthorized action:
+
+Type: ${type}
+Time: ${new Date().toLocaleString("en-IN", { timeZone: "Asia/Kolkata" })}
+License Key: ${key}
+Attempted Device ID: ${deviceId}
+Details: ${details}
+
+The unauthorized device was blocked from accessing DriveMate Pro features.
+You can inspect or revoke this license key inside your DriveMate Admin Dashboard.`;
+
+    GmailApp.sendEmail(adminEmail, subject, body);
+  } catch (err) {
+    // Non-blocking
+  }
 }
