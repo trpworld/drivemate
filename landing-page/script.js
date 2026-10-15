@@ -134,4 +134,88 @@ document.addEventListener('DOMContentLoaded', () => {
       prompt('Copy your UPI ID:', upiId);
     }
   });
+
+  // 4. Local File Protocol (file://) Advisory Handler
+  const isLocalFile = window.location.protocol === 'file:';
+  const modalLocal = document.getElementById('modal-local-file');
+  const btnCloseLocal = document.getElementById('btn-close-local-modal');
+  const btnCopyPath = document.getElementById('btn-copy-path');
+  const localAssetsPathEl = document.getElementById('local-assets-path');
+  const btnProceedDownload = document.getElementById('btn-proceed-download-anyway');
+
+  let pendingDownloadUrl = null;
+
+  function closeLocalModal() {
+    if (modalLocal) {
+      modalLocal.style.display = 'none';
+      document.body.style.overflow = 'auto';
+    }
+  }
+
+  btnCloseLocal?.addEventListener('click', closeLocalModal);
+  modalLocal?.addEventListener('click', (e) => {
+    if (e.target === modalLocal) closeLocalModal();
+  });
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && modalLocal?.style.display === 'flex') {
+      closeLocalModal();
+    }
+  });
+
+  if (isLocalFile) {
+    // Intercept download links when running on file:// to prevent Chrome UUID stripping confusion
+    const downloadLinks = document.querySelectorAll('a[download], a[href*="assets/DriveMate"]');
+    downloadLinks.forEach(link => {
+      link.addEventListener('click', (e) => {
+        e.preventDefault();
+        pendingDownloadUrl = link.getAttribute('href');
+
+        if (localAssetsPathEl) {
+          try {
+            const currentPath = decodeURIComponent(window.location.pathname);
+            const dir = currentPath.substring(0, currentPath.lastIndexOf('/'));
+            localAssetsPathEl.textContent = dir + '/assets/';
+          } catch (_) {
+            localAssetsPathEl.textContent = 'landing-page/assets/';
+          }
+        }
+
+        if (modalLocal) {
+          modalLocal.style.display = 'flex';
+          document.body.style.overflow = 'hidden';
+        }
+      });
+    });
+
+    btnProceedDownload?.addEventListener('click', () => {
+      if (pendingDownloadUrl) {
+        const downloadUrl = pendingDownloadUrl;
+        closeLocalModal();
+        // Allow the direct file download
+        const tempLink = document.createElement('a');
+        tempLink.href = downloadUrl;
+        tempLink.setAttribute('download', downloadUrl.split('/').pop() || 'DriveMate-Package.zip');
+        document.body.appendChild(tempLink);
+        tempLink.click();
+        document.body.removeChild(tempLink);
+      }
+    });
+
+    btnCopyPath?.addEventListener('click', () => {
+      const pathText = localAssetsPathEl?.textContent || '';
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(pathText).then(() => {
+          btnCopyPath.textContent = '✓ Copied!';
+          btnCopyPath.style.background = '#16a34a';
+          setTimeout(() => {
+            btnCopyPath.textContent = '📋 Copy';
+            btnCopyPath.style.background = '#0284c7';
+          }, 1500);
+        });
+      } else {
+        prompt('Copy local folder path:', pathText);
+      }
+    });
+  }
 });

@@ -1,0 +1,12 @@
+{
+  "latestVersion": "0.3.0",
+  "desktopVersion": "1.0.0",
+  "versionCode": 30,
+  "releaseDate": "2026-10-16",
+  "releaseNotes": "DriveMate Desktop v1.0.0 (Native 32-stream Rust & C# engines, In-App Auto-Updater, 1-Click Sample Benchmarks, Zero-Login Public Link Scanner) & Extension v0.3.0.",
+  "updateUrl": "https://drivemate-pro.pages.dev/assets/DriveMate-Chrome-Extension.zip",
+  "desktopMacUrl": "https://drivemate-pro.pages.dev/assets/DriveMate-Mac.zip",
+  "desktopWindowsUrl": "https://drivemate-pro.pages.dev/assets/DriveMate-Windows.zip",
+  "desktopDmgUrl": "https://drivemate-pro.pages.dev/assets/DriveMate.dmg",
+  "downloadPage": "https://drivemate-pro.pages.dev#download"
+}

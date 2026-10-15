@@ -9,39 +9,39 @@
   },
   "test_3_manifest_audit": {
     "status": "PASSED",
-    "evidence": "Permissions strictly bounded to ['activeTab', 'nativeMessaging']. Scopes strictly limited to drive.readonly."
+    "evidence": "Permissions strictly bounded to ['alarms', 'storage', 'nativeMessaging', 'activeTab', 'unlimitedStorage']. Scopes strictly limited to drive.readonly."
   },
   "test_5_ping_pong": {
     "status": "PASSED",
-    "latency_ms": 11.32,
+    "latency_ms": 17.92,
     "response": {
-      "responseTimestamp": 1791664032210.468,
+      "responseTimestamp": 1792051385505.444,
       "action": "PONG",
       "echoPayload": "Automated Probe 1",
+      "helperVersion": "0.3.0-phase3",
       "status": "SUCCESS",
-      "receivedTimestamp": 1791664032199.265,
-      "helperVersion": "0.3.0-phase3"
+      "receivedTimestamp": 1792051385487.662
     }
   },
   "test_6_multi_message": {
     "status": "PASSED",
     "response": {
-      "responseTimestamp": 1791664032211.027,
       "action": "ECHO_RESPONSE",
+      "helperVersion": "0.3.0-phase3",
+      "responseTimestamp": 1792051385505.886,
+      "receivedTimestamp": 1792051385505.62,
       "echoPayload": "Second Packet on Same Port",
-      "status": "SUCCESS",
-      "receivedTimestamp": 1791664032210.5952,
-      "helperVersion": "0.3.0-phase3"
+      "status": "SUCCESS"
     }
   },
   "test_7_malformed_json": {
     "status": "PASSED",
     "response": {
-      "responseTimestamp": 1791664032219.2422,
       "action": "PARSE_ERROR",
+      "helperVersion": "0.3.0-phase3",
+      "responseTimestamp": 1792051385510.49,
       "error": "Malformed JSON schema: The data couldn\u2019t be read because it isn\u2019t in the correct format.",
-      "status": "ERROR",
-      "helperVersion": "0.3.0-phase3"
+      "status": "ERROR"
     }
   },
   "test_8_clean_eof": {

@@ -70,11 +70,16 @@ def read_until_action(proc, expected_actions, timeout=15.0):
     return None, events
 
 def spawn_helper():
+    clean_env = dict(os.environ)
+    for k in ["http_proxy", "https_proxy", "HTTP_PROXY", "HTTPS_PROXY"]:
+        clean_env.pop(k, None)
+    clean_env["NO_PROXY"] = "*"
     return subprocess.Popen(
         [HELPER_BIN],
         stdin=subprocess.PIPE,
         stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE
+        stderr=subprocess.PIPE,
+        env=clean_env
     )
 
 def close_helper(proc):

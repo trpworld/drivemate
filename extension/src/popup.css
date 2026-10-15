@@ -708,6 +708,148 @@ body {
 }
 
 /* ==========================================================================
+   DriveMate In-App Auto-Update Banner & Version Badge Styles
+   ========================================================================== */
+
+.badge-version {
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 4px;
+  background: rgba(56, 189, 248, 0.12);
+  color: #38bdf8;
+  border: 1px solid rgba(56, 189, 248, 0.3);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  user-select: none;
+}
+
+.badge-version:hover {
+  background: rgba(56, 189, 248, 0.25);
+  border-color: #38bdf8;
+  box-shadow: 0 0 8px rgba(56, 189, 248, 0.3);
+}
+
+.badge-version.badge-update-ready {
+  background: rgba(245, 158, 11, 0.25);
+  color: #fbbf24;
+  border-color: #f59e0b;
+  animation: pulseUpdateBadge 1.5s infinite;
+}
+
+@keyframes pulseUpdateBadge {
+  0%, 100% { box-shadow: 0 0 0 rgba(245, 158, 11, 0); }
+  50% { box-shadow: 0 0 10px rgba(245, 158, 11, 0.6); }
+}
+
+.update-bar-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  background: linear-gradient(135deg, rgba(30, 58, 138, 0.95), rgba(67, 56, 202, 0.92));
+  border: 1px solid rgba(129, 140, 248, 0.5);
+  border-radius: 8px;
+  padding: 7px 10px;
+  margin-top: 4px;
+  margin-bottom: 8px;
+  box-shadow: 0 4px 14px rgba(67, 56, 202, 0.35);
+  animation: slideDownUpdate 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes slideDownUpdate {
+  from { opacity: 0; transform: translateY(-6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.update-bar-content {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  flex: 1;
+}
+
+.update-rocket {
+  font-size: 16px;
+  flex-shrink: 0;
+  animation: bounceRocket 2s infinite ease-in-out;
+}
+
+@keyframes bounceRocket {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-2px); }
+}
+
+.update-text-group {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.update-title {
+  font-size: 11px;
+  font-weight: 700;
+  color: #ffffff;
+  line-height: 1.2;
+}
+
+.update-sub {
+  font-size: 9.5px;
+  color: #c7d2fe;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.update-btn-group {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.btn-update-now {
+  background: linear-gradient(135deg, #38bdf8, #0284c7);
+  color: #ffffff;
+  border: none;
+  border-radius: 6px;
+  padding: 4px 9px;
+  font-size: 10px;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(2, 132, 199, 0.4);
+  transition: all 0.15s ease;
+  white-space: nowrap;
+}
+
+.btn-update-now:hover {
+  background: linear-gradient(135deg, #7dd3fc, #0369a1);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 10px rgba(2, 132, 199, 0.6);
+}
+
+.btn-dismiss-update {
+  background: rgba(255, 255, 255, 0.12);
+  border: none;
+  color: #e0e7ff;
+  font-size: 11px;
+  width: 20px;
+  height: 20px;
+  border-radius: 999px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.btn-dismiss-update:hover {
+  background: rgba(255, 255, 255, 0.25);
+  color: #ffffff;
+}
+
+/* ==========================================================================
    DriveMate Quota Meter & PRO Lifetime Licensing Styles
    ========================================================================== */
 

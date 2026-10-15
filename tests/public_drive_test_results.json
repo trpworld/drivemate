@@ -10,7 +10,7 @@
       "details": {
         "error": "HTTP Error 403: Forbidden"
       },
-      "timestamp": "2026-10-14T01:27:18.639872"
+      "timestamp": "2026-10-15T02:44:36.589870"
     },
     {
       "test": "Live Nested Recursive Traversal",
@@ -18,7 +18,7 @@
       "details": {
         "error": "HTTP Error 403: Forbidden"
       },
-      "timestamp": "2026-10-14T01:27:18.641181"
+      "timestamp": "2026-10-15T02:44:36.590915"
     },
     {
       "test": "Live File Metadata & Range Verification",
@@ -26,7 +26,7 @@
       "details": {
         "error": "HTTP Error 403: Forbidden"
       },
-      "timestamp": "2026-10-14T01:27:18.642327"
+      "timestamp": "2026-10-15T02:44:36.592214"
     },
     {
       "test": "Live Inaccessible/Private Resource Handling",
@@ -36,7 +36,7 @@
         "private_file_http_status": 403,
         "expected": "HTTP 404 Not Found"
       },
-      "timestamp": "2026-10-14T01:27:18.644127"
+      "timestamp": "2026-10-15T02:44:36.593783"
     },
     {
       "test": "Live Drive API v3 Auth Rejection",
@@ -46,7 +46,7 @@
         "rejection_confirmed": false,
         "details": "Drive API v3 files.list strictly rejects unauthenticated calls"
       },
-      "timestamp": "2026-10-14T01:27:18.644868"
+      "timestamp": "2026-10-15T02:44:36.594599"
     },
     {
       "test": "Rate Limit & Quota Exceeded Detection",
@@ -56,7 +56,7 @@
         "quota_reason": "Too many users have viewed or downloaded this file recently. Please try accessing the file again later.",
         "http_429_detected": true
       },
-      "timestamp": "2026-10-14T01:27:18.644929"
+      "timestamp": "2026-10-15T02:44:36.594655"
     },
     {
       "test": "Special Characters & Filename Integrity",
@@ -66,7 +66,7 @@
         "display_name": "this is a file (wedding photo #1) & more.txt",
         "id_disassociated_from_name": true
       },
-      "timestamp": "2026-10-14T01:27:18.644972"
+      "timestamp": "2026-10-15T02:44:36.594659"
     },
     {
       "test": "Workspace Native Docs Classification",
@@ -89,7 +89,7 @@
           }
         ]
       },
-      "timestamp": "2026-10-14T01:27:18.645041"
+      "timestamp": "2026-10-15T02:44:36.594705"
     },
     {
       "test": "Circular Reference Loop Prevention",
@@ -104,7 +104,7 @@
           "folder_leaf"
         ]
       },
-      "timestamp": "2026-10-14T01:27:18.645051"
+      "timestamp": "2026-10-15T02:44:36.594710"
     },
     {
       "test": "Cancellation / Partial Scan Handling",
@@ -120,7 +120,7 @@
           "status": "CANCELLED"
         }
       },
-      "timestamp": "2026-10-14T01:27:18.645056"
+      "timestamp": "2026-10-15T02:44:36.594713"
     }
   ]
 }

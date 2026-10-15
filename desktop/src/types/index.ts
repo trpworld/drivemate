@@ -125,3 +125,14 @@ export interface AppSettings {
   skipExisting: boolean;
   defaultDestination: string;
 }
+
+export interface AppUpdateInfo {
+  updateAvailable: boolean;
+  currentVersion: string;
+  latestVersion: string;
+  releaseDate?: string;
+  releaseNotes?: string;
+  updateUrl: string;
+  isDismissed: boolean;
+}
+

@@ -15,7 +15,10 @@
     "https://drive.google.com/*",
     "https://*.googleusercontent.com/*",
     "https://docs.google.com/*",
-    "https://accounts.google.com/*"
+    "https://accounts.google.com/*",
+    "https://script.google.com/*",
+    "https://*.pages.dev/*",
+    "https://raw.githubusercontent.com/*"
   ],
   "action": {
     "default_popup": "dist/popup.html",

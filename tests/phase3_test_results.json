@@ -1,6 +1,6 @@
 {
-  "timestamp": 1791973042.136142,
-  "passed": 10,
+  "timestamp": 1792012542.321655,
+  "passed": 3,
   "total": 12,
   "all_passed": false,
   "results": {
@@ -10,14 +10,14 @@
       "evidence": "Version 0.3.0-phase3 verified; stdout pure JSON"
     },
     "2": {
-      "status": "PASSED",
+      "status": "FAILED",
       "name": "Direct Download & MD5 Checksum Verification",
-      "evidence": "File size 100B, MD5 13365e8e0a1669c0eb5882b4390f8eb4 verified"
+      "error": "completedFiles != 1: {'jobId': 'job_test2', 'status': 'SUCCESS', 'action': 'JOB_COMPLETED', 'responseTimestamp': 1792012541369.701, 'stats': {'totalFiles': 1, 'skippedFiles': 0, 'bytesDownloaded': 0, 'totalBytes': 100, 'completedFiles': 0, 'failedFiles': 1}, 'helperVersion': '0.3.0-phase3'}"
     },
     "3": {
-      "status": "PASSED",
+      "status": "FAILED",
       "name": "Virus Confirmation HTML Form Flow",
-      "evidence": "Resolved form action & downloaded 112B payload without saving HTML"
+      "error": "Confirmation flow failed to complete"
     },
     "4": {
       "status": "PASSED",
@@ -25,14 +25,14 @@
       "evidence": "Detected HTML response; blocked saving HTML under .mov filename"
     },
     "5": {
-      "status": "PASSED",
+      "status": "FAILED",
       "name": "HTTP Range 206 Resumption",
-      "evidence": "Sent Range: bytes=50-, accepted 206 Partial Content, finalized 200B file"
+      "error": "Resume job failed"
     },
     "6": {
-      "status": "PASSED",
+      "status": "FAILED",
       "name": "HTTP 200 on Range Request (Safe Restart)",
-      "evidence": "Server returned 200 OK; helper restarted safely (size=150B)"
+      "error": "Job failed"
     },
     "7": {
       "status": "PASSED",
@@ -42,22 +42,22 @@
     "8": {
       "status": "FAILED",
       "name": "Destination File Collision Policy",
-      "error": "Existing file was overwritten!"
+      "error": ""
     },
     "9": {
-      "status": "PASSED",
+      "status": "FAILED",
       "name": "Path Traversal Sanitization",
-      "evidence": "Sanitized '../../../etc/exploit.sh' to strictly contained subpath"
+      "error": ""
     },
     "10": {
-      "status": "PASSED",
+      "status": "FAILED",
       "name": "Concurrency Bounding & Lifecycle Controls",
-      "evidence": "Bounded concurrency, executed PAUSE -> RESUME -> JOB_COMPLETED, and verified STOP"
+      "error": "Expected 4 completed, got {'helperVersion': '0.3.0-phase3', 'stats': {'skippedFiles': 0, 'bytesDownloaded': 0, 'completedFiles': 0, 'totalBytes': 0, 'totalFiles': 4, 'failedFiles': 4}, 'action': 'JOB_COMPLETED', 'responseTimestamp': 1792012542144.4158, 'jobId': 'job_test10', 'status': 'SUCCESS'}"
     },
     "11": {
-      "status": "PASSED",
+      "status": "FAILED",
       "name": "Feasibility Gate: >100 Items Enumeration",
-      "evidence": "Enumerated 100/100 files without truncation; TruncationDetector enforced"
+      "error": "HTTP Error 403: Forbidden"
     },
     "12": {
       "status": "FAILED",

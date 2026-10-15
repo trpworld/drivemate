@@ -27,6 +27,7 @@ export class NativeDownloadClient {
 
   private attachMessageListener(): void {
     if (this.messageListenerAttached) return;
+    if (typeof chrome === 'undefined' || !chrome.runtime?.onMessage) return;
     this.messageListenerAttached = true;
 
     chrome.runtime.onMessage.addListener((msg: any) => {
@@ -43,6 +44,11 @@ export class NativeDownloadClient {
     this.currentJobId = request.jobId;
 
     return new Promise((resolve, reject) => {
+      if (typeof chrome === 'undefined' || !chrome.runtime?.sendMessage) {
+        const err = 'Chrome runtime API is unavailable in this environment.';
+        this.callbacks.onStateChange?.('error', err);
+        return reject(new Error(err));
+      }
       chrome.runtime.sendMessage(
         {
           action: 'START_DOWNLOAD_JOB',
@@ -68,6 +74,7 @@ export class NativeDownloadClient {
   }
 
   public pauseJob(jobId?: string): void {
+    if (typeof chrome === 'undefined' || !chrome.runtime?.sendMessage) return;
     const jId = jobId || this.currentJobId;
     chrome.runtime.sendMessage({
       action: 'PAUSE_DOWNLOAD_JOB',
@@ -76,6 +83,7 @@ export class NativeDownloadClient {
   }
 
   public resumeJob(jobId?: string): void {
+    if (typeof chrome === 'undefined' || !chrome.runtime?.sendMessage) return;
     const jId = jobId || this.currentJobId;
     chrome.runtime.sendMessage({
       action: 'RESUME_DOWNLOAD_JOB',
@@ -84,6 +92,7 @@ export class NativeDownloadClient {
   }
 
   public stopJob(jobId?: string): void {
+    if (typeof chrome === 'undefined' || !chrome.runtime?.sendMessage) return;
     const jId = jobId || this.currentJobId;
     chrome.runtime.sendMessage({
       action: 'STOP_DOWNLOAD_JOB',
@@ -93,6 +102,10 @@ export class NativeDownloadClient {
 
   public getCurrentState(): Promise<any> {
     return new Promise((resolve) => {
+      if (typeof chrome === 'undefined' || !chrome.runtime?.sendMessage) {
+        resolve(null);
+        return;
+      }
       chrome.runtime.sendMessage({ action: 'GET_CURRENT_JOB_STATE' }, (response) => {
         if (chrome.runtime.lastError || !response || !response.success) {
           resolve(null);
@@ -105,6 +118,10 @@ export class NativeDownloadClient {
 
   public clearJobState(): Promise<void> {
     return new Promise((resolve) => {
+      if (typeof chrome === 'undefined' || !chrome.runtime?.sendMessage) {
+        resolve();
+        return;
+      }
       chrome.runtime.sendMessage({ action: 'CLEAR_JOB_STATE' }, () => {
         resolve();
       });

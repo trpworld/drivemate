@@ -3,7 +3,7 @@
 
 import { PublicDriveScanner, collectDownloadableFiles } from './services/publicDriveScanner';
 import { downloadClient } from './services/downloadClient';
-import { LicenseService, DAILY_FREE_LIMIT_BYTES } from './services/licenseService';
+import { LicenseService, DAILY_FREE_LIMIT_BYTES, AppUpdateInfo } from './services/licenseService';
 import type {
   ScanResult,
   JobProgressEvent,
@@ -114,9 +114,24 @@ const inputLicenseKey = document.getElementById('input-license-key') as HTMLInpu
 const btnActivateLicense = document.getElementById('btn-activate-license') as HTMLButtonElement;
 const licenseFeedbackMsg = document.getElementById('license-feedback-msg') as HTMLElement;
 
+// --- DOM ELEMENTS: IN-APP UPDATER ---
+const btnCheckVersion = document.getElementById('btn-check-version') as HTMLElement;
+const updateAlertBar = document.getElementById('update-alert-bar') as HTMLElement;
+const valUpdateTitle = document.getElementById('val-update-title') as HTMLElement;
+const valUpdateNotes = document.getElementById('val-update-notes') as HTMLElement;
+const btnUpdateNow = document.getElementById('btn-update-now') as HTMLButtonElement;
+const btnDismissUpdate = document.getElementById('btn-dismiss-update') as HTMLButtonElement;
+
 // Dedicated Tab Pop-out Handler
 btnOpenTab?.addEventListener('click', () => {
-  chrome.tabs.create({ url: chrome.runtime.getURL('dist/popup.html?mode=tab') });
+  const url = (typeof chrome !== 'undefined' && chrome.runtime?.getURL)
+    ? chrome.runtime.getURL('dist/popup.html?mode=tab')
+    : 'popup.html?mode=tab';
+  if (typeof chrome !== 'undefined' && chrome.tabs?.create) {
+    chrome.tabs.create({ url });
+  } else {
+    window.open(url, '_blank');
+  }
 });
 
 if (new URLSearchParams(window.location.search).get('mode') === 'tab') {
@@ -308,6 +323,94 @@ btnCopyUpi?.addEventListener('click', () => {
     btnCopyUpi.textContent = '8927202527@yapl';
   }
 });
+
+// --- IN-APP AUTO-UPDATER CONTROLLER ---
+let activeUpdateInfo: AppUpdateInfo | null = null;
+
+export async function checkAppUpdates(isManual = false): Promise<void> {
+  const licenseService = LicenseService.getInstance();
+
+  if (isManual && btnCheckVersion) {
+    btnCheckVersion.textContent = 'Checking...';
+    btnCheckVersion.classList.remove('badge-update-ready');
+    btnCheckVersion.title = 'Checking for updates...';
+  }
+
+  try {
+    const info = await licenseService.checkForAppUpdates(isManual);
+    activeUpdateInfo = info;
+
+    if (info.updateAvailable) {
+      if (btnCheckVersion) {
+        btnCheckVersion.textContent = `⚡ v${info.latestVersion}`;
+        btnCheckVersion.classList.add('badge-update-ready');
+        btnCheckVersion.title = `New DriveMate v${info.latestVersion} available! Click to update.`;
+      }
+
+      if (!info.isDismissed || isManual) {
+        if (updateAlertBar) updateAlertBar.style.display = 'flex';
+        if (valUpdateTitle) valUpdateTitle.textContent = `DriveMate v${info.latestVersion} Available!`;
+        if (valUpdateNotes) valUpdateNotes.textContent = info.releaseNotes || 'Faster download engine & bug fixes';
+      }
+    } else {
+      if (updateAlertBar) updateAlertBar.style.display = 'none';
+      if (btnCheckVersion) {
+        btnCheckVersion.classList.remove('badge-update-ready');
+        if (isManual) {
+          btnCheckVersion.textContent = '✓ Up to date';
+          btnCheckVersion.title = `DriveMate v${info.currentVersion} is up to date`;
+          setTimeout(() => {
+            btnCheckVersion.textContent = `v${info.currentVersion}`;
+            btnCheckVersion.title = 'Click to Check for Updates';
+          }, 2500);
+        } else {
+          btnCheckVersion.textContent = `v${info.currentVersion}`;
+          btnCheckVersion.title = 'Click to Check for Updates';
+        }
+      }
+    }
+  } catch (err) {
+    console.warn('[DriveMate Update] Check failed:', err);
+    if (isManual && btnCheckVersion) {
+      btnCheckVersion.textContent = 'Check Failed';
+      setTimeout(() => {
+        btnCheckVersion.textContent = 'v0.3.0';
+        btnCheckVersion.title = 'Click to Check for Updates';
+      }, 2000);
+    }
+  }
+}
+
+btnCheckVersion?.addEventListener('click', () => {
+  if (activeUpdateInfo?.updateAvailable) {
+    if (updateAlertBar) updateAlertBar.style.display = 'flex';
+    const targetUrl = activeUpdateInfo.updateUrl || 'https://drivemate-pro.pages.dev/assets/DriveMate-Chrome-Extension.zip';
+    if (typeof chrome !== 'undefined' && chrome.tabs?.create) {
+      chrome.tabs.create({ url: targetUrl });
+    } else {
+      window.open(targetUrl, '_blank');
+    }
+  } else {
+    checkAppUpdates(true);
+  }
+});
+
+btnUpdateNow?.addEventListener('click', () => {
+  const targetUrl = activeUpdateInfo?.updateUrl || 'https://drivemate-pro.pages.dev/assets/DriveMate-Chrome-Extension.zip';
+  if (typeof chrome !== 'undefined' && chrome.tabs?.create) {
+    chrome.tabs.create({ url: targetUrl });
+  } else {
+    window.open(targetUrl, '_blank');
+  }
+});
+
+btnDismissUpdate?.addEventListener('click', async () => {
+  if (updateAlertBar) updateAlertBar.style.display = 'none';
+  if (activeUpdateInfo?.latestVersion) {
+    await LicenseService.getInstance().dismissUpdate(activeUpdateInfo.latestVersion);
+  }
+});
+
 
 // --- HELPER: FORMAT BYTES ---
 export function formatBytes(bytes: number | null | undefined): string {
@@ -738,7 +841,7 @@ export async function startUnifiedDownload(targetOverride?: string) {
 // --- EVENT HANDLERS: USER INTERACTIONS ---
 
 // 1. Instantly inspect and count files on PASTE into the input field (Does NOT auto-download yet)
-inputFolderId.addEventListener('paste', (e: ClipboardEvent) => {
+inputFolderId?.addEventListener('paste', (e: ClipboardEvent) => {
   const pastedText = e.clipboardData?.getData('text') || '';
   if (pastedText.trim().length > 5) {
     inputFolderId.value = pastedText.trim();
@@ -750,8 +853,8 @@ inputFolderId.addEventListener('paste', (e: ClipboardEvent) => {
 
 // 2. Debounced inspection when editing or typing a valid link
 let inputDebounceTimer: any = null;
-inputFolderId.addEventListener('input', () => {
-  const val = inputFolderId.value.trim();
+inputFolderId?.addEventListener('input', () => {
+  const val = inputFolderId?.value.trim() || '';
   clearTimeout(inputDebounceTimer);
   if (val && val !== currentScannedTarget && (val.includes('drive.google.com') || val.length >= 15)) {
     inputDebounceTimer = setTimeout(() => {
@@ -761,23 +864,25 @@ inputFolderId.addEventListener('input', () => {
 });
 
 // 3. Start download on ENTER key
-inputFolderId.addEventListener('keydown', (e: KeyboardEvent) => {
+inputFolderId?.addEventListener('keydown', (e: KeyboardEvent) => {
   if (e.key === 'Enter') {
     e.preventDefault();
-    if (lastScanResult && currentDownloadableFiles.length > 0 && inputFolderId.value.trim() === currentScannedTarget) {
+    const val = inputFolderId?.value.trim() || '';
+    if (lastScanResult && currentDownloadableFiles.length > 0 && val === currentScannedTarget) {
       startDownloadNow();
     } else {
-      inspectAndCountFolder(inputFolderId.value.trim(), true);
+      inspectAndCountFolder(val, true);
     }
   }
 });
 
 // 4. Primary action button click
-btnStartDownload.addEventListener('click', () => {
-  if (lastScanResult && currentDownloadableFiles.length > 0 && inputFolderId.value.trim() === currentScannedTarget) {
+btnStartDownload?.addEventListener('click', () => {
+  const val = inputFolderId?.value.trim() || '';
+  if (lastScanResult && currentDownloadableFiles.length > 0 && val === currentScannedTarget) {
     startDownloadNow();
   } else {
-    inspectAndCountFolder(inputFolderId.value.trim(), true);
+    inspectAndCountFolder(val, true);
   }
 });
 
@@ -1320,3 +1425,4 @@ async function restoreActiveJobState() {
 
 restoreActiveJobState();
 refreshQuotaUI();
+checkAppUpdates(false);

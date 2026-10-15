@@ -646,6 +646,19 @@ DriveMate Team`;
 function doGet(e) {
   try {
     const action = e && e.parameter && e.parameter.action ? e.parameter.action.toUpperCase() : "";
+
+    // Action: CHECK_VERSION (Live version check for in-app updater)
+    if (action === "CHECK_VERSION" || action === "VERSION") {
+      return jsonResponse({
+        success: true,
+        latestVersion: "0.3.0",
+        versionCode: 30,
+        releaseDate: "2026-10-15",
+        releaseNotes: "Performance optimization, 4-in-1 distribution, UTR license binding & anti-piracy email alerting.",
+        updateUrl: "https://drivemate.netlify.app/assets/DriveMate-Chrome-Extension.zip"
+      });
+    }
+
     if (action === "GET_ALL_DATA") {
       const ss = SpreadsheetApp.getActiveSpreadsheet();
 

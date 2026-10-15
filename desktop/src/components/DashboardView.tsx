@@ -1,6 +1,7 @@
 import React from 'react';
 import type {
   AppSettings,
+  AppUpdateInfo,
   DbJob,
   DiagnosticsReport,
   FileEvent,
@@ -12,6 +13,7 @@ import type {
 } from '../types';
 import type { SettingsTab } from './SettingsView';
 import { formatBytes, formatSpeed } from '../utils/formatters';
+import { DesktopUpdaterService } from '../services/updaterService';
 
 interface DashboardViewProps {
   jobs: DbJob[];
@@ -97,6 +99,61 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
   const [isScanningLocal, setIsScanningLocal] = React.useState(false);
   const [scanStatusText, setScanStatusText] = React.useState<string | null>(null);
   const [scanError, setScanError] = React.useState<string | null>(null);
+
+  // In-App Auto-Updater state
+  const [updateInfo, setUpdateInfo] = React.useState<AppUpdateInfo | null>(null);
+  const [updateDismissed, setUpdateDismissed] = React.useState(false);
+  const [, setCheckingUpdate] = React.useState(false);
+  const [versionBadgeText, setVersionBadgeText] = React.useState('Desktop v1.0');
+
+  React.useEffect(() => {
+    checkForUpdates(false);
+  }, []);
+
+  const checkForUpdates = async (manual = false) => {
+    if (manual) {
+      setCheckingUpdate(true);
+      setVersionBadgeText('Checking...');
+    }
+    try {
+      const svc = DesktopUpdaterService.getInstance();
+      const info = await svc.checkForUpdates(manual);
+      setUpdateInfo(info);
+      if (info.updateAvailable) {
+        setVersionBadgeText(`⚡ v${info.latestVersion}`);
+        if (manual) setUpdateDismissed(false);
+      } else {
+        if (manual) {
+          setVersionBadgeText('✓ Up to date');
+          setTimeout(() => setVersionBadgeText(`v${info.currentVersion}`), 2500);
+        } else {
+          setVersionBadgeText(`v${info.currentVersion}`);
+        }
+      }
+    } catch {
+      if (manual) {
+        setVersionBadgeText('Check Failed');
+        setTimeout(() => setVersionBadgeText('v1.0.0'), 2000);
+      }
+    } finally {
+      if (manual) setCheckingUpdate(false);
+    }
+  };
+
+  const handleVersionBadgeClick = () => {
+    if (updateInfo?.updateAvailable) {
+      setUpdateDismissed(false);
+    } else {
+      checkForUpdates(true);
+    }
+  };
+
+  const handleDismissUpdate = () => {
+    setUpdateDismissed(true);
+    if (updateInfo?.latestVersion) {
+      DesktopUpdaterService.getInstance().dismissUpdate(updateInfo.latestVersion);
+    }
+  };
 
   // Pro Upgrade Modal state
   const [showLicenseModal, setShowLicenseModal] = React.useState(false);
@@ -328,7 +385,19 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
           <div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
               <span className="native-brand-title">DriveMate</span>
-              <span className="native-brand-badge">Desktop v1.0</span>
+              <span
+                id="badge-version"
+                className={`native-brand-badge ${updateInfo?.updateAvailable ? 'badge-update-ready' : ''}`}
+                onClick={handleVersionBadgeClick}
+                style={{ cursor: 'pointer' }}
+                title={
+                  updateInfo?.updateAvailable
+                    ? `New DriveMate v${updateInfo.latestVersion} available! Click to update.`
+                    : 'Click to Check for Updates'
+                }
+              >
+                {versionBadgeText}
+              </span>
             </div>
             <div style={{ fontSize: '11px', color: '#94a3b8', marginTop: '1px' }}>
               Ultra-Fast Google Drive Downloader
@@ -392,6 +461,103 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
         </div>
       </header>
 
+      {/* In-App Auto-Update Notification Banner */}
+      {updateInfo?.updateAvailable && !updateDismissed && (
+        <div
+          id="update-alert-bar"
+          className="native-update-banner"
+          style={{
+            background: 'linear-gradient(90deg, #1e3a8a, #0f172a)',
+            borderBottom: '1px solid rgba(59, 130, 246, 0.4)',
+            padding: '10px 24px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            gap: '16px',
+            boxShadow: '0 4px 12px rgba(0,0,0,0.3)',
+          }}
+        >
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flex: 1, minWidth: 0 }}>
+            <span style={{ fontSize: '18px' }}>🚀</span>
+            <div style={{ minWidth: 0 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <strong id="val-update-title" style={{ color: '#60a5fa', fontSize: '13px' }}>
+                  DriveMate v{updateInfo.latestVersion} Available!
+                </strong>
+                <span
+                  style={{
+                    fontSize: '10px',
+                    padding: '1px 6px',
+                    borderRadius: '4px',
+                    background: 'rgba(59, 130, 246, 0.2)',
+                    color: '#93c5fd',
+                    fontWeight: 600,
+                  }}
+                >
+                  NEW UPDATE
+                </span>
+              </div>
+              <p
+                id="val-update-notes"
+                style={{
+                  margin: '2px 0 0',
+                  fontSize: '11.5px',
+                  color: '#cbd5e1',
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                  whiteSpace: 'nowrap',
+                }}
+              >
+                {updateInfo.releaseNotes || 'Faster download engine, improved UI stability & bug fixes.'}
+              </p>
+            </div>
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexShrink: 0 }}>
+            <a
+              id="btn-update-now"
+              href={updateInfo.updateUrl}
+              target="_blank"
+              rel="noreferrer"
+              className="btn-update-now"
+              style={{
+                background: 'linear-gradient(135deg, #3b82f6, #2563eb)',
+                color: '#ffffff',
+                padding: '6px 14px',
+                borderRadius: '6px',
+                fontSize: '12px',
+                fontWeight: 600,
+                textDecoration: 'none',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '6px',
+                boxShadow: '0 2px 6px rgba(37, 99, 235, 0.35)',
+                cursor: 'pointer',
+              }}
+            >
+              ⚡ Update Now
+            </a>
+            <button
+              type="button"
+              id="btn-dismiss-update"
+              onClick={handleDismissUpdate}
+              title="Dismiss update notice"
+              style={{
+                background: 'transparent',
+                border: 'none',
+                color: '#94a3b8',
+                fontSize: '16px',
+                cursor: 'pointer',
+                padding: '4px 8px',
+                borderRadius: '4px',
+                lineHeight: 1,
+              }}
+            >
+              ✕
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* =========================================================================
           2. MASTER RESPONSIVE WORKSPACE (ADAPTS TO MAC, WINDOWS, 4K, LAPTOP)
           ========================================================================= */}
@@ -447,6 +613,36 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
                       </button>
                     )}
                   </div>
+
+                  {/* 1-Click Verified Public Sample Link Button */}
+                  <button
+                    type="button"
+                    id="btn-sample-link"
+                    className="btn-sample-link"
+                    onClick={() => {
+                      setUrlInput('https://drive.google.com/drive/folders/1KpLl_1tcK0eeehzN980zbG-3M2nhbVks');
+                    }}
+                    style={{
+                      marginTop: '6px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '6px',
+                      background: 'rgba(56, 189, 248, 0.08)',
+                      border: '1px dashed rgba(56, 189, 248, 0.4)',
+                      borderRadius: '6px',
+                      color: '#38bdf8',
+                      padding: '6px 10px',
+                      fontSize: '11px',
+                      cursor: 'pointer',
+                      width: '100%',
+                      justifyContent: 'center',
+                      transition: 'all 0.15s ease',
+                    }}
+                    title="Fill in a verified public Google Drive sample folder to test high-speed downloading"
+                  >
+                    <span>✨</span>
+                    <span>Test Public Sample Folder (Click to Load)</span>
+                  </button>
 
                   {/* Real-time Link Validation hint */}
                   <div style={{ marginTop: '5px', fontSize: '11px', display: 'flex', alignItems: 'center', gap: '6px' }}>

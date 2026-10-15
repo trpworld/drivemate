@@ -19,6 +19,55 @@ async function sha256Hex(message: string): Promise<string> {
   return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
 }
 
+export const chromeStorage = {
+  get: (keys: string[]): Promise<Record<string, any>> => {
+    return new Promise((resolve) => {
+      if (typeof chrome !== 'undefined' && chrome.storage?.local) {
+        chrome.storage.local.get(keys, (res) => resolve(res || {}));
+      } else {
+        const res: Record<string, any> = {};
+        for (const k of keys) {
+          try {
+            const raw = typeof localStorage !== 'undefined' ? localStorage.getItem(k) : null;
+            if (raw !== null) res[k] = JSON.parse(raw);
+          } catch {
+            res[k] = typeof localStorage !== 'undefined' ? localStorage.getItem(k) : null;
+          }
+        }
+        resolve(res);
+      }
+    });
+  },
+  set: (items: Record<string, any>): Promise<void> => {
+    return new Promise((resolve) => {
+      if (typeof chrome !== 'undefined' && chrome.storage?.local) {
+        chrome.storage.local.set(items, () => resolve());
+      } else {
+        if (typeof localStorage !== 'undefined') {
+          for (const [k, v] of Object.entries(items)) {
+            localStorage.setItem(k, typeof v === 'string' ? v : JSON.stringify(v));
+          }
+        }
+        resolve();
+      }
+    });
+  },
+  remove: (keys: string[]): Promise<void> => {
+    return new Promise((resolve) => {
+      if (typeof chrome !== 'undefined' && chrome.storage?.local) {
+        chrome.storage.local.remove(keys, () => resolve());
+      } else {
+        if (typeof localStorage !== 'undefined') {
+          for (const k of keys) {
+            localStorage.removeItem(k);
+          }
+        }
+        resolve();
+      }
+    });
+  }
+};
+
 export class LicenseService {
   private static instance: LicenseService;
   private cachedLicense: LicenseState | null = null;
@@ -38,35 +87,27 @@ export class LicenseService {
    * Retrieves or generates a persistent unique Device ID for hardware binding.
    */
   public async getDeviceId(): Promise<string> {
-    return new Promise((resolve) => {
-      chrome.storage.local.get(['drivemate_device_id'], (res) => {
-        let id = res.drivemate_device_id as string | undefined;
-        if (!id) {
-          const rand = Math.random().toString(36).substring(2, 10).toUpperCase();
-          const time = Date.now().toString(36).toUpperCase();
-          id = `DM-DEV-${rand}-${time}`;
-          chrome.storage.local.set({ drivemate_device_id: id });
-        }
-        resolve(id);
-      });
-    });
+    const res = await chromeStorage.get(['drivemate_device_id']);
+    let id = res.drivemate_device_id as string | undefined;
+    if (!id) {
+      const rand = Math.random().toString(36).substring(2, 10).toUpperCase();
+      const time = Date.now().toString(36).toUpperCase();
+      id = `DM-DEV-${rand}-${time}`;
+      await chromeStorage.set({ drivemate_device_id: id });
+    }
+    return id;
   }
 
   /**
    * Retrieves the configured central Google Apps Script Web App URL for device management.
    */
   public async getActivationServerUrl(): Promise<string | null> {
-    return new Promise((resolve) => {
-      chrome.storage.local.get(['drivemate_activation_url'], (res) => {
-        resolve((res.drivemate_activation_url as string) || DEFAULT_ACTIVATION_SERVER_URL);
-      });
-    });
+    const res = await chromeStorage.get(['drivemate_activation_url']);
+    return (res.drivemate_activation_url as string) || DEFAULT_ACTIVATION_SERVER_URL;
   }
 
   public async setActivationServerUrl(url: string): Promise<void> {
-    return new Promise((resolve) => {
-      chrome.storage.local.set({ drivemate_activation_url: url.trim() }, () => resolve());
-    });
+    await chromeStorage.set({ drivemate_activation_url: url.trim() });
   }
 
   /**
@@ -123,61 +164,54 @@ export class LicenseService {
    */
   public async getLicenseState(): Promise<LicenseState> {
     const currentDeviceId = await this.getDeviceId();
+    const res = await chromeStorage.get(['drivemate_license']);
+    const stored = res.drivemate_license as LicenseState | undefined;
+    if (stored && stored.isPro) {
+      // Check local expiry
+      if (stored.daysRemaining != null && stored.daysRemaining <= 0) {
+        console.warn('License expired. Demoting to Free tier.');
+        const expiredState: LicenseState = { isPro: false, planName: 'License Expired' };
+        this.cachedLicense = expiredState;
+        await chromeStorage.remove(['drivemate_license']);
+        return expiredState;
+      }
 
-    return new Promise((resolve) => {
-      chrome.storage.local.get(['drivemate_license'], async (res) => {
-        const stored = res.drivemate_license as LicenseState | undefined;
-        if (stored && stored.isPro) {
-          // Check local expiry
-          if (stored.daysRemaining != null && stored.daysRemaining <= 0) {
-            console.warn('License expired. Demoting to Free tier.');
-            const expiredState: LicenseState = { isPro: false, planName: 'License Expired' };
-            this.cachedLicense = expiredState;
-            chrome.storage.local.remove(['drivemate_license']);
-            resolve(expiredState);
-            return;
-          }
+      // If stored license is bound to a different device, reject clone!
+      if (stored.deviceId && stored.deviceId !== currentDeviceId) {
+        console.warn('License device ID mismatch detected. Demoting to Free tier.');
+        const defaultState: LicenseState = { isPro: false };
+        this.cachedLicense = defaultState;
+        await chromeStorage.remove(['drivemate_license']);
+        return defaultState;
+      }
 
-          // If stored license is bound to a different device, reject clone!
-          if (stored.deviceId && stored.deviceId !== currentDeviceId) {
-            console.warn('License device ID mismatch detected. Demoting to Free tier.');
-            const defaultState: LicenseState = { isPro: false };
-            this.cachedLicense = defaultState;
-            chrome.storage.local.remove(['drivemate_license']);
-            resolve(defaultState);
-            return;
-          }
-
-          // Live validation with central Google Sheets ledger:
-          if (stored.licenseKey) {
-            const check = await this.validateOnlineWithLedger(stored.licenseKey, currentDeviceId);
-            if (!check.valid) {
-              console.warn('License revoked or expired in Google Sheets ledger. Demoting to Free tier.');
-              const revokedState: LicenseState = { isPro: false, planName: 'License Revoked or Expired' };
-              this.cachedLicense = revokedState;
-              chrome.storage.local.remove(['drivemate_license']);
-              resolve(revokedState);
-              return;
-            }
-            if (check.details) {
-              stored.planName = check.details.planName || stored.planName;
-              stored.maxDevices = check.details.maxDevices || stored.maxDevices;
-              stored.currentDevices = check.details.currentDevices || stored.currentDevices;
-              stored.expiryDate = check.details.expiryDate || stored.expiryDate;
-              stored.daysRemaining = check.details.daysRemaining != null ? check.details.daysRemaining : stored.daysRemaining;
-              chrome.storage.local.set({ drivemate_license: stored });
-            }
-          }
-
-          this.cachedLicense = stored;
-          resolve(stored);
-        } else {
-          const defaultState: LicenseState = { isPro: false };
-          this.cachedLicense = defaultState;
-          resolve(defaultState);
+      // Live validation with central Google Sheets ledger:
+      if (stored.licenseKey) {
+        const check = await this.validateOnlineWithLedger(stored.licenseKey, currentDeviceId);
+        if (!check.valid) {
+          console.warn('License revoked or expired in Google Sheets ledger. Demoting to Free tier.');
+          const revokedState: LicenseState = { isPro: false, planName: 'License Revoked or Expired' };
+          this.cachedLicense = revokedState;
+          await chromeStorage.remove(['drivemate_license']);
+          return revokedState;
         }
-      });
-    });
+        if (check.details) {
+          stored.planName = check.details.planName || stored.planName;
+          stored.maxDevices = check.details.maxDevices || stored.maxDevices;
+          stored.currentDevices = check.details.currentDevices || stored.currentDevices;
+          stored.expiryDate = check.details.expiryDate || stored.expiryDate;
+          stored.daysRemaining = check.details.daysRemaining != null ? check.details.daysRemaining : stored.daysRemaining;
+          await chromeStorage.set({ drivemate_license: stored });
+        }
+      }
+
+      this.cachedLicense = stored;
+      return stored;
+    } else {
+      const defaultState: LicenseState = { isPro: false };
+      this.cachedLicense = defaultState;
+      return defaultState;
+    }
   }
 
   /**
@@ -203,30 +237,27 @@ export class LicenseService {
       };
     }
 
-    return new Promise((resolve) => {
-      chrome.storage.local.get(['drivemate_daily_quota'], (res) => {
-        let quota = res.drivemate_daily_quota as DailyQuotaState | undefined;
-        if (!quota || quota.date !== today) {
-          // Reset quota for new day
-          quota = {
-            date: today,
-            bytesDownloadedToday: 0
-          };
-          chrome.storage.local.set({ drivemate_daily_quota: quota });
-        }
+    const res = await chromeStorage.get(['drivemate_daily_quota']);
+    let quota = res.drivemate_daily_quota as DailyQuotaState | undefined;
+    if (!quota || quota.date !== today) {
+      // Reset quota for new day
+      quota = {
+        date: today,
+        bytesDownloadedToday: 0
+      };
+      await chromeStorage.set({ drivemate_daily_quota: quota });
+    }
 
-        const used = quota.bytesDownloadedToday || 0;
-        const remaining = Math.max(0, DAILY_FREE_LIMIT_BYTES - used);
+    const used = quota.bytesDownloadedToday || 0;
+    const remaining = Math.max(0, DAILY_FREE_LIMIT_BYTES - used);
 
-        resolve({
-          usedBytes: used,
-          limitBytes: DAILY_FREE_LIMIT_BYTES,
-          remainingBytes: remaining,
-          isPro: false,
-          date: today
-        });
-      });
-    });
+    return {
+      usedBytes: used,
+      limitBytes: DAILY_FREE_LIMIT_BYTES,
+      remainingBytes: remaining,
+      isPro: false,
+      date: today
+    };
   }
 
   /**
@@ -238,22 +269,17 @@ export class LicenseService {
     if (license.isPro) return; // Pro users don't need quota recording
 
     const today = getTodayString();
-    return new Promise((resolve) => {
-      chrome.storage.local.get(['drivemate_daily_quota'], (res) => {
-        let quota = res.drivemate_daily_quota as DailyQuotaState | undefined;
-        if (!quota || quota.date !== today) {
-          quota = {
-            date: today,
-            bytesDownloadedToday: 0
-          };
-        }
+    const res = await chromeStorage.get(['drivemate_daily_quota']);
+    let quota = res.drivemate_daily_quota as DailyQuotaState | undefined;
+    if (!quota || quota.date !== today) {
+      quota = {
+        date: today,
+        bytesDownloadedToday: 0
+      };
+    }
 
-        quota.bytesDownloadedToday += bytes;
-        chrome.storage.local.set({ drivemate_daily_quota: quota }, () => {
-          resolve();
-        });
-      });
-    });
+    quota.bytesDownloadedToday += bytes;
+    await chromeStorage.set({ drivemate_daily_quota: quota });
   }
 
   /**
@@ -427,12 +453,9 @@ export class LicenseService {
       daysRemaining: daysRemaining
     };
 
-    return new Promise((resolve) => {
-      chrome.storage.local.set({ drivemate_license: proState }, () => {
-        this.cachedLicense = proState;
-        resolve({ success: true });
-      });
-    });
+    await chromeStorage.set({ drivemate_license: proState });
+    this.cachedLicense = proState;
+    return { success: true };
   }
 
   /**
@@ -441,11 +464,7 @@ export class LicenseService {
   public async deactivateLicense(): Promise<void> {
     const freeState: LicenseState = { isPro: false };
     this.cachedLicense = freeState;
-    return new Promise((resolve) => {
-      chrome.storage.local.remove(['drivemate_license'], () => {
-        resolve();
-      });
-    });
+    await chromeStorage.remove(['drivemate_license']);
   }
 
   /**
@@ -472,11 +491,97 @@ export class LicenseService {
           licenseKey: license.licenseKey || '',
           downloadedBytes: quota.usedBytes,
           os: os,
-          version: 'v0.3.0'
+          version: typeof chrome !== 'undefined' && chrome.runtime?.getManifest ? chrome.runtime.getManifest().version : 'v0.3.0'
         })
       });
     } catch {
       // Telemetry is best-effort and silent
     }
   }
+
+  /**
+   * Live in-app update check against Central Cloud Server & CDN fallbacks.
+   * Compares currently running manifest version with latest available release.
+   */
+  public async checkForAppUpdates(forceRefresh = false): Promise<AppUpdateInfo> {
+    const currentVersion = typeof chrome !== 'undefined' && chrome.runtime?.getManifest ? chrome.runtime.getManifest().version : '0.3.0';
+    const dismissedVersion = forceRefresh ? null : await this.getDismissedVersion();
+
+    const defaultResult: AppUpdateInfo = {
+      updateAvailable: false,
+      currentVersion,
+      latestVersion: currentVersion,
+      updateUrl: 'https://drivemate-pro.pages.dev/assets/DriveMate-Chrome-Extension.zip',
+      isDismissed: false
+    };
+
+    // Candidate sources for live version info
+    const sources: string[] = [];
+    const serverUrl = await this.getActivationServerUrl();
+    if (serverUrl) {
+      sources.push(`${serverUrl}?action=CHECK_VERSION`);
+    }
+    sources.push('https://drivemate-pro.pages.dev/version.json');
+    sources.push('https://raw.githubusercontent.com/gobindabiswas/drivemate/main/landing-page/version.json');
+
+    for (const url of sources) {
+      try {
+        const resp = await fetch(url, { cache: forceRefresh ? 'no-cache' : 'default' });
+        if (resp.ok) {
+          const data = await resp.json();
+          if (data && data.latestVersion) {
+            const latestVer = String(data.latestVersion).trim();
+            const isNewer = this.compareSemver(latestVer, currentVersion) > 0;
+            const isDismissed = dismissedVersion === latestVer;
+
+            return {
+              updateAvailable: isNewer,
+              currentVersion,
+              latestVersion: latestVer,
+              releaseDate: data.releaseDate,
+              releaseNotes: data.releaseNotes || 'New improvements, bug fixes & faster download speeds.',
+              updateUrl: data.updateUrl || 'https://drivemate-pro.pages.dev/assets/DriveMate-Chrome-Extension.zip',
+              isDismissed: isDismissed
+            };
+          }
+        }
+      } catch {
+        // Try next source in fallback chain
+      }
+    }
+
+    return defaultResult;
+  }
+
+  public async dismissUpdate(version: string): Promise<void> {
+    await chromeStorage.set({ drivemate_dismissed_version: version });
+  }
+
+  public async getDismissedVersion(): Promise<string | null> {
+    const res = await chromeStorage.get(['drivemate_dismissed_version']);
+    return (res.drivemate_dismissed_version as string) || null;
+  }
+
+  private compareSemver(v1: string, v2: string): number {
+    const p1 = v1.replace(/^v/, '').split('.').map(n => parseInt(n, 10) || 0);
+    const p2 = v2.replace(/^v/, '').split('.').map(n => parseInt(n, 10) || 0);
+    for (let i = 0; i < Math.max(p1.length, p2.length); i++) {
+      const n1 = p1[i] || 0;
+      const n2 = p2[i] || 0;
+      if (n1 > n2) return 1;
+      if (n1 < n2) return -1;
+    }
+    return 0;
+  }
 }
+
+export interface AppUpdateInfo {
+  updateAvailable: boolean;
+  currentVersion: string;
+  latestVersion: string;
+  releaseDate?: string;
+  releaseNotes?: string;
+  updateUrl: string;
+  isDismissed?: boolean;
+}
+

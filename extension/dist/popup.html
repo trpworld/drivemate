@@ -22,6 +22,7 @@
         </div>
       </div>
       <div style="display: flex; align-items: center; gap: 6px;">
+        <span id="btn-check-version" class="badge-version" title="Click to Check for Updates">v0.3.0</span>
         <div id="auth-badge" class="badge badge-connected">PUBLIC LINK MODE</div>
         <button id="btn-open-tab" class="btn-popout" title="Open DriveMate in Dedicated Full Tab" aria-label="Open in Dedicated Tab">
           <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
@@ -31,6 +32,23 @@
           </svg>
           <span>Tab</span>
         </button>
+      </div>
+    </div>
+
+    <!-- Smart In-App Auto-Update Notification Banner -->
+    <div id="update-alert-bar" class="update-bar-wrapper" style="display: none;">
+      <div class="update-bar-content">
+        <span class="update-rocket">🚀</span>
+        <div class="update-text-group">
+          <div class="update-title" id="val-update-title">DriveMate Update Available!</div>
+          <div class="update-sub" id="val-update-notes">Faster download engine & bug fixes</div>
+        </div>
+      </div>
+      <div class="update-btn-group">
+        <button id="btn-update-now" class="btn-update-now" type="button" title="Download Update & Open Extensions">
+          <span>⚡ Update Now</span>
+        </button>
+        <button id="btn-dismiss-update" class="btn-dismiss-update" type="button" title="Dismiss">✕</button>
       </div>
     </div>
 

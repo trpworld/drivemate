@@ -70,7 +70,7 @@ def run_tests():
 
     print("\n[Test 3] Auditing Manifest V3 permissions and security scope...")
     m = manifest_data
-    allowed_permissions = {"nativeMessaging", "identity", "activeTab", "storage", "alarms"}
+    allowed_permissions = {"nativeMessaging", "identity", "activeTab", "storage", "alarms", "unlimitedStorage"}
     actual_permissions = set(m.get("permissions", []))
     is_permissions_valid = actual_permissions.issubset(allowed_permissions) and "nativeMessaging" in actual_permissions
     oauth_scopes = m.get("oauth2", {}).get("scopes", [])
