@@ -48,3 +48,8 @@ desktop/dist/
 # Classified Admin Tools (Local Only - Never on Internet)
 dashboard/
 Open-Admin-Dashboard.command
+
+# Mobile Admin App (Local to owner only)
+DriveMate-Mobile-Admin.html
+mobile-admin/
+📱-Open-Mobile-Admin-Wi-Fi.command
