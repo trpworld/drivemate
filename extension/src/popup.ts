@@ -175,7 +175,9 @@ export async function refreshQuotaUI() {
         planTitle.textContent = license.planName.toUpperCase();
       }
       if (planSub) {
-        if (license.daysRemaining != null) {
+        if (license.utr) {
+          planSub.textContent = `— Verified with UTR: ${license.utr} (${license.daysRemaining != null ? license.daysRemaining + "d left" : "Active"})`;
+        } else if (license.daysRemaining != null) {
           planSub.textContent = `— ${license.daysRemaining} days remaining (Unlimited Daily Downloads)`;
         } else {
           planSub.textContent = '— Unlimited Daily Downloads (No 10 GB Limit)';

@@ -513,10 +513,10 @@ function doPost(e) {
     // --------------------------------------------------------------------------
     if (action === "RECORD_SALE" || action === "CREATE_LICENSE") {
       const key = (data.licenseKey || data.key || "").trim().toUpperCase();
-      const name = (data.customerName || data.name || "Customer").trim();
+      const name = (data.customerName || data.name || "Valued Customer").trim();
       const phone = (data.phone || "").trim();
-      const email = (data.email || "").trim();
       const utr = (data.utr || data.paymentUtr || "").trim();
+      const email = (data.email || (phone ? phone + "@customer.com" : "customer@drivemate.com")).trim();
       const plan = (data.plan || "6M").toString().trim().toUpperCase();
       const price = data.price || (plan === "1Y" ? "₹500" : "₹100");
       const targetDeviceId = (data.targetDeviceId || "").trim();

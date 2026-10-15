@@ -99,6 +99,7 @@ export interface DbJobFile {
 export interface LicenseState {
   is_pro: boolean;
   license_key?: string;
+  utr?: string;
   plan_name: string;
   device_id: string;
   max_devices?: number;

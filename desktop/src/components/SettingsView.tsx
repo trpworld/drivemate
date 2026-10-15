@@ -505,6 +505,11 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
                       ? (license.days_remaining != null ? `${license.days_remaining} days remaining • Team ${license.devices_used || 1}/${license.max_devices || 5} devices` : 'Active Edition • No Expiration')
                       : 'Free Tier (10 GB daily quota). Upgrade to 6-Month Pro (₹100) or 1-Year Team (₹500).'}
                   </div>
+                  {license?.utr && (
+                    <div style={{ fontSize: '11.5px', color: 'var(--emerald-text)', marginTop: '3px', fontWeight: 600 }}>
+                      🧾 UPI UTR: {license.utr} (Verified Genuine)
+                    </div>
+                  )}
                   <div style={{ fontSize: '11px', color: 'var(--text-muted)', marginTop: '4px', fontFamily: 'var(--font-mono)' }}>
                     Device ID: {license?.device_id || 'DM-MAC-08365AD4'}
                   </div>

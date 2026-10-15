@@ -178,6 +178,7 @@ export interface LicenseState {
   currentDevices?: number;
   expiryDate?: string | null;
   daysRemaining?: number | null;
+  utr?: string;
 }
 
 export interface DailyQuotaState {

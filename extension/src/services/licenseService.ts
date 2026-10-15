@@ -396,7 +396,10 @@ export class LicenseService {
     let expiryDate: string | null = null;
     let daysRemaining: number | null = offlinePlan.daysRemaining;
 
-    // Check Online Anti-Piracy / Device Limit Ledger (if configured)
+    // Check Online Anti-Piracy / UTR Ledger Verification (Strict Enforcement)
+    let utr: string | undefined = undefined;
+    const isVip = cleanKey === 'DMPROLIFETIMEVIP' || cleanKey === 'DRIVEMATEPRO2026';
+
     const serverUrl = await this.getActivationServerUrl();
     if (serverUrl) {
       try {
@@ -416,7 +419,7 @@ export class LicenseService {
           if (resData && resData.success === false) {
             return {
               success: false,
-              error: resData.message || '⚠️ Activation rejected by central ledger: ' + (resData.error || 'Invalid License Key')
+              error: resData.message || '⚠️ Activation rejected: This license key was not found in the official UPI payment ledger.'
             };
           }
           if (resData && resData.success) {
@@ -425,10 +428,21 @@ export class LicenseService {
             currentDevices = resData.currentDevices || currentDevices;
             expiryDate = resData.expiryDate || null;
             daysRemaining = resData.daysRemaining != null ? resData.daysRemaining : daysRemaining;
+            utr = resData.utr || resData.paymentUtr || undefined;
           }
+        } else if (!isVip) {
+          return {
+            success: false,
+            error: '⚠️ Server returned an error while verifying license against the official UPI ledger. Please try again.'
+          };
         }
       } catch (networkErr) {
-        console.warn('Central license verification unreachable, fallback to local hardware binding:', networkErr);
+        if (!isVip) {
+          return {
+            success: false,
+            error: '⚠️ Active internet connection required to verify license against the official UPI UTR ledger.'
+          };
+        }
       }
     }
 
@@ -441,7 +455,8 @@ export class LicenseService {
       maxDevices: maxDevices,
       currentDevices: currentDevices,
       expiryDate: expiryDate,
-      daysRemaining: daysRemaining
+      daysRemaining: daysRemaining,
+      utr: utr
     };
 
     await chromeStorage.set({ drivemate_license: proState });
