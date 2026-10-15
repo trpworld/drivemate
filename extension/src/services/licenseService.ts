@@ -414,19 +414,10 @@ export class LicenseService {
         if (response.ok) {
           const resData = await response.json();
           if (resData && resData.success === false) {
-            const fatalActivationErrors = [
-              'DEVICE_LIMIT_EXCEEDED',
-              'LICENSE_REVOKED',
-              'LICENSE_EXPIRED',
-              'DEVICE_NOT_AUTHORIZED'
-            ];
-            if (fatalActivationErrors.includes(resData.error)) {
-              return {
-                success: false,
-                error: resData.message || '⚠️ Device limit exceeded: This license is already in use on another computer.'
-              };
-            }
-            console.warn('[DriveMate Activation] Non-fatal server response, proceeding with offline cryptographic activation:', resData.message || resData.error);
+            return {
+              success: false,
+              error: resData.message || '⚠️ Activation rejected by central ledger: ' + (resData.error || 'Invalid License Key')
+            };
           }
           if (resData && resData.success) {
             planName = resData.planName || planName;

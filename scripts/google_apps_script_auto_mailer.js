@@ -220,31 +220,48 @@ function doPost(e) {
       const now = new Date();
 
       if (foundRow === -1) {
-        // First time this key is ever activated: bind to this device!
-        const expiryDate = new Date(now.getTime() + defaultPlan.durationDays * 24 * 60 * 60 * 1000);
-        sheet.appendRow([
-          key,
-          deviceId,
-          1,
-          defaultPlan.maxDevices,
-          "ACTIVE",
-          now,
-          now,
-          defaultPlan.name,
-          expiryDate.toISOString(),
-          clientVer,
-          "0.00 GB",
-          "Initial Activation"
-        ]);
+        // Developer VIP bypass keys allowed
+        if (key === "DMPROLIFETIMEVIP" || key === "DRIVEMATEPRO2026") {
+          const expiryDate = new Date(now.getTime() + defaultPlan.durationDays * 24 * 60 * 60 * 1000);
+          sheet.appendRow([
+            key,
+            deviceId,
+            1,
+            defaultPlan.maxDevices,
+            "ACTIVE",
+            now,
+            now,
+            defaultPlan.name,
+            expiryDate.toISOString(),
+            clientVer,
+            "0.00 GB",
+            "VIP Developer Test Key"
+          ]);
+          return jsonResponse({
+            success: true,
+            message: "🎉 VIP Developer License activated successfully.",
+            planName: defaultPlan.name,
+            maxDevices: defaultPlan.maxDevices,
+            currentDevices: 1,
+            expiryDate: expiryDate.toISOString(),
+            daysRemaining: defaultPlan.durationDays
+          });
+        }
+
+        // UNREGISTERED KEY: Was NEVER generated from a valid payment UTR!
+        logSecurityViolation(ss, {
+          key: key,
+          type: "UNREGISTERED_KEY_ATTEMPT",
+          attemptedDevice: deviceId,
+          boundDevices: "0/0",
+          actionTaken: "BLOCKED_UNREGISTERED",
+          details: "Attempted activation with an unregistered key not found in payment UTR ledger."
+        });
 
         return jsonResponse({
-          success: true,
-          message: "🎉 License activated successfully (" + defaultPlan.shortName + " - Slot 1/" + defaultPlan.maxDevices + ").",
-          planName: defaultPlan.name,
-          maxDevices: defaultPlan.maxDevices,
-          currentDevices: 1,
-          expiryDate: expiryDate.toISOString(),
-          daysRemaining: defaultPlan.durationDays
+          success: false,
+          error: "UNREGISTERED_LICENSE",
+          message: "⚠️ This license key is not registered in the official payment ledger. Please ensure you purchased a genuine key with UPI UTR."
         });
       } else {
         // Key is already in sheet: inspect device binding & expiry
