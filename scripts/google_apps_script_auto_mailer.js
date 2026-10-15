@@ -26,6 +26,7 @@
  */
 
 const MASTER_SALT = "DriveMate-Pro-2026-SuperSecretMasterSalt-9941";
+const ADMIN_SECRET_TOKEN = "DriveMate-Secure-Owner-Token-8927";
 
 const PLAN_CONFIG = {
   "6M": {
@@ -660,6 +661,14 @@ function doGet(e) {
     }
 
     if (action === "GET_ALL_DATA") {
+      const clientToken = e && e.parameter ? e.parameter.adminToken : "";
+      if (clientToken !== ADMIN_SECRET_TOKEN) {
+        return jsonResponse({
+          success: false,
+          error: "UNAUTHORIZED_ADMIN_ACCESS",
+          message: "Access Denied: Valid adminToken is required to access database ledger."
+        });
+      }
       const ss = SpreadsheetApp.getActiveSpreadsheet();
 
       // 1. Activations

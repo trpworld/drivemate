@@ -12,6 +12,36 @@
 </head>
 <body>
 
+  <!-- MASTER ADMIN SECURITY GATEKEEPER (MAXIMUM PROTECTION) -->
+  <div id="admin-lock-screen" class="admin-lock-screen">
+    <div class="lock-card">
+      <div class="lock-badge-vault">
+        <span class="pulse-dot-red"></span>
+        <span>DRIVEMATE CRYPTO-VAULT PROTOCOL</span>
+      </div>
+      <div class="lock-shield-icon">🛡️</div>
+      <h1 class="lock-title">Admin Console Locked</h1>
+      <p class="lock-desc">Enter your 6-digit Master Security PIN to decrypt session and access the License & User Control Center.</p>
+      
+      <form id="form-admin-login" class="lock-form" autocomplete="off">
+        <div class="pin-input-wrap">
+          <input type="password" id="admin-pin-input" class="admin-pin-input" maxlength="20" placeholder="••••••" autofocus required autocomplete="off" />
+        </div>
+        <div id="lock-error-msg" class="lock-error-msg" style="display: none;"></div>
+        <button type="submit" id="btn-unlock-admin" class="btn btn-primary btn-unlock">
+          <span>🔓 Unlock Admin Console</span>
+        </button>
+      </form>
+      
+      <div class="lock-info-row">
+        <span>🔒 256-Bit Cryptographic Vault</span>
+        <span>•</span>
+        <span>⏱️ Auto-Lock: 15 Mins</span>
+      </div>
+    </div>
+  </div>
+
+
   <!-- Ambient Animated Glowing Background -->
   <div class="ambient-glow glow-1"></div>
   <div class="ambient-glow glow-2"></div>
@@ -41,6 +71,9 @@
       </div>
 
       <div class="topbar-right">
+        <button id="btn-lock-console" class="btn btn-secondary btn-sm" title="Lock Admin Console">
+          <span class="icon">🔒</span> <span>Lock</span>
+        </button>
         <div class="live-clock" id="live-clock">--:--:--</div>
         <button id="btn-quick-gen" class="btn btn-primary btn-sm">
           <span class="icon">⚡</span> <span>New License</span>
@@ -219,6 +252,19 @@
           <div class="empty-icon">🔍</div>
           <h3>No matching installed users found</h3>
           <p>Try clearing your filter or searching a different term.</p>
+        </div>
+
+        <div class="backup-section mt-24" style="border-top: 1px solid var(--border-subtle); padding-top: 20px;">
+          <h4>🔐 Master Admin Security PIN</h4>
+          <p class="text-muted">Change the 6-digit cryptographic PIN used to lock this Admin Console.</p>
+          <form id="form-change-pin" style="max-width: 420px; display: flex; flex-direction: column; gap: 10px; margin-top: 12px;">
+            <input type="password" id="input-curr-pin" class="form-input" placeholder="Current Master PIN" required />
+            <input type="password" id="input-new-pin" class="form-input" placeholder="New Master PIN (min 4 digits)" required />
+            <input type="password" id="input-confirm-pin" class="form-input" placeholder="Confirm New Master PIN" required />
+            <button type="submit" class="btn btn-primary btn-sm" style="align-self: flex-start; margin-top: 4px;">
+              <span>💾 Update Master PIN</span>
+            </button>
+          </form>
         </div>
       </div>
     </section>

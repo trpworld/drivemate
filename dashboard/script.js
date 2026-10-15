@@ -1,3 +1,184 @@
+// ==============================================================================
+//  DRIVEMATE VAULT PROTOCOL — MAXIMUM ADMIN SECURITY GATEKEEPER
+// ==============================================================================
+const ADMIN_VAULT_SALT = "DriveMate-Master-Admin-Salt-2026-X99";
+// Default Master PIN: "892720" (Owner's UPI/WhatsApp phone prefix)
+const DEFAULT_VAULT_HASH = "5cecd01db23510ab8e0d916a70dcd43926e28cfd9775f79c61cf12929c65484c";
+const ADMIN_API_TOKEN = "DriveMate-Secure-Owner-Token-8927";
+
+class VaultGatekeeper {
+  constructor() {
+    this.storageKey = "drivemate_admin_pin_hash_v1";
+    this.sessionKey = "drivemate_admin_unlocked_session";
+    this.attemptsKey = "drivemate_admin_lockout_attempts";
+    this.lockoutUntilKey = "drivemate_admin_lockout_timestamp";
+    this.maxAttempts = 5;
+    this.lockoutDurationMs = 10 * 60 * 1000; // 10 minutes
+    this.inactivityTimeoutMs = 15 * 60 * 1000; // 15 minutes
+    this.inactivityTimer = null;
+
+    this.lockScreenEl = document.getElementById("admin-lock-screen");
+    this.appLayoutEl = document.querySelector(".app-layout");
+    this.pinInputEl = document.getElementById("admin-pin-input");
+    this.errorMsgEl = document.getElementById("lock-error-msg");
+    this.formEl = document.getElementById("form-admin-login");
+    this.lockBtn = document.getElementById("btn-lock-console");
+
+    this.bindEvents();
+    this.enforceInitialState();
+  }
+
+  getExpectedHash() {
+    return localStorage.getItem(this.storageKey) || DEFAULT_VAULT_HASH;
+  }
+
+  setNewHash(hash) {
+    localStorage.setItem(this.storageKey, hash);
+  }
+
+  isUnlocked() {
+    return sessionStorage.getItem(this.sessionKey) === "true";
+  }
+
+  enforceInitialState() {
+    if (this.isUnlocked()) {
+      this.hideLockScreen();
+      this.resetInactivityTimer();
+    } else {
+      this.showLockScreen();
+    }
+  }
+
+  showLockScreen() {
+    sessionStorage.removeItem(this.sessionKey);
+    if (this.lockScreenEl) this.lockScreenEl.style.display = "flex";
+    if (this.appLayoutEl) this.appLayoutEl.classList.add("locked-layout");
+    if (this.pinInputEl) {
+      this.pinInputEl.value = "";
+      setTimeout(() => this.pinInputEl.focus(), 100);
+    }
+    if (this.errorMsgEl) this.errorMsgEl.style.display = "none";
+    if (this.inactivityTimer) clearTimeout(this.inactivityTimer);
+  }
+
+  hideLockScreen() {
+    sessionStorage.setItem(this.sessionKey, "true");
+    if (this.lockScreenEl) this.lockScreenEl.style.display = "none";
+    if (this.appLayoutEl) this.appLayoutEl.classList.remove("locked-layout");
+    this.resetInactivityTimer();
+  }
+
+  bindEvents() {
+    if (this.formEl) {
+      this.formEl.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        await this.handleUnlockAttempt();
+      });
+    }
+
+    if (this.lockBtn) {
+      this.lockBtn.addEventListener("click", () => {
+        this.showLockScreen();
+      });
+    }
+
+    // Reset inactivity timer on user activity
+    const activityEvents = ["mousemove", "keydown", "click", "scroll"];
+    activityEvents.forEach((evt) => {
+      window.addEventListener(evt, () => {
+        if (this.isUnlocked()) {
+          this.resetInactivityTimer();
+        }
+      });
+    });
+
+    // Change PIN Form
+    const changePinForm = document.getElementById("form-change-pin");
+    if (changePinForm) {
+      changePinForm.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const currPin = document.getElementById("input-curr-pin").value;
+        const newPin = document.getElementById("input-new-pin").value;
+        const confirmPin = document.getElementById("input-confirm-pin").value;
+
+        const currHash = await sha256Hex(currPin + ADMIN_VAULT_SALT);
+        if (currHash !== this.getExpectedHash()) {
+          alert("❌ Current Master PIN is incorrect!");
+          return;
+        }
+
+        if (newPin.length < 4) {
+          alert("❌ New PIN must be at least 4 digits!");
+          return;
+        }
+
+        if (newPin !== confirmPin) {
+          alert("❌ New PIN and Confirm PIN do not match!");
+          return;
+        }
+
+        const newHash = await sha256Hex(newPin + ADMIN_VAULT_SALT);
+        this.setNewHash(newHash);
+        changePinForm.reset();
+        alert("🎉 Master Security PIN updated successfully! Remember your new PIN.");
+      });
+    }
+  }
+
+  resetInactivityTimer() {
+    if (this.inactivityTimer) clearTimeout(this.inactivityTimer);
+    this.inactivityTimer = setTimeout(() => {
+      console.warn("[Admin Vault] Auto-locked session due to 15 minutes of inactivity.");
+      this.showLockScreen();
+    }, this.inactivityTimeoutMs);
+  }
+
+  async handleUnlockAttempt() {
+    // Check lockout status
+    const lockoutUntil = Number(localStorage.getItem(this.lockoutUntilKey) || 0);
+    const now = Date.now();
+    if (lockoutUntil > now) {
+      const remainingSec = Math.ceil((lockoutUntil - now) / 1000);
+      this.showError(`🚨 Security Lockout: Too many failed attempts. Try again in ${remainingSec}s.`);
+      return;
+    }
+
+    const enteredPin = (this.pinInputEl.value || "").trim();
+    if (!enteredPin) return;
+
+    const computedHash = await sha256Hex(enteredPin + ADMIN_VAULT_SALT);
+    if (computedHash === this.getExpectedHash()) {
+      // Success! Clear failed attempts and unlock
+      localStorage.removeItem(this.attemptsKey);
+      localStorage.removeItem(this.lockoutUntilKey);
+      this.hideLockScreen();
+      if (window.app) window.app.renderAll();
+    } else {
+      let attempts = Number(localStorage.getItem(this.attemptsKey) || 0) + 1;
+      localStorage.setItem(this.attemptsKey, String(attempts));
+
+      if (attempts >= this.maxAttempts) {
+        localStorage.setItem(this.lockoutUntilKey, String(now + this.lockoutDurationMs));
+        this.showError("🚨 Too many wrong attempts! Console locked for 10 minutes.");
+      } else {
+        const remaining = this.maxAttempts - attempts;
+        this.showError(`❌ Incorrect Master PIN. ${remaining} attempts remaining.`);
+      }
+
+      this.pinInputEl.value = "";
+      this.pinInputEl.focus();
+    }
+  }
+
+  showError(msg) {
+    if (this.errorMsgEl) {
+      this.errorMsgEl.textContent = msg;
+      this.errorMsgEl.style.display = "block";
+    }
+  }
+}
+
+
 /**
  * ==============================================================================
  *  DriveMate PRO — License & Anti-Piracy Admin Dashboard Engine
@@ -1412,7 +1593,7 @@ DriveMate PRO কেনার জন্য ধন্যবাদ! আপনা�
     if (!url) return;
     this.showToast("Syncing latest data from Google Sheets...", "info");
     try {
-      const resp = await fetch(`${url}?action=GET_ALL_DATA`);
+      const resp = await fetch(`${url}?action=GET_ALL_DATA&adminToken=DriveMate-Secure-Owner-Token-8927`);
       if (resp.ok) {
         const data = await resp.json();
         if (data && data.success) {
@@ -1607,5 +1788,6 @@ function escapeHtml(str) {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
+  window.vault = new VaultGatekeeper();
   window.app = new DashboardApp();
 });
