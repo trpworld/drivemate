@@ -44,3 +44,7 @@ DriveMate/
 👉-SEND-THIS-TO-BUYER*
 desktop/src-tauri/target/
 desktop/dist/
+
+# Classified Admin Tools (Local Only - Never on Internet)
+dashboard/
+Open-Admin-Dashboard.command

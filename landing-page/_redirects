@@ -1,0 +1,4 @@
+/dashboard/*  /404  404
+/dashboard    /404  404
+/admin/*      /404  404
+/admin        /404  404
